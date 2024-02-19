@@ -1,7 +1,7 @@
 import React,{useState} from 'react'
 import c1 from '../images/backg.png'
 import c2 from '../images/ellipse.png'
-import { Switch } from '@headlessui/react'
+// import { Switch } from '@headlessui/react'
 import {Link} from 'react-router-dom'
 
 function Signup() {
