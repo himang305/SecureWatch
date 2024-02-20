@@ -6,6 +6,9 @@ import Login1 from './components/login1.jsx';
 import Verify from './components/verify.jsx';
 import Home from './components/home.jsx';
 import Dashboard from './components/dashboard.jsx';
+import Monitor from './components/monitor.jsx';
+import Activity from './components/activity.jsx';
+import Create from './components/create.jsx';
 
 function App() {
   return (
@@ -17,6 +20,10 @@ function App() {
     <Route path='verify' element={<Verify/>}/>
     <Route path='/' element={<Home/>}/>
     <Route path='/dashboard' element={<Dashboard/>}/>
+    <Route path='/monitor' element={<Monitor/>}/>
+    <Route path='/activity' element={<Activity/>}/>
+    <Route path='/create' element={<Create/>}/>
+
     </Routes>
     </BrowserRouter>
   );
