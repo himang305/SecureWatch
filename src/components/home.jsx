@@ -6,6 +6,7 @@ import c1 from '../images/c1.png'
 import c2 from '../images/c2.png'
 import c3 from '../images/c3.png'
 import c4 from '../images/c4.png'
+import { Link } from 'react-router-dom';
 
 function home() {
   return (
@@ -19,7 +20,9 @@ function home() {
       </div>
       <div className='text-[#8F8F8F] mt-10'>Unlock the Future of Transaction Security – Proactive Monitoring,</div>
       <div className='text-[#8F8F8F]'>Intuitive Insights, and Seamless Scalability Await You with SecureWatch</div>
+      <Link to="/dashboard">
       <button className='rounded-md px-4 py-2 text-white bg-black mt-10'>Start for free</button>
+      </Link>
       <div className='mt-10'>
       <img src={Home} alt="" /></div>
       <div className='text-5xl mx-10 text-center mt-10'>

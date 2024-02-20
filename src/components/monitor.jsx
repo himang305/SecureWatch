@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Link } from 'react-router-dom';
 
 export default function Monitor(props) {
   return (
@@ -60,37 +61,41 @@ export default function Monitor(props) {
               className="img-5"
             />
           </div>
+
           <div className="div-23">
             <div className="div-24">
-              <div className="div-25">
-                <div className="div-26">First Monitor</div>
-                <div className="div-27">Governance</div>
-              </div>
-              <div className="div-28">
-                <div className="div-29">
-                  <div className="div-30">Networks</div>
-                  <div className="div-31">MAINNET</div>
+              <Link to="/activity">
+
+                <div className="div-25">
+                  <div className="div-26">First Monitor</div>
+                  <div className="div-27">Governance</div>
                 </div>
-                <div className="div-32">
-                  <div className="div-33">Monitoring</div>
-                  <div className="div-34">
-                    <div className="div-35">
-                      <div className="div-36" />
-                      <div className="div-37">First Monitor</div>
+                <div className="div-28">
+                  <div className="div-29">
+                    <div className="div-30">Networks</div>
+                    <div className="div-31">MAINNET</div>
+                  </div>
+                  <div className="div-32">
+                    <div className="div-33">Monitoring</div>
+                    <div className="div-34">
+                      <div className="div-35">
+                        <div className="div-36" />
+                        <div className="div-37">First Monitor</div>
+                      </div>
                     </div>
                   </div>
+                  <div className="div-38">
+                    <div className="div-39">Conditions</div>
+                    <div className="div-40">2 events and 3 functions</div>
+                  </div>
+                  <div className="div-41">
+                    <div className="div-42">Alerts Severity</div>
+                    <div className="div-43">Medium Severity</div>
+                  </div>
                 </div>
-                <div className="div-38">
-                  <div className="div-39">Conditions</div>
-                  <div className="div-40">2 events and 3 functions</div>
-                </div>
-                <div className="div-41">
-                  <div className="div-42">Alerts Severity</div>
-                  <div className="div-43">Medium Severity</div>
-                </div>
-              </div>
+              </Link>
             </div>
-            <div className="div-44">
+            {/* <div className="div-44">
               <div className="div-45">
                 <div className="div-46">
                   <div className="div-47" />
@@ -106,46 +111,49 @@ export default function Monitor(props) {
                   <div className="div-54">Delete</div>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
+
           <div className="div-55">
             <div className="div-56">
-              <div className="div-57">
-                <div className="div-58">Second Monitor</div>
-                <div className="div-59">Governance</div>
-              </div>
-              <div className="div-60">
-                <div className="div-61">
-                  <div className="div-62">Networks</div>
-                  <div className="div-63">MAINNET</div>
+              <Link to="/activity">
+                <div className="div-57">
+                  <div className="div-58">Second Monitor</div>
+                  <div className="div-59">Governance</div>
                 </div>
-                <div className="div-64">
-                  <div className="div-65">Monitoring</div>
-                  <div className="div-66">
-                    <div className="div-67">
-                      <div className="div-68" />
-                      <div className="div-69">Second Monitor</div>
+                <div className="div-60">
+                  <div className="div-61">
+                    <div className="div-62">Networks</div>
+                    <div className="div-63">MAINNET</div>
+                  </div>
+                  <div className="div-64">
+                    <div className="div-65">Monitoring</div>
+                    <div className="div-66">
+                      <div className="div-67">
+                        <div className="div-68" />
+                        <div className="div-69">Second Monitor</div>
+                      </div>
                     </div>
                   </div>
+                  <div className="div-70">
+                    <div className="div-71">Conditions</div>
+                    <div className="div-72">2 events and 3 functions</div>
+                  </div>
+                  <div className="div-73">
+                    <div className="div-74">Alerts Severity</div>
+                    <div className="div-75">Medium Severity</div>
+                  </div>
                 </div>
-                <div className="div-70">
-                  <div className="div-71">Conditions</div>
-                  <div className="div-72">2 events and 3 functions</div>
-                </div>
-                <div className="div-73">
-                  <div className="div-74">Alerts Severity</div>
-                  <div className="div-75">Medium Severity</div>
-                </div>
-              </div>
+              </Link>
             </div>
-            <div className="div-76">
+            {/* <div className="div-76">
               <div className="div-77">
                 <div className="div-78" />
               </div>
               <div className="div-79">
                 <div className="div-80" />
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

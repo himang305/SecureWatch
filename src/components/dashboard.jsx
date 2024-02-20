@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Link } from 'react-router-dom';
 
 export default function Dashboard(props) {
     return (
@@ -155,11 +156,13 @@ export default function Dashboard(props) {
                                                         <br />
                                                         Active Monitor
                                                     </div>
+                                                    <Link to="/monitor">
                                                     <img
                                                         loading="lazy"
                                                         src="https://cdn.builder.io/api/v1/image/assets/TEMP/5bed0f30be143bcf2a0a7897892dff00c81739a9525f16a414351590536fbd03?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
                                                         className="img-12"
                                                     />
+                                                    </Link>
                                                 </div>
                                             </div>
                                         </div>
