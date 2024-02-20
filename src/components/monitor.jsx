@@ -50,7 +50,9 @@ export default function Monitor(props) {
             <div className="div-17">Monitor (2)</div>
             <div className="div-18">
               <div className="div-19">See Monitor Activity</div>
+              <Link to="/create">
               <div className="div-20">Create Monitor</div>
+              </Link>
             </div>
           </div>
           <div className="div-21">
