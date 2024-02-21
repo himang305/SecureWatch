@@ -15,7 +15,9 @@ export default function Create(props) {
             <div className="div-4">
               <div className="div-5">
                 <div className="div-6" />
-                <div className="div-7">SecureWatch</div>
+                <Link to="/" className="div-7">
+                            SecureWatch
+                            </Link>
               </div>
               <div className="div-8">
                 <div className="div-9">
@@ -138,38 +140,30 @@ export default function Create(props) {
                   <div className="div-41">
                     <div className="div-42">
                       <div className="div-43">
-                        <div className="div-44">Name</div>
+                        <div className="div-44">Monitor Name</div>
                         <div className="div-45">
                           Give your monitor a name to make it easier to identify
                           it. Only for display purposes.
                         </div>
                       </div>
-                      <div className="div-46" />
+                      <input type="text" class="div-46" style={{ padding: '10px' }} />
                     </div>
+
                     <div className="div-47">
                       <div className="div-48">Risk Category</div>
                       <div className="div-49">
-                        <div className="div-50">
-                          <div className="div-51">
-                            <div className="div-52">None</div>
-                            <img
-                              loading="lazy"
-                              src="https://cdn.builder.io/api/v1/image/assets/TEMP/7bde97b411ac6563ee30b7bf3dee3ef9aa9f00899b0b4e656a29be9bcd2b0db6?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                              className="img-14"
-                            />
-                          </div>
-                        </div>
+                        <select className="div-50">
+                          <option value="none">None</option>
+                          <option value="governance">Governance</option>
+                          <option value="access-control">Access Control</option>
+                          <option value="suspicious-activity">Suspicious Activity</option>
+                          <option value="financial">Financial</option>
+                          <option value="technical">Technical</option>
+                        </select>
                       </div>
                     </div>
-                    <div className="div-53">
-                      <div className="div-54">
-                        <div className="div-55">Governance</div>
-                        <div className="div-56">Access Control</div>
-                        <div className="div-57">Suspicious Activity</div>
-                        <div className="div-58">Financial</div>
-                        <div className="div-59">Technical</div>
-                      </div>
-                    </div>
+
+
                     <div className="div-60">
                       <div className="div-61">
                         <div className="div-62">Add Address</div>
@@ -180,42 +174,26 @@ export default function Create(props) {
                         </div>
                       </div>
                       <div className="div-64">
-                        <div className="div-65">Name</div>
-                        <div className="div-66">
-                          <div className="div-67">
-                            <div className="div-68">Enter text</div>
-                          </div>
-                        </div>
+                        <div className="div-65">Contract Name</div>
+                        <input type="text" class="div-46" style={{ padding: '10px' }} />
+
+
                       </div>
-                      <div className="div-69">
-                        <div className="div-70">Network</div>
-                        <div className="div-71">
-                          <div className="div-72">
-                            <div className="div-73">
-                              <div className="div-74">Mainnet</div>
-                              <img
-                                loading="lazy"
-                                src="https://cdn.builder.io/api/v1/image/assets/TEMP/44780f7f7b5075457f45c666329197a7dfe3591d5a9fcdd14232a565e5c89a88?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                                className="img-15"
-                              />
-                            </div>
-                            <img
-                              loading="lazy"
-                              src="https://cdn.builder.io/api/v1/image/assets/TEMP/6c6bb124d66adee565c682fcc98b6b23416dfbdf942ead6b3271059f56a58d61?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                              className="img-16"
-                            />
-                          </div>
-                        </div>
+                      <div className="div-47">
+                      <div className="div-48">Network</div>
+                      <div className="div-49">
+                        <select className="div-50">
+                          <option value="none">Ethereum Mainnet</option>
+                          <option value="governance">Polygon</option>
+                          <option value="access-control">Sepolia</option>
+                          <option value="suspicious-activity">Mumbai</option>
+                        </select>
                       </div>
+                    </div>
                       <div className="div-75">
                         <div className="div-76">Address</div>
-                        <div className="div-77">
-                          <div className="div-78">
-                            <div className="div-79">
-                              Enter address (0x.......)
-                            </div>
-                          </div>
-                        </div>
+                        <input type="text" class="div-46" style={{ padding: '10px' }} placeholder="Enter Address 0x.... "/>
+
                       </div>
                       <div className="div-80">
                         <div className="div-81">
@@ -224,7 +202,7 @@ export default function Create(props) {
                             Paste your Contract’s ABI code here
                           </div>
                         </div>
-                        <div className="div-84" />
+                        <textarea className="div-84" />
                       </div>
                     </div>
                     <Link to="/event">
@@ -873,6 +851,8 @@ export default function Create(props) {
           display: flex;
           flex-direction: column;
           padding: 0 3px;
+          background-color: #fff; /* Change background color to white */
+
         }
         @media (max-width: 991px) {
           .div-50 {

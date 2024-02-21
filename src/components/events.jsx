@@ -22,7 +22,9 @@ export default function Create(props) {
             <div className="div-4">
               <div className="div-5">
                 <div className="div-6" />
-                <div className="div-7">SecureWatch</div>
+                <Link to="/" className="div-7">
+                            SecureWatch
+                            </Link>
               </div>
               <div className="div-8">
                 <div className="div-9">
@@ -187,9 +189,9 @@ export default function Create(props) {
                       </div>
                     </div>
 
-                    <Link to="/monitor">
+                    {/* <Link to="/monitor">
                       <div className="div-85">Save Monitor</div>
-                    </Link>
+                    </Link> */}
                   </div>
                 </div>
 

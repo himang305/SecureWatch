@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Link } from 'react-router-dom';
 
 export default function Activity(props) {
   return (
@@ -13,7 +14,10 @@ export default function Activity(props) {
           <div className="div-3">
             <div className="div-4">
               <div className="div-5" />
-              <div className="div-6">SecureWatch</div>
+              <Link to="/" className="div-6">
+                            SecureWatch
+                            </Link>
+              
             </div>
             <div className="div-7">
               <div className="div-8">

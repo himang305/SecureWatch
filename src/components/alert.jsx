@@ -22,7 +22,9 @@ export default function Create(props) {
             <div className="div-4">
               <div className="div-5">
                 <div className="div-6" />
-                <div className="div-7">SecureWatch</div>
+                <Link to="/" className="div-7">
+                            SecureWatch
+                            </Link>
               </div>
               <div className="div-8">
                 <div className="div-9">
@@ -151,57 +153,46 @@ export default function Create(props) {
                 </div>
                 <div className="column-2">
                   <div className="div-41">
-                    <div className="div-47">
-                      <div className="div-48 font-bold ">Risk Category</div>
+                    
+                  <div className="div-47">
+                      <div className="div-48 font-bold">Risk Category</div>
                       <div className="div-49">
-                        <div className="div-50">
-                          <div className="div-51">
-                            <div className="div-52">None</div>
-                            <img
-                              loading="lazy"
-                              src="https://cdn.builder.io/api/v1/image/assets/TEMP/7bde97b411ac6563ee30b7bf3dee3ef9aa9f00899b0b4e656a29be9bcd2b0db6?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                              className="img-14"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="div-53">
-                      <div className="div-54">
-                        <div className="div-55">Low Severity</div>
-                        <div className="div-56">Medium Severity</div>
-                        <div className="div-57">High Severity</div>
+                        <select className="div-50">
+                          <option value="none">None</option>
+                          <option value="governance">Low Severity</option>
+                          <option value="access-control">Medium Severity</option>
+                          <option value="suspicious-activity">High Severity</option>
+                        </select>
                       </div>
                     </div>
 
+                   
+                   
+
                     <div className="div-59 font-bold ">Execute an Action</div>
                     <div className="div-60">
-                      <div className="div-61">
-                        <div className="div-62">
-                          <div className="div-63">None</div>
-                          <img
-                            loading="lazy"
-                            src="https://cdn.builder.io/api/v1/image/assets/TEMP/7bde97b411ac6563ee30b7bf3dee3ef9aa9f00899b0b4e656a29be9bcd2b0db6?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                            className="img-14"
-                          />
-                        </div>
-                      </div>
+                    <select className="div-50">
+                          <option value="none">None</option>
+                          <option value="governance">Pause Contract</option>
+                          <option value="access-control">Alert Administrator</option>
+                          <option value="suspicious-activity">Invoke Emergency Protocol</option>
+                          <option value="suspicious-activity">Rollback Transactions</option>
+
+                        </select>
                     </div>
 
                     <div className="div-64 font-bold ">
                       Execute an Incident Responce Scenario
                     </div>
-                    <div className="div-65">
-                      <div className="div-66">
-                        <div className="div-67">
-                          <div className="div-68">None</div>
-                          <img
-                            loading="lazy"
-                            src="https://cdn.builder.io/api/v1/image/assets/TEMP/7bde97b411ac6563ee30b7bf3dee3ef9aa9f00899b0b4e656a29be9bcd2b0db6?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                            className="img-14"
-                          />
-                        </div>
-                      </div>
+                    <div className="div-60">
+                    <select className="div-50">
+                          <option value="none">None</option>
+                          <option value="governance">Log Event</option>
+                          <option value="access-control">Invoke Emergency Fund Transfer</option>
+                          <option value="suspicious-activity">Execute Recovery Plan</option>
+                          <option value="suspicious-activity">Generate Incident Report</option>
+
+                        </select>
                     </div>
 
                     <div className="flex flex-row">
@@ -219,18 +210,18 @@ export default function Create(props) {
                       </div>
                     </div>
                     <div className="flex flex-row mt-4">
-                      <div
+                      <input type="number"
                         className="border border-gray-400 rounded-lg p-4"
-                        style={{ marginRight: `15px`, width: `191px` }}
-                      >
-                        1
-                      </div>
-                      <div
+                        style={{           backgroundColor: `#fff`
+                        ,marginRight: `15px`, width: `191px` }}
+                      />
+                       
+                      {/* <div
                         className="border border-gray-400 rounded-lg p-4  "
                         style={{ marginRight: `15px`, width: `136px` }}
                       >
                         0
-                      </div>
+                      </div> */}
                       <div>
                         <div
                           className="border border-gray-400 rounded-lg p-4 "
@@ -965,6 +956,7 @@ export default function Create(props) {
           display: flex;
           flex-direction: column;
           padding: 0 3px;
+          background-color: #fff; /* Change background color to white */
         }
         @media (max-width: 1263px) {
           .div-50 {

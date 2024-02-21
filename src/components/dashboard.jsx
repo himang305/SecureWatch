@@ -14,7 +14,9 @@ export default function Dashboard(props) {
                     <div className="div-3">
                         <div className="div-4">
                             <div className="div-5" />
-                            <div className="div-6">SecureWatch</div>
+                            <Link to="/" className="div-6">
+                            SecureWatch
+                            </Link>
                         </div>
                         <div className="div-7">
                             <div className="div-8">
