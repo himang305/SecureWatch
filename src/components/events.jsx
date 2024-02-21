@@ -1,16 +1,23 @@
 import * as React from "react";
+import check from "../images/check-circle.png";
 import { Link } from "react-router-dom";
+// import "./event.css";
 
 export default function Create(props) {
   return (
     <>
       <div className="div">
-        <div className="div-2">
-          <img
+        <div
+          className="div-2"
+          style={{
+            backgroundImage: `url(https://cdn.builder.io/api/v1/image/assets/TEMP/36c8b221f323430f5124f215841c7cf6a78bd29e22dabec65143ff5e9ab22b21?apiKey=81130fff99a04bb0ab44e20c5639d57c&)`,
+          }}
+        >
+          {/* <img
             loading="lazy"
             src="https://cdn.builder.io/api/v1/image/assets/TEMP/36c8b221f323430f5124f215841c7cf6a78bd29e22dabec65143ff5e9ab22b21?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
             className="img"
-          />
+          /> */}
           <div className="div-3">
             <div className="div-4">
               <div className="div-5">
@@ -63,95 +70,94 @@ export default function Create(props) {
                       <div className="div-23">Create Monitor</div>
                     </div>
                     <div className="div-24">
-                      <div className="div-25">
-                        <div className="div-26">
-                          <div className="div-27">
+                      <Link to="/create">
+                        <div className="div-25">
+                          <div className="div-26">
+                            <div className="div-27">
+                              <img
+                                loading="lazy"
+                                src={check}
+                                className="img-6"
+                              />
+                              <div className="div-28 font-bold">
+                                General Information
+                              </div>
+                            </div>
                             <img
                               loading="lazy"
-                              src="https://cdn.builder.io/api/v1/image/assets/TEMP/777a206898fe081696002673d11331121950c607d68a5229fc433ec2a3b669e8?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                              className="img-6"
+                              src="https://cdn.builder.io/api/v1/image/assets/TEMP/2886dea935eed3fcd5470af43ca1073b7b6bfc908a06b6b390b7cec5f43f2aac?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
+                              className="img-7"
                             />
-                            <div className="div-28">General Information</div>
+                          </div>
+                        </div>
+                      </Link>
+                      <div className="div-29">
+                        <div className="div-30">
+                          <div className="div-31">
+                            <img loading="lazy" src={check} className="img-8" />
+                            <div className="div-32 font-bold">Events</div>
                           </div>
                           <img
                             loading="lazy"
                             src="https://cdn.builder.io/api/v1/image/assets/TEMP/12edda73ff44546ed0729419fcf035cbbce6d5a2524bbd94a512bb980c89a6b0?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                            className="img-7"
-                          />
-                        </div>
-                      </div>
-                      <div className="div-29">
-                        <div className="div-30">
-                          <div className="div-31">
-                            <img
-                              loading="lazy"
-                              src="https://cdn.builder.io/api/v1/image/assets/TEMP/903b1c4aef7162f281f909c1d47f5b559eb7acac52310458b2aad9dd1d7bc399?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                              className="img-8"
-                            />
-                            <div className="div-32">Events</div>
-                          </div>
-                          <img
-                            loading="lazy"
-                            src="https://cdn.builder.io/api/v1/image/assets/TEMP/2886dea935eed3fcd5470af43ca1073b7b6bfc908a06b6b390b7cec5f43f2aac?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
                             className="img-9"
                           />
                         </div>
                       </div>
-                      <div className="div-33">
-                        <div className="div-34">
-                          <div className="div-35">
+                      <Link to="/function">
+                        <div className="div-33">
+                          <div className="div-34">
+                            <div className="div-35">
+                              <img
+                                loading="lazy"
+                                src={check}
+                                className="img-10"
+                              />
+                              <div className="div-36 font-bold">Functions</div>
+                            </div>
                             <img
                               loading="lazy"
-                              src="https://cdn.builder.io/api/v1/image/assets/TEMP/901b5bfa6ca02e3053326385a786bdd278662d4ae863698979b3fecc3056f309?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                              className="img-10"
+                              src="https://cdn.builder.io/api/v1/image/assets/TEMP/1d5b9bef2843f9ebac32e9e10126235ee109e7377631eb2542c4c4dd415b097a?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
+                              className="img-11"
                             />
-                            <div className="div-36">Functions</div>
                           </div>
-                          <img
-                            loading="lazy"
-                            src="https://cdn.builder.io/api/v1/image/assets/TEMP/1d5b9bef2843f9ebac32e9e10126235ee109e7377631eb2542c4c4dd415b097a?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                            className="img-11"
-                          />
                         </div>
-                      </div>
-                      <div className="div-37">
-                        <div className="div-38">
-                          <div className="div-39">
+                      </Link>
+                      <Link to="/alert">
+                        <div className="div-37">
+                          <div className="div-38">
+                            <div className="div-39">
+                              <img
+                                loading="lazy"
+                                src={check}
+                                className="img-12"
+                              />
+                              <div className="div-40 font-bold">Alerts</div>
+                            </div>
                             <img
                               loading="lazy"
-                              src="https://cdn.builder.io/api/v1/image/assets/TEMP/a4f1edb97b02bd765ad787c2192eebc6842f8ba0dc0b1e5bc8b814348a7cbfad?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                              className="img-12"
+                              src="https://cdn.builder.io/api/v1/image/assets/TEMP/526e1118f52e4329f0c3bbaef4404e9db39b2e9242c8da1582e4f1cbf9970ab1?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
+                              className="img-13"
                             />
-                            <div className="div-40">Alerts</div>
                           </div>
-                          <img
-                            loading="lazy"
-                            src="https://cdn.builder.io/api/v1/image/assets/TEMP/526e1118f52e4329f0c3bbaef4404e9db39b2e9242c8da1582e4f1cbf9970ab1?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                            className="img-13"
-                          />
                         </div>
-                      </div>
+                      </Link>
                     </div>
                   </div>
                 </div>
                 <div className="column-2">
                   <div className="div-41">
-                    <div className="div-42">
-                      <div className="div-43">
-                        <div className="div-44">Name</div>
-                        <div className="div-45">
-                          Give your monitor a name to make it easier to identify
-                          it. Only for display purposes.
-                        </div>
-                      </div>
-                      <div className="div-46" />
-                    </div>
                     <div className="div-47">
-                      <div className="div-48">Risk Category</div>
+                      <div className="div-48 font-bold">
+                        Enter the Signature Name
+                      </div>
                       <div className="div-49">
                         <div className="div-50">
                           <div className="div-51">
-                            <div className="div-52">None</div>
+                            <div className="div-52">
+                              Type the signature name or select from the
+                              dropdown
+                            </div>
                             <img
                               loading="lazy"
                               src="https://cdn.builder.io/api/v1/image/assets/TEMP/7bde97b411ac6563ee30b7bf3dee3ef9aa9f00899b0b4e656a29be9bcd2b0db6?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
@@ -163,73 +169,58 @@ export default function Create(props) {
                     </div>
                     <div className="div-53">
                       <div className="div-54">
-                        <div className="div-55">Governance</div>
-                        <div className="div-56">Access Control</div>
-                        <div className="div-57">Suspicious Activity</div>
-                        <div className="div-58">Financial</div>
-                        <div className="div-59">Technical</div>
+                        <div class="flex flex-row " style={{ margin: `10px` }}>
+                          <input type="radio" class="div-55 mr-2" />
+                          <label for="" class="div-56">
+                            Approval (address, address, unit256)
+                          </label>
+                        </div>
+                        <div
+                          className="flex flex-row "
+                          style={{ margin: `10px` }}
+                        >
+                          <input type="radio" className="div-57 mr-2" />
+                          <label htmlFor="" className="div-58 ">
+                            Transfer (address,address,unit256)
+                          </label>
+                        </div>
                       </div>
                     </div>
-                    <div className="div-60">
-                      <div className="div-61">
-                        <div className="div-62">Add Address</div>
-                        <div className="div-63">
-                          Add an address to your address book. If the address is
-                          a contract, the ABI and NatSpec will be automatically
-                          detected.
-                        </div>
-                      </div>
-                      <div className="div-64">
-                        <div className="div-65">Name</div>
-                        <div className="div-66">
-                          <div className="div-67">
-                            <div className="div-68">Enter text</div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="div-69">
-                        <div className="div-70">Network</div>
-                        <div className="div-71">
-                          <div className="div-72">
-                            <div className="div-73">
-                              <div className="div-74">Mainnet</div>
-                              <img
-                                loading="lazy"
-                                src="https://cdn.builder.io/api/v1/image/assets/TEMP/44780f7f7b5075457f45c666329197a7dfe3591d5a9fcdd14232a565e5c89a88?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                                className="img-15"
-                              />
-                            </div>
-                            <img
-                              loading="lazy"
-                              src="https://cdn.builder.io/api/v1/image/assets/TEMP/6c6bb124d66adee565c682fcc98b6b23416dfbdf942ead6b3271059f56a58d61?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                              className="img-16"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="div-75">
-                        <div className="div-76">Address</div>
-                        <div className="div-77">
-                          <div className="div-78">
-                            <div className="div-79">
-                              Enter address (0x.......)
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="div-80">
-                        <div className="div-81">
-                          <div className="div-82">ABI</div>
-                          <div className="div-83">
-                            Paste your Contract’s ABI code here
-                          </div>
-                        </div>
-                        <div className="div-84" />
-                      </div>
-                    </div>
-                    <Link to="/event">
-                      <div className="div-85">Create</div>
+
+                    <Link to="/monitor">
+                      <div className="div-85">Save Monitor</div>
                     </Link>
+                  </div>
+                </div>
+
+                <div className="cloumn-3">
+                  <div className="summary-container border">
+                    <div class="summary-header">Monitor Summary</div>
+                    <div className="tags-container flex">
+                      <div class="tag">Networks</div>
+                      <div className="tag">Risk Category</div>
+                    </div>
+                    <div className="networks-container flex ">
+                      <div className="network text-white m-3">MAINNET</div>
+                      <div class="severity">Medium Severity</div>
+                    </div>
+                    <div class="contracts-container">
+                      <div class="contracts-header">Contracts</div>
+                      <div class="contract-address">0x1d54....49844</div>
+                    </div>
+                    <div class="conditions-container">
+                      <div class="conditions-header">Event Conditions</div>
+                      <div class="condition">None</div>
+                      <div class="conditions-header">Function Conditions</div>
+                      <div class="condition">None</div>
+                    </div>
+                    <div class="alerts-container">
+                      <div class="alerts-header">Alerts</div>
+                      <div className="flex flex-row">
+                        <div class="alert">Marked as </div>
+                        <div class="alert-severity">Medium Severity</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -245,18 +236,18 @@ export default function Create(props) {
           justify-content: center;
         }
         .div-2 {
-          disply: flex;
+          display: flex;
           flex-direction: column;
           overflow: hidden;
           position: relative;
           display: flex;
-          min-height: 1603px;
+          min-height: 500px;
           width: 100%;
           justify-content: center;
           align-items: center;
           padding: 50px 60px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1200px) {
           .div-2 {
             max-width: 100%;
             padding: 0 20px;
@@ -274,11 +265,11 @@ export default function Create(props) {
           position: relative;
           display: flex;
           width: 100%;
-          max-width: 990px;
+          max-width: 1200px;
           flex-direction: column;
           margin: 21px 0 9px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-3 {
             max-width: 100%;
           }
@@ -287,10 +278,9 @@ export default function Create(props) {
           border-radius: 25.412px;
           border: 1.059px solid #505050;
           background-color: rgba(48, 48, 48, 0.97);
-          align-self: end;
+          align-self: center;
           display: flex;
           margin-right: 42px;
-          width: 772px;
           max-width: 100%;
           justify-content: space-between;
           gap: 20px;
@@ -299,7 +289,7 @@ export default function Create(props) {
           letter-spacing: -0.07px;
           padding: 12px 13px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-4 {
             margin-right: 10px;
             flex-wrap: wrap;
@@ -314,7 +304,7 @@ export default function Create(props) {
           color: #fff;
           line-height: 114%;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-5 {
             white-space: initial;
           }
@@ -340,7 +330,7 @@ export default function Create(props) {
           line-height: 161%;
           margin: auto 0;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-8 {
             white-space: initial;
           }
@@ -350,7 +340,7 @@ export default function Create(props) {
           display: flex;
           gap: 7px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-9 {
             white-space: initial;
           }
@@ -371,7 +361,7 @@ export default function Create(props) {
           justify-content: space-between;
           gap: 7px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-11 {
             white-space: initial;
           }
@@ -392,7 +382,7 @@ export default function Create(props) {
           justify-content: space-between;
           gap: 6px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-13 {
             white-space: initial;
           }
@@ -417,7 +407,7 @@ export default function Create(props) {
           color: #000;
           line-height: 130%;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-15 {
             white-space: initial;
           }
@@ -429,7 +419,7 @@ export default function Create(props) {
           background-color: #fff;
           padding: 8px 13px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-16 {
             white-space: initial;
           }
@@ -437,7 +427,7 @@ export default function Create(props) {
         .div-17 {
           margin-top: 77px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-17 {
             max-width: 100%;
             margin-top: 40px;
@@ -447,7 +437,7 @@ export default function Create(props) {
           gap: 20px;
           display: flex;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-18 {
             flex-direction: column;
             align-items: stretch;
@@ -458,19 +448,19 @@ export default function Create(props) {
           display: flex;
           flex-direction: column;
           line-height: normal;
-          width: 36%;
+          width: 25%;
           margin-left: 0px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .column {
-            width: 100%;
+            width: 25%;
           }
         }
         .div-19 {
           display: flex;
           flex-direction: column;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-19 {
             margin-top: 40px;
           }
@@ -509,7 +499,7 @@ export default function Create(props) {
           font: 500 40px/48% Poppins, -apple-system, Roboto, Helvetica,
             sans-serif;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-23 {
             white-space: initial;
           }
@@ -525,7 +515,7 @@ export default function Create(props) {
           letter-spacing: 0.5px;
           line-height: 76%;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-24 {
             margin-top: 40px;
             white-space: initial;
@@ -533,7 +523,7 @@ export default function Create(props) {
         }
         .div-25 {
           border-radius: 20px;
-          border: 1px solid #0ca851;
+          border: 1px solid #cacaca;
           background-color: #fff;
           display: flex;
           width: 100%;
@@ -542,7 +532,7 @@ export default function Create(props) {
           color: #000;
           padding: 22px 23px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-25 {
             white-space: initial;
             padding: 0 20px;
@@ -553,7 +543,7 @@ export default function Create(props) {
           display: flex;
           gap: 20px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-26 {
             white-space: initial;
           }
@@ -563,7 +553,7 @@ export default function Create(props) {
           gap: 11px;
           margin: auto 0;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-27 {
             white-space: initial;
           }
@@ -578,7 +568,7 @@ export default function Create(props) {
           font-family: Poppins, sans-serif;
           flex-grow: 1;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-28 {
             white-space: initial;
           }
@@ -592,16 +582,17 @@ export default function Create(props) {
         }
         .div-29 {
           border-radius: 20px;
-          border: 1px solid #cacaca;
+          border: 1px solid #0ca851;
           background-color: #fff;
           display: flex;
           margin-top: 17px;
           width: 100%;
+          color: #000;
           flex-direction: column;
           justify-content: center;
           padding: 25px 23px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-29 {
             white-space: initial;
             padding: 0 20px;
@@ -614,7 +605,7 @@ export default function Create(props) {
           gap: 20px;
           padding: 0 1px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-30 {
             white-space: initial;
           }
@@ -624,7 +615,7 @@ export default function Create(props) {
           display: flex;
           gap: 11px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-31 {
             white-space: initial;
           }
@@ -651,11 +642,12 @@ export default function Create(props) {
           display: flex;
           margin-top: 17px;
           width: 100%;
+          color: #000;
           flex-direction: column;
           justify-content: center;
           padding: 25px 23px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-33 {
             white-space: initial;
             padding: 0 20px;
@@ -668,7 +660,7 @@ export default function Create(props) {
           gap: 20px;
           padding: 0 1px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-34 {
             white-space: initial;
           }
@@ -678,7 +670,7 @@ export default function Create(props) {
           display: flex;
           gap: 11px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-35 {
             white-space: initial;
           }
@@ -706,11 +698,12 @@ export default function Create(props) {
           display: flex;
           margin-top: 17px;
           width: 100%;
+          color: #000;
           flex-direction: column;
           justify-content: center;
           padding: 25px 23px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-37 {
             white-space: initial;
             padding: 0 20px;
@@ -723,7 +716,7 @@ export default function Create(props) {
           gap: 20px;
           padding: 0 1px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-38 {
             white-space: initial;
           }
@@ -733,7 +726,7 @@ export default function Create(props) {
           display: flex;
           gap: 11px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-39 {
             white-space: initial;
           }
@@ -757,12 +750,12 @@ export default function Create(props) {
           display: flex;
           flex-direction: column;
           line-height: normal;
-          width: 64%;
+          width: 50%;
           margin-left: 20px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .column-2 {
-            width: 100%;
+            width: 50%;
           }
         }
         .div-41 {
@@ -771,7 +764,7 @@ export default function Create(props) {
           flex-grow: 1;
           flex-direction: column;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-41 {
             max-width: 100%;
             margin-top: 40px;
@@ -783,7 +776,7 @@ export default function Create(props) {
           font-weight: 500;
           letter-spacing: 0.5px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-42 {
             max-width: 100%;
           }
@@ -792,7 +785,7 @@ export default function Create(props) {
           display: flex;
           flex-direction: column;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-43 {
             max-width: 100%;
           }
@@ -801,7 +794,7 @@ export default function Create(props) {
           color: #000;
           font: 22px/59% Poppins, sans-serif;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-44 {
             max-width: 100%;
           }
@@ -811,7 +804,7 @@ export default function Create(props) {
           margin-top: 12px;
           font: 17px/23px Poppins, sans-serif;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-45 {
             max-width: 100%;
           }
@@ -823,7 +816,7 @@ export default function Create(props) {
           margin-top: 12px;
           height: 54px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-46 {
             max-width: 100%;
           }
@@ -837,7 +830,7 @@ export default function Create(props) {
           color: #000;
           font-weight: 500;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-47 {
             max-width: 100%;
           }
@@ -846,7 +839,7 @@ export default function Create(props) {
           font-family: Poppins, sans-serif;
           justify-content: center;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-48 {
             max-width: 100%;
           }
@@ -862,7 +855,7 @@ export default function Create(props) {
           white-space: nowrap;
           padding: 9px 19px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-49 {
             max-width: 100%;
             white-space: initial;
@@ -874,7 +867,7 @@ export default function Create(props) {
           flex-direction: column;
           padding: 0 3px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-50 {
             max-width: 100%;
             white-space: initial;
@@ -886,7 +879,7 @@ export default function Create(props) {
           gap: 20px;
           padding: 5px 1px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-51 {
             max-width: 100%;
             flex-wrap: wrap;
@@ -895,6 +888,7 @@ export default function Create(props) {
         }
         .div-52 {
           font-family: Poppins, sans-serif;
+          color: #8e8e8e;
         }
         .img-14 {
           aspect-ratio: 1;
@@ -921,7 +915,7 @@ export default function Create(props) {
           white-space: nowrap;
           padding: 17px 60px 17px 20px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-53 {
             max-width: 100%;
             padding-right: 20px;
@@ -932,36 +926,61 @@ export default function Create(props) {
           display: flex;
           flex-direction: column;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-54 {
             white-space: initial;
           }
         }
-        .div-55 {
-          font-family: Poppins, sans-serif;
+        /* Hide the default radio button */
+        input[type="radio"].div-55 {
+          appearance: none;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          width: 20px; /* Adjust size as needed */
+          height: 20px; /* Adjust size as needed */
+          border: 2px solid #000; /* Default border color */
+          border-radius: 4px; /* Adjust border radius for squareness */
+          outline: none;
+          cursor: pointer;
+          vertical-align: middle; /* Align the radio button vertically with the label */
         }
-        .div-56 {
-          font-family: Poppins, sans-serif;
-          margin-top: 13px;
+
+        /* Style the radio button when checked */
+        input[type="radio"].div-55:checked {
+          background-color: #28aa61; /* Green background color when checked */
+          border-color: #28aa61; /* Green border color when checked */
         }
-        @media (max-width: 991px) {
-          .div-56 {
-            white-space: initial;
-          }
+
+        /* Hide the label for the radio button */
+        label.div-56 {
+          margin-left: 5px; /* Add some space between the radio button and the label */
+          color: #000;
         }
-        .div-57 {
-          font-family: Poppins, sans-serif;
-          margin-top: 13px;
+        input[type="radio"].div-57 {
+          appearance: none;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          width: 20px; /* Adjust size as needed */
+          height: 20px; /* Adjust size as needed */
+          border: 2px solid #000; /* Default border color */
+          border-radius: 4px; /* Adjust border radius for squareness */
+          outline: none;
+          cursor: pointer;
+          vertical-align: middle; /* Align the radio button vertically with the label */
         }
-        @media (max-width: 991px) {
-          .div-57 {
-            white-space: initial;
-          }
+
+        /* Style the radio button when checked */
+        input[type="radio"].div-57:checked {
+          background-color: #28aa61; /* Green background color when checked */
+          border-color: #28aa61; /* Green border color when checked */
         }
-        .div-58 {
-          font-family: Poppins, sans-serif;
-          margin-top: 13px;
+
+        /* Hide the label for the radio button */
+        label.div-58 {
+          margin-left: 5px; /* Add some space between the radio button and the label */
+          color: #000000;
         }
+
         .div-59 {
           font-family: Poppins, sans-serif;
           margin-top: 13px;
@@ -971,7 +990,7 @@ export default function Create(props) {
           margin-top: 25px;
           flex-direction: column;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-60 {
             max-width: 100%;
           }
@@ -981,7 +1000,7 @@ export default function Create(props) {
           flex-direction: column;
           font-weight: 500;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-61 {
             max-width: 100%;
           }
@@ -991,7 +1010,7 @@ export default function Create(props) {
           color: #000;
           font: 18px Poppins, sans-serif;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-62 {
             max-width: 100%;
           }
@@ -1002,7 +1021,7 @@ export default function Create(props) {
           margin-top: 9px;
           font: 17px/23px Poppins, sans-serif;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-63 {
             max-width: 100%;
           }
@@ -1014,7 +1033,7 @@ export default function Create(props) {
           font-size: 18px;
           white-space: nowrap;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-64 {
             max-width: 100%;
             white-space: initial;
@@ -1026,7 +1045,7 @@ export default function Create(props) {
           color: #000;
           font-weight: 500;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-65 {
             max-width: 100%;
             white-space: initial;
@@ -1044,7 +1063,7 @@ export default function Create(props) {
           font-weight: 300;
           padding: 9px 19px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-66 {
             max-width: 100%;
             white-space: initial;
@@ -1057,7 +1076,7 @@ export default function Create(props) {
           padding-right: 60px;
           flex-direction: column;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-67 {
             max-width: 100%;
             padding-right: 20px;
@@ -1069,7 +1088,7 @@ export default function Create(props) {
           justify-content: center;
           padding: 5px 0;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-68 {
             white-space: initial;
           }
@@ -1081,7 +1100,7 @@ export default function Create(props) {
           color: #000;
           white-space: nowrap;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-69 {
             max-width: 100%;
             white-space: initial;
@@ -1091,7 +1110,7 @@ export default function Create(props) {
           justify-content: center;
           font: 500 18px Poppins, sans-serif;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-70 {
             max-width: 100%;
             white-space: initial;
@@ -1109,7 +1128,7 @@ export default function Create(props) {
           font-weight: 300;
           padding: 12px 19px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-71 {
             max-width: 100%;
             padding-right: 20px;
@@ -1123,7 +1142,7 @@ export default function Create(props) {
           gap: 20px;
           padding: 0 1px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-72 {
             max-width: 100%;
             flex-wrap: wrap;
@@ -1138,7 +1157,7 @@ export default function Create(props) {
           gap: 5px;
           padding: 4px 13px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-73 {
             white-space: initial;
           }
@@ -1170,7 +1189,7 @@ export default function Create(props) {
           font-size: 18px;
           white-space: nowrap;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-75 {
             max-width: 100%;
             white-space: initial;
@@ -1182,7 +1201,7 @@ export default function Create(props) {
           color: #000;
           font-weight: 500;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-76 {
             max-width: 100%;
             white-space: initial;
@@ -1200,7 +1219,7 @@ export default function Create(props) {
           font-weight: 300;
           padding: 9px 19px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-77 {
             max-width: 100%;
             white-space: initial;
@@ -1213,7 +1232,7 @@ export default function Create(props) {
           padding-right: 60px;
           flex-direction: column;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-78 {
             max-width: 100%;
             padding-right: 20px;
@@ -1225,7 +1244,7 @@ export default function Create(props) {
           justify-content: center;
           padding: 5px 0;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-79 {
             white-space: initial;
           }
@@ -1236,7 +1255,7 @@ export default function Create(props) {
           flex-direction: column;
           font-weight: 500;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-80 {
             max-width: 100%;
           }
@@ -1245,7 +1264,7 @@ export default function Create(props) {
           display: flex;
           flex-direction: column;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-81 {
             max-width: 100%;
           }
@@ -1256,7 +1275,7 @@ export default function Create(props) {
           white-space: nowrap;
           font: 18px Poppins, sans-serif;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-82 {
             max-width: 100%;
             white-space: initial;
@@ -1268,7 +1287,7 @@ export default function Create(props) {
           margin-top: 9px;
           font: 17px/136% Poppins, sans-serif;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-83 {
             max-width: 100%;
           }
@@ -1280,7 +1299,7 @@ export default function Create(props) {
           margin-top: 10px;
           height: 281px;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-84 {
             max-width: 100%;
           }
@@ -1300,11 +1319,81 @@ export default function Create(props) {
           font: 400 15px/133% Poppins, -apple-system, Roboto, Helvetica,
             sans-serif;
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1263px) {
           .div-85 {
             white-space: initial;
             padding: 0 20px;
           }
+        }
+
+        .column-3 {
+          display: flex;
+          flex-direction: column;
+          line-height: normal;
+          width: 25%;
+          margin-left: 20px;
+        }
+        @media (max-width: 1263px) {
+          .column-3 {
+            width: 25%;
+          }
+        }
+
+        .summary-container {
+          border: 2px solid #0ca851;
+          padding: 20px;
+          border-radius: 10px;
+          width: 338px;
+          margin-top: 100px;
+        }
+        @media (max-width: 1263px) {
+          .summary-container {
+            white-space: initial;
+            padding: 0 20px;
+          }
+        }
+
+        .summary-header {
+          font-weight: bold;
+          margin-bottom: 10px;
+        }
+
+        .tag {
+          margin: 12px;
+          font: 1em poppins;
+          font-weight: bold;
+        }
+        .network {
+          background-color: #0ca851;
+          padding: 5px 10px;
+          margin: 5px;
+          border-radius: 5px;
+        }
+        .severity {
+          background-color: #f0f0f0;
+          padding: 5px 10px;
+          margin: 5px;
+          border-radius: 5px;
+        }
+
+        .contracts-header,
+        .conditions-header,
+        .alerts-header {
+          font-weight: bold;
+          margin-top: 10px;
+        }
+
+        .contract-address,
+        .condition,
+        .alert {
+          padding: 5px 10px;
+          border-radius: 5px;
+          margin-top: 5px;
+        }
+        .alert-severity {
+          background-color: #f0f0f0;
+          margin-top: 5px;
+          padding: 5px 10px;
         }
       `}</style>
     </>
