@@ -506,7 +506,7 @@ export default function Create(props) {
           letter-spacing: -0.07px;
           margin-top: 25px;
           white-space: nowrap;
-          font: 500 40px/48% Poppins, -apple-system, Roboto, Helvetica,
+          font: 500 40px/80% Poppins, -apple-system, Roboto, Helvetica,
             sans-serif;
         }
         @media (max-width: 991px) {
@@ -758,7 +758,7 @@ export default function Create(props) {
           flex-direction: column;
           line-height: normal;
           width: 64%;
-          margin-left: 20px;
+          margin-left: auto;
         }
         @media (max-width: 991px) {
           .column-2 {

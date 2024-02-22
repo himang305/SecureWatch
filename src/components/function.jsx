@@ -489,7 +489,7 @@ export default function Create(props) {
         }
         @media (max-width: 1263px) {
           .column {
-            width: 25%;
+            width: 100%;
           }
         }
         .div-19 {
@@ -532,7 +532,7 @@ export default function Create(props) {
           letter-spacing: -0.07px;
           margin-top: 25px;
           white-space: nowrap;
-          font: 500 40px/48% Poppins, -apple-system, Roboto, Helvetica,
+          font: 500 40px/80% Poppins, -apple-system, Roboto, Helvetica,
             sans-serif;
         }
         @media (max-width: 1263px) {
@@ -787,11 +787,11 @@ export default function Create(props) {
           flex-direction: column;
           line-height: normal;
           width: 50%;
-          margin-left: 20px;
+          margin-left: auto;
         }
         @media (max-width: 1263px) {
           .column-2 {
-            width: 50%;
+            width: 100%;
           }
         }
         .div-41 {
@@ -1371,7 +1371,7 @@ export default function Create(props) {
         }
         @media (max-width: 1263px) {
           .column-3 {
-            width: 25%;
+            width: 100%;
           }
         }
 
@@ -1379,7 +1379,6 @@ export default function Create(props) {
           border: 2px solid #0ca851;
           padding: 20px;
           border-radius: 10px;
-          width: 338px;
           margin-top: 100px;
         }
         @media (max-width: 1263px) {
