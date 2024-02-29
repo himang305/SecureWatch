@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
 export default function Monitor(props) {
   return (
@@ -51,7 +51,7 @@ export default function Monitor(props) {
             <div className="div-18">
               <div className="div-19">See Monitor Activity</div>
               <Link to="/create">
-              <div className="div-20">Create Monitor</div>
+                <div className="div-20">Create Monitor</div>
               </Link>
             </div>
           </div>
@@ -67,7 +67,6 @@ export default function Monitor(props) {
           <div className="div-23">
             <div className="div-24">
               <Link to="/activity">
-
                 <div className="div-25">
                   <div className="div-26">First Monitor</div>
                   <div className="div-27">Governance</div>
@@ -1055,5 +1054,3 @@ export default function Monitor(props) {
     </>
   );
 }
-
-

@@ -1,298 +1,271 @@
 import * as React from "react";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import Navbar from "./navbar2";
 
 export default function Dashboard(props) {
-    return (
-        <>
-            <div className="div">
-                <div className="div-2">
-                    <img
-                        loading="lazy"
-                        src="https://cdn.builder.io/api/v1/image/assets/TEMP/68918d13fc132d3ed6575b3477301bdbf91d784612a3f1c0a7c1593771c3a496?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                        className="img"
-                    />
-                    <div className="div-3">
-                        <div className="div-4">
-                            <div className="div-5" />
-                            <div className="div-6">SecureWatch</div>
-                        </div>
-                        <div className="div-7">
-                            <div className="div-8">
-                                <img
-                                    loading="lazy"
-                                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/d58fb628934d90937b358a69cc3950ef1f7aecd108c71502de9adb5ea0179a13?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                                    className="img-2"
-                                />
-                                <div className="div-9">Overview</div>
-                            </div>
-                            <div className="div-10">
-                                <img
-                                    loading="lazy"
-                                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/735991d9a777b7b128a74b2a9b14fa03b40c8bce28740745900649b767dbf411?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                                    className="img-3"
-                                />
-                                <div className="div-11">Monitor</div>
-                            </div>
-                            <div className="div-12">
-                                <img
-                                    loading="lazy"
-                                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/aa59e5b603947d22bced57a442eadfeb177f2d7a78de43f8bc921ac57fd11391?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                                    className="img-4"
-                                />
-                                <div className="div-13">Logs</div>
-                            </div>
-                        </div>
-                        <div className="div-14">
-                            <div className="div-15">prashantd049@gmail.com</div>
-                        </div>
-                    </div>
-                    <div className="div-16">
-                        <div className="div-17">
-                            <div className="div-18">SecureWatch Org</div>
-                            <div className="div-19">
-                                <img
-                                    loading="lazy"
-                                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/d0462a138230676b081080bcdebb4259cbdcf0cc72d3f58035cf9dbbff40b003?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                                    className="img-5"
-                                />
-                            </div>
-                        </div>
-                        <div className="div-20">
-                            <div className="div-21">
-                                <span style={{ fontWeight: 600, color: 'rgba(12,168,81,1)' }}>
-                                    Tenant ID
-                                </span>
-                                #833f1c5e...
-                            </div>
-                            <img
-                                loading="lazy"
-                                src="https://cdn.builder.io/api/v1/image/assets/TEMP/316fd892780c6d3275faa27fdfed56b8c3256077710f584051eb733c00e5f0e0?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                                className="img-6"
-                            />
-                        </div>
-                    </div>
-                    <div className="div-22">
-                        <div className="div-23">
-                            <div className="div-24">
-                                <div className="column">
-                                    <div className="div-25">
-                                        <div className="div-26">
-                                            <div className="column-2">
-                                                <div className="div-27">
-                                                    <div className="div-28">
-                                                        <img
-                                                            loading="lazy"
-                                                            src="https://cdn.builder.io/api/v1/image/assets/TEMP/66c29d4b811ec0e77b046b152bf0a8c47460d415f5b4e9c1344a4693d1e1104b?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                                                            className="img-7"
-                                                        />
-                                                        <div className="div-29">Deploy</div>
-                                                    </div>
-                                                    <div className="div-30">04</div>
-                                                </div>
-                                            </div>
-                                            <div className="column-3">
-                                                <div className="div-31">
-                                                    <div className="div-32">
-                                                        Check
-                                                        <br />
-                                                        deployed CONTRACT
-                                                    </div>
-                                                    <img
-                                                        loading="lazy"
-                                                        src="https://cdn.builder.io/api/v1/image/assets/TEMP/4e8c610c9525bbdef4d5aef0b7a4eff23b2c257a39f94536d4f28bef4ccaf261?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                                                        className="img-8"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="column-4">
-                                    <div className="div-33">
-                                        <div className="div-34">
-                                            <img
-                                                loading="lazy"
-                                                src="https://cdn.builder.io/api/v1/image/assets/TEMP/b5b1fc965e661077add4f9d0a1367dddc8014c106ef34bf6e9ccf18029bae366?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                                                className="img-9"
-                                            />
-                                            <div className="div-35">Access Control</div>
-                                        </div>
-                                        <div className="div-36">
-                                            <div className="div-37">00</div>
-                                            <div className="div-38">
-                                                <div className="div-39">
-                                                    Check <br />
-                                                    MANAGED CONTRACTS
-                                                </div>
-                                                <img
-                                                    loading="lazy"
-                                                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/d143e1190bada5989595695b326c69d61232c75729587d8c5cb2405df7537be4?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                                                    className="img-10"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="column-5">
-                                    <div className="div-40">
-                                        <div className="div-41">
-                                            <div className="column-6">
-                                                <div className="div-42">
-                                                    <div className="div-43">
-                                                        <img
-                                                            loading="lazy"
-                                                            src="https://cdn.builder.io/api/v1/image/assets/TEMP/17331916cf688bd49f58ea5fa3eced0057f73173e3e92a4b90f91ca39a6d79f9?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                                                            className="img-11"
-                                                        />
-                                                        <div className="div-44">Monitor</div>
-                                                    </div>
-                                                    <div className="div-45">02</div>
-                                                </div>
-                                            </div>
-                                            <div className="column-7">
-                                                <div className="div-46">
-                                                    <div className="div-47">
-                                                        Check
-                                                        <br />
-                                                        Active Monitor
-                                                    </div>
-                                                    <Link to="/monitor">
-                                                    <img
-                                                        loading="lazy"
-                                                        src="https://cdn.builder.io/api/v1/image/assets/TEMP/5bed0f30be143bcf2a0a7897892dff00c81739a9525f16a414351590536fbd03?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                                                        className="img-12"
-                                                    />
-                                                    </Link>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="div-48">
-                            <div className="div-49">
-                                <div className="column-8">
-                                    <div className="div-50">
-                                        <div className="div-51">
-                                            <img
-                                                loading="lazy"
-                                                src="https://cdn.builder.io/api/v1/image/assets/TEMP/084ea882688345cb80d170f584a86f571a8c73c701c755ad69d61a49e5e23d58?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                                                className="img-13"
-                                            />
-                                            <div className="div-52">Incident Response</div>
-                                        </div>
-                                        <div className="div-53">
-                                            <div className="div-54">02</div>
-                                            <div className="div-55">
-                                                <div className="div-56">
-                                                    Check
-                                                    <br />
-                                                    ACTIVE SCENARIOS
-                                                </div>
-                                                <img
-                                                    loading="lazy"
-                                                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/05ba14e3d828ac48f86ded337d88b521beeb3d7645bbf203aed8cd6b0be79b8f?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                                                    className="img-14"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="column-9">
-                                    <div className="div-57">
-                                        <div className="div-58">
-                                            <img
-                                                loading="lazy"
-                                                src="https://cdn.builder.io/api/v1/image/assets/TEMP/e13468f7c9b54cd126d9dd094785f82677cd7c69caf57e24f0ab7040de285252?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                                                className="img-15"
-                                            />
-                                            <div className="div-59">Actions</div>
-                                        </div>
-                                        <div className="div-60">
-                                            <div className="div-61">
-                                                <div className="div-62">
-                                                    <div className="div-63">02</div>
-                                                    <div className="div-64">
-                                                        ACTIVE <br />
-                                                        ACTIONS
-                                                    </div>
-                                                </div>
-                                                <div className="div-65">
-                                                    <div className="div-66">02</div>
-                                                    <div className="div-67">
-                                                        PENDING <br />
-                                                        TX PROPOSALS
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <img
-                                                loading="lazy"
-                                                src="https://cdn.builder.io/api/v1/image/assets/TEMP/a149968e95fe6a6815d51a691ae736a8bbcf860cf8b83fec56bb64f77bce0c81?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                                                className="img-16"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="div-68">
-                            <div className="div-69">
-                                <div className="div-70">
-                                    <img
-                                        loading="lazy"
-                                        src="https://cdn.builder.io/api/v1/image/assets/TEMP/a9c8d0cb29efda5bda13878bf5dc1d12442ad9ecd1d511debbb418cf231b9f81?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                                        className="img-17"
-                                    />
-                                    <div className="div-71">Code</div>
-                                </div>
-                                <img
-                                    loading="lazy"
-                                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/b269d40c196fbfcf9270af10eca4224efdb5c1edc27c787d36e5b2e71051ee0e?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
-                                    className="img-18"
-                                />
-                            </div>
-                            <div className="div-72">
-                                <div className="div-73">
-                                    <div className="div-74">02</div>
-                                    <div className="div-75">SUCCESSFULL REPORT</div>
-                                </div>
-                                <div className="div-76">
-                                    <div className="div-77">
-                                        <div className="div-78">00</div>
-                                        <div className="div-79">
-                                            CRITICAL FINDINGS <br />
-                                            TO RESOLVE
-                                        </div>
-                                    </div>
-                                    <div className="div-80">
-                                        <div className="div-81">00</div>
-                                        <div className="div-82">
-                                            HIGH FINDINGS <br />
-                                            TO RESOLVE
-                                        </div>
-                                    </div>
-                                    <div className="div-83">
-                                        <div className="div-84">00</div>
-                                        <div className="div-85">
-                                            MEDIUM FINDINGS <br />
-                                            TO RESOLVE
-                                        </div>
-                                    </div>
-                                    <div className="div-86">
-                                        <div className="div-87">00</div>
-                                        <div className="div-88">
-                                            LOW FINDINGS <br />
-                                            TO RESOLVE
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+  const location = useLocation();
+  const navigate = useNavigate();
+  const email = location.state ? location.state.email : null;
+
+  return (
+    <>
+      <div className="div">
+        <div className="div-2">
+          <img
+            loading="lazy"
+            src="https://cdn.builder.io/api/v1/image/assets/TEMP/68918d13fc132d3ed6575b3477301bdbf91d784612a3f1c0a7c1593771c3a496?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
+            className="img"
+          />
+          <Navbar email={email} />
+
+          <div className="div-16">
+            <div className="div-17">
+              <div className="div-18">SecureWatch Org</div>
+              <div className="div-19">
+                <img
+                  loading="lazy"
+                  src="https://cdn.builder.io/api/v1/image/assets/TEMP/d0462a138230676b081080bcdebb4259cbdcf0cc72d3f58035cf9dbbff40b003?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
+                  className="img-5"
+                />
+              </div>
             </div>
-            <style jsx>{`
+            <div className="div-20">
+              <div className="div-21">
+                <span style={{ fontWeight: 600, color: "rgba(12,168,81,1)" }}>
+                  Tenant ID
+                </span>
+                #833f1c5e...
+              </div>
+              <img
+                loading="lazy"
+                src="https://cdn.builder.io/api/v1/image/assets/TEMP/316fd892780c6d3275faa27fdfed56b8c3256077710f584051eb733c00e5f0e0?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
+                className="img-6"
+              />
+            </div>
+          </div>
+          <div className="div-22">
+            <div className="div-23">
+              <div className="div-24">
+                <div className="column">
+                  <div className="div-25">
+                    <div className="div-26">
+                      <div className="column-2">
+                        <div className="div-27">
+                          <div className="div-28">
+                            <img
+                              loading="lazy"
+                              src="https://cdn.builder.io/api/v1/image/assets/TEMP/66c29d4b811ec0e77b046b152bf0a8c47460d415f5b4e9c1344a4693d1e1104b?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
+                              className="img-7"
+                            />
+                            <div className="div-29">Deploy</div>
+                          </div>
+                          <div className="div-30">04</div>
+                        </div>
+                      </div>
+                      <div className="column-3">
+                        <div className="div-31">
+                          <div className="div-32">
+                            Check
+                            <br />
+                            deployed CONTRACT
+                          </div>
+                          <img
+                            loading="lazy"
+                            src="https://cdn.builder.io/api/v1/image/assets/TEMP/4e8c610c9525bbdef4d5aef0b7a4eff23b2c257a39f94536d4f28bef4ccaf261?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
+                            className="img-8"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="column-4">
+                  <div className="div-33">
+                    <div className="div-34">
+                      <img
+                        loading="lazy"
+                        src="https://cdn.builder.io/api/v1/image/assets/TEMP/b5b1fc965e661077add4f9d0a1367dddc8014c106ef34bf6e9ccf18029bae366?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
+                        className="img-9"
+                      />
+                      <div className="div-35">Access Control</div>
+                    </div>
+                    <div className="div-36">
+                      <div className="div-37">00</div>
+                      <div className="div-38">
+                        <div className="div-39">
+                          Check <br />
+                          MANAGED CONTRACTS
+                        </div>
+                        <img
+                          loading="lazy"
+                          src="https://cdn.builder.io/api/v1/image/assets/TEMP/d143e1190bada5989595695b326c69d61232c75729587d8c5cb2405df7537be4?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
+                          className="img-10"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="column-5">
+                  <div className="div-40">
+                    <div className="div-41">
+                      <div className="column-6">
+                        <div className="div-42">
+                          <div className="div-43">
+                            <img
+                              loading="lazy"
+                              src="https://cdn.builder.io/api/v1/image/assets/TEMP/17331916cf688bd49f58ea5fa3eced0057f73173e3e92a4b90f91ca39a6d79f9?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
+                              className="img-11"
+                            />
+                            <div className="div-44">Monitor</div>
+                          </div>
+                          <div className="div-45">02</div>
+                        </div>
+                      </div>
+                      <div className="column-7">
+                        <div className="div-46">
+                          <div className="div-47">
+                            Check
+                            <br />
+                            Active Monitor
+                          </div>
+                          <Link to="/monitor">
+                            <img
+                              loading="lazy"
+                              src="https://cdn.builder.io/api/v1/image/assets/TEMP/5bed0f30be143bcf2a0a7897892dff00c81739a9525f16a414351590536fbd03?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
+                              className="img-12"
+                            />
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="div-48">
+              <div className="div-49">
+                <div className="column-8">
+                  <div className="div-50">
+                    <div className="div-51">
+                      <img
+                        loading="lazy"
+                        src="https://cdn.builder.io/api/v1/image/assets/TEMP/084ea882688345cb80d170f584a86f571a8c73c701c755ad69d61a49e5e23d58?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
+                        className="img-13"
+                      />
+                      <div className="div-52">Incident Response</div>
+                    </div>
+                    <div className="div-53">
+                      <div className="div-54">02</div>
+                      <div className="div-55">
+                        <div className="div-56">
+                          Check
+                          <br />
+                          ACTIVE SCENARIOS
+                        </div>
+                        <img
+                          loading="lazy"
+                          src="https://cdn.builder.io/api/v1/image/assets/TEMP/05ba14e3d828ac48f86ded337d88b521beeb3d7645bbf203aed8cd6b0be79b8f?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
+                          className="img-14"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="column-9">
+                  <div className="div-57">
+                    <div className="div-58">
+                      <img
+                        loading="lazy"
+                        src="https://cdn.builder.io/api/v1/image/assets/TEMP/e13468f7c9b54cd126d9dd094785f82677cd7c69caf57e24f0ab7040de285252?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
+                        className="img-15"
+                      />
+                      <div className="div-59">Actions</div>
+                    </div>
+                    <div className="div-60">
+                      <div className="div-61">
+                        <div className="div-62">
+                          <div className="div-63">02</div>
+                          <div className="div-64">
+                            ACTIVE <br />
+                            ACTIONS
+                          </div>
+                        </div>
+                        <div className="div-65">
+                          <div className="div-66">02</div>
+                          <div className="div-67">
+                            PENDING <br />
+                            TX PROPOSALS
+                          </div>
+                        </div>
+                      </div>
+                      <img
+                        loading="lazy"
+                        src="https://cdn.builder.io/api/v1/image/assets/TEMP/a149968e95fe6a6815d51a691ae736a8bbcf860cf8b83fec56bb64f77bce0c81?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
+                        className="img-16"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="div-68">
+              <div className="div-69">
+                <div className="div-70">
+                  <img
+                    loading="lazy"
+                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/a9c8d0cb29efda5bda13878bf5dc1d12442ad9ecd1d511debbb418cf231b9f81?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
+                    className="img-17"
+                  />
+                  <div className="div-71">Code</div>
+                </div>
+                <img
+                  loading="lazy"
+                  src="https://cdn.builder.io/api/v1/image/assets/TEMP/b269d40c196fbfcf9270af10eca4224efdb5c1edc27c787d36e5b2e71051ee0e?apiKey=81130fff99a04bb0ab44e20c5639d57c&"
+                  className="img-18"
+                />
+              </div>
+              <div className="div-72">
+                <div className="div-73">
+                  <div className="div-74">02</div>
+                  <div className="div-75">SUCCESSFULL REPORT</div>
+                </div>
+                <div className="div-76">
+                  <div className="div-77">
+                    <div className="div-78">00</div>
+                    <div className="div-79">
+                      CRITICAL FINDINGS <br />
+                      TO RESOLVE
+                    </div>
+                  </div>
+                  <div className="div-80">
+                    <div className="div-81">00</div>
+                    <div className="div-82">
+                      HIGH FINDINGS <br />
+                      TO RESOLVE
+                    </div>
+                  </div>
+                  <div className="div-83">
+                    <div className="div-84">00</div>
+                    <div className="div-85">
+                      MEDIUM FINDINGS <br />
+                      TO RESOLVE
+                    </div>
+                  </div>
+                  <div className="div-86">
+                    <div className="div-87">00</div>
+                    <div className="div-88">
+                      LOW FINDINGS <br />
+                      TO RESOLVE
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <style jsx>{`
         .div {
           background-color: #fcfffd;
           display: flex;
@@ -323,157 +296,7 @@ export default function Dashboard(props) {
           object-fit: cover;
           object-position: center;
         }
-        .div-3 {
-          position: relative;
-          border-radius: 25.412px;
-          border: 1.059px solid #505050;
-          background-color: rgba(48, 48, 48, 0.97);
-          align-self: center;
-          display: flex;
-          margin-top: 21px;
-          width: 772px;
-          max-width: 100%;
-          justify-content: space-between;
-          gap: 20px;
-          font-weight: 600;
-          white-space: nowrap;
-          letter-spacing: -0.07px;
-          padding: 12px 13px;
-        }
-        @media (max-width: 991px) {
-          .div-3 {
-            flex-wrap: wrap;
-            white-space: initial;
-          }
-        }
-        .div-4 {
-          align-self: start;
-          display: flex;
-          gap: 10px;
-          font-size: 17px;
-          color: #fff;
-          line-height: 114%;
-        }
-        @media (max-width: 991px) {
-          .div-4 {
-            white-space: initial;
-          }
-        }
-        .div-5 {
-          background-color: #107f41;
-          border-radius: 50%;
-          width: 35px;
-          height: 34px;
-        }
-        .div-6 {
-          font-family: Poppins, sans-serif;
-          flex-grow: 1;
-          margin: auto 0;
-        }
-        .div-7 {
-          display: flex;
-          gap: 17px;
-          font-size: 13px;
-          color: #fff2f2;
-          font-weight: 400;
-          letter-spacing: -0.08px;
-          line-height: 161%;
-          margin: auto 0;
-        }
-        @media (max-width: 991px) {
-          .div-7 {
-            white-space: initial;
-          }
-        }
-        .div-8 {
-          justify-content: space-between;
-          display: flex;
-          gap: 7px;
-        }
-        @media (max-width: 991px) {
-          .div-8 {
-            white-space: initial;
-          }
-        }
-        .img-2 {
-          aspect-ratio: 1;
-          object-fit: auto;
-          object-position: center;
-          width: 20px;
-          align-self: start;
-        }
-        .div-9 {
-          font-family: Inter, sans-serif;
-          flex-grow: 1;
-        }
-        .div-10 {
-          display: flex;
-          justify-content: space-between;
-          gap: 7px;
-        }
-        @media (max-width: 991px) {
-          .div-10 {
-            white-space: initial;
-          }
-        }
-        .img-3 {
-          aspect-ratio: 0.95;
-          object-fit: auto;
-          object-position: center;
-          width: 19px;
-          align-self: start;
-        }
-        .div-11 {
-          font-family: Inter, sans-serif;
-          flex-grow: 1;
-        }
-        .div-12 {
-          display: flex;
-          justify-content: space-between;
-          gap: 6px;
-        }
-        @media (max-width: 991px) {
-          .div-12 {
-            white-space: initial;
-          }
-        }
-        .img-4 {
-          aspect-ratio: 1;
-          object-fit: auto;
-          object-position: center;
-          width: 20px;
-          align-self: start;
-        }
-        .div-13 {
-          font-family: Inter, sans-serif;
-        }
-        .div-14 {
-          display: flex;
-          flex-grow: 1;
-          flex-basis: 0%;
-          flex-direction: column;
-          justify-content: center;
-          font-size: 15px;
-          color: #000;
-          line-height: 130%;
-        }
-        @media (max-width: 991px) {
-          .div-14 {
-            white-space: initial;
-          }
-        }
-        .div-15 {
-          font-family: Poppins, sans-serif;
-          justify-content: center;
-          border-radius: 21.144px;
-          background-color: #fff;
-          padding: 8px 13px;
-        }
-        @media (max-width: 991px) {
-          .div-15 {
-            white-space: initial;
-          }
-        }
+
         .div-16 {
           position: relative;
           display: flex;
@@ -1394,8 +1217,6 @@ export default function Dashboard(props) {
           font: 11px/15px Inter, sans-serif;
         }
       `}</style>
-        </>
-    );
+    </>
+  );
 }
-
-

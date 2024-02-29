@@ -1,5 +1,5 @@
 import * as React from "react";
-import check from "../images/check-circle.png";
+import check from "../images/check-circle.svg";
 import { Link } from "react-router-dom";
 // import "./event.css";
 
