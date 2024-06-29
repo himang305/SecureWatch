@@ -98,7 +98,7 @@ function Monitor_create() {
       />
       <Navbar email={email} />
       <div className="w-5/6  lg:w-5/6 mx-auto mt-20 flex justify-center flex-col md:flex-row md:gap-10 lg:gap-20 ">
-        <div className="w-full md:w-1/4 ">
+        <div className="w-full lg:w-1/4 ">
           <div className="flex">
             <div>
               <svg
@@ -381,9 +381,9 @@ function Monitor_create() {
             </div>
           </div>
         </div>
-        <div className="mt-4 md:mt-0 w-full md:w-1/2 pb-20">
+        <div className="mt-4 lg:mt-0 w-full lg:w-1/2 pb-20">
           <form onSubmit={handleSubmit}>
-            <div className="font-medium text-xl" style={{ color: "black" }}>
+            {/* <div className="font-medium text-xl" style={{ color: "black" }}>
               Name
             </div>
             <div
@@ -399,8 +399,8 @@ function Monitor_create() {
               name="name"
               onChange={(e) => setMonitorName(e.target.value)}
               className="outline-none border-2 border-[#4C4C4C] w-full rounded-xl p-2 py-3 mt-1 "
-            />
-            <div
+            /> */}
+            {/* <div
               className="font-medium mt-5 text-lg"
               style={{ color: "black" }}
             >
@@ -448,8 +448,7 @@ function Monitor_create() {
               <option value="technical" className="text-[13px] text-[#959595]">
                 Technical
               </option>
-            </select>
-
+            </select> */}
             <div
               className="text-lg font-medium mt-5"
               style={{ color: "black" }}

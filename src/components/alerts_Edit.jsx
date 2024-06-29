@@ -36,7 +36,7 @@ function Alerts_Edit() {
   const { name, email, m_id, token, network, address, rk, selectedEventNames } =
     location.state || {};
 
-  console.log("netwrok in alers is:", network);
+  // console.log("netwrok in alers is:", network);
 
   const [open, setOpen] = useState(false);
   function openModal() {
@@ -106,14 +106,18 @@ function Alerts_Edit() {
     };
     fetchMoniter();
   }, [value]);
+  console.log(moniter);
   if (
     !moniter ||
     !Array.isArray(moniter.monitors) ||
     moniter.monitors.length === 0
   ) {
     return (
-      <div className="text-center mt-20 text-4xl font-medium text-black">
-        {/* Please create a monitor. */}
+      <div className="pt-10">
+      <Navbar email={email}  />
+      <div className="text-center pt-20 text-4xl font-medium text-black">
+        Please create a monitor.
+      </div>
       </div>
     );
   }
@@ -665,7 +669,6 @@ function Alerts_Edit() {
                 Networks
               </div>
               <div className="text-white bg-[#0CA851] rounded-md p-2 text-[13px]">
-                {/* {network} */}
                 {network === 80002
                   ? "Amoy"
                   : network === 1
