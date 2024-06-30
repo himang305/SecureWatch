@@ -34,11 +34,11 @@ function Functions() {
   };
   return (
     <div
-      className="font-poppin mt-10 mx-2"
+      className="font-poppin pt-10 mx-2 min-h-screen"
       style={{ backgroundColor: "#FCFFFD" }}
     >
       <Navbar email={email} />
-      <div className="w-full mx-auto mt-10 md:mt-20 flex items-start justify-center flex-col md:flex-row md:gap-10 lg:gap-20 ">
+      <div className="w-full mx-auto mt-10 md:mt-20 flex items-center justify-center flex-col  md:flex-row flex-wrap md:gap-10 lg:gap-20 ">
         <div className="mx-auto md:mx-0">
           <div className="flex">
             <div>

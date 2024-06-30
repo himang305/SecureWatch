@@ -144,7 +144,7 @@ function Alerts_Edit() {
         pauseOnHover
       />
       <Navbar email={email} />
-      <div className="w-full h-full mx-auto mt-10 md:mt-20 flex items-start justify-center flex-col md:flex-row md:gap-10 lg:gap-20 ">
+      <div className="w-full h-full mx-auto mt-10 md:mt-20 flex items-start justify-center flex-col flex-wrap md:flex-row md:gap-10 lg:gap-20 ">
         <div className="mx-auto md:mx-0">
           <div className="flex">
             <div>
