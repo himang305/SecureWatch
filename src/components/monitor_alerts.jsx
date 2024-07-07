@@ -2,7 +2,7 @@ import React, { useState,useEffect } from "react";
 import { useLocation } from 'react-router-dom';
 import Navbar from "./navbar2";
 import { FaCaretDown,FaCopy } from 'react-icons/fa';
-
+import { showErrorAlert, showSuccessAlert } from "./toastifyalert";
 
 function Monitor_alerts() {
   const location = useLocation();
@@ -51,9 +51,11 @@ function Monitor_alerts() {
   // Function to copy text to clipboard
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text).then(() => {
-      alert('Text copied to clipboard');
+      showSuccessAlert("Address copied Successful");
+      // alert('Text copied to clipboard');
     }).catch(err => {
-      console.error('Failed to copy: ', err);
+      showErrorAlert("Failed to copy");
+      // console.error('Failed to copy: ', err);
     });
   };
  
@@ -76,7 +78,7 @@ function Monitor_alerts() {
           <div className="">
 
 
-<div key={index} className="w-[95%] lg:w-4/6 mx-auto  flex flex-col mb-14 mt-10 ">
+  <div key={index} className="w-[95%] lg:w-4/6 mx-auto  flex flex-col mb-14 mt-10 ">
         <div className="overflow-x-auto rounded-lg border-2 border-gray-400 custom-scrollbar">
             <table className="min-w-full rounded-lg overflow-hidden">
                 <thead >
@@ -88,6 +90,7 @@ function Monitor_alerts() {
                         <th className="px-4 py-2 border-2 border-gray-300 ">More details:</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     <tr>
                         <td className="px-4 py-2 border-2 border-gray-300"><span className="text-lg  text-black ">{`${hash.slice(0, 5)}...${hash.slice(hash.length - 4)}`}</span></td>
@@ -135,82 +138,11 @@ function Monitor_alerts() {
 )}
                     </tr>
                 </tbody>
-            </table>
-        </div>
-       
-    </div>
 
 
-
-            {/* <div key={index} className="w-[95%] lg:w-4/6 mx-auto  flex flex-col mb-14 mt-10 ">
-
-            <div className="w-full flex gap-4 flex-wrap">
-
-            <div className="text-lg font-semibold text-gray-500 bg-[#E9E9E9] px-3 py-2 rounded-xl border-2 border-gray-300">
-                     Hash : <span className="text-lg  text-black ">{`${hash.slice(0, 5)}...${hash.slice(hash.length - 4)}`}</span>
-                    </div>
-
-                    <div className="flex gap-2 items-center text-gray-500 bg-[#E9E9E9] px-3 py-2 rounded-xl border-2 border-gray-300">
-                      <div className=" text-lg font-semibold text-gray-500">Created on:</div>
-                        <div className="my-auto text-md font-medium text-black">{created_on.slice(0,10)} {created_on.slice(11,16)}
-                      </div>
-                    </div>
-
-                    <div className="text-lg font-semibold text-gray-500  bg-[#E9E9E9] px-3 py-2 rounded-xl border-2 border-gray-300">From: <span className="text-lg mt-auto text-black">{`${from_address.slice(0, 5)}...${from_address.slice(from_address.length - 4)}`}</span> </div>
-
-
-<div className="text-lg font-semibold  text-gray-500 bg-[#E9E9E9] px-3 py-2 rounded-xl border-2 border-gray-300">To: <span className="text-lg mt-auto text-black">{`${to_address.slice(0, 5)}...${to_address.slice(to_address.length - 4)}`}</span></div>
-
-<button onClick={() => setActiveDiv(activeDiv === index ? null : index)} className="flex relative gap-2 items-center text-lg font-semibold text-gray-500 bg-[#E9E9E9] px-3 py-2 rounded-xl border-2 border-gray-300">
-    More <FaCaretDown />
-    
-</button>
-
-            </div>
-
-            {activeDiv === index && (
-
-    <div className="container mx-auto mt-6 ">
-        <div className="overflow-x-auto rounded-lg border-2 border-gray-400 custom-scrollbar">
-            <table className="min-w-full rounded-lg overflow-hidden">
-                <thead >
-                    <tr className="bg-gray-200">
-                        <th className="px-4 py-2 border-2 border-gray-300">Event:</th>
-                        <th className="px-4 py-2 border-2 border-gray-300">From:</th>
-                        <th className="px-4 py-2 border-2 border-gray-300">To:</th>
-                        <th className="px-4 py-2 border-2 border-gray-300 ">Value:</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td className="px-4 py-2 border-2 border-gray-300">{name}</td>
-                        <td className="px-4 py-2 border-2 border-gray-300"><span className="flex justify-center items-center gap-3"> <span className="text-lg  text-[#7D7D7D] line-clamp-5">{arguemant.slice(9,51)}</span>
-            <CopyIcon onClick={() => copyToClipboard(arguemant.slice(9,51))} />
-            </span>
-</td>
-                        <td className="px-4 py-2 border-2 border-gray-300"><span className="flex justify-center items-center gap-3">
-              <span className="text-lg  text-[#7D7D7D] line-clamp-5">{arguemant.slice(59,101)}</span>
-            <CopyIcon onClick={() => copyToClipboard(arguemant.slice(59,101))} />
-            </span> 
-</td>
-                        <td className="px-4 py-2 border-2 border-gray-300"><span className="text-lg  text-[#7D7D7D] line-clamp-5">{arguemant.slice(112,131)}</span></td>
-                    </tr>
-                </tbody>
             </table>
         </div>
     </div>
-       
-     
-    )}
-              
-
-
-
-            </div> */}
-
-
-
-
           </div>
         );
       })}
