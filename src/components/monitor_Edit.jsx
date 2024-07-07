@@ -472,7 +472,7 @@ function Monitor_Edit() {
         </div>
         <div className="mt-4 md:mt-0 w-full md:w-1/2 pb-20">
           <form onSubmit={handleSubmit}>
-            <div className="font-medium text-xl" style={{ color: "black" }}>
+            {/* <div className="font-medium text-xl" style={{ color: "black" }}>
               Name
             </div>
             <div
@@ -489,8 +489,8 @@ function Monitor_Edit() {
               placeholder={selectedMonitor.name}
               onChange={(e) => setMonitorName(e.target.value)}
               className="outline-none border-2 border-[#4C4C4C] w-full rounded-xl p-2 py-3 mt-1 "
-            />
-            <div
+            /> */}
+            {/* <div
               className="font-medium mt-5 text-lg"
               style={{ color: "black" }}
             >
@@ -539,7 +539,7 @@ function Monitor_Edit() {
               <option value="technical" className="text-[13px] text-[#959595]">
                 Technical
               </option>
-            </select>
+            </select> */}
 
             <div
               className="text-lg font-medium mt-5"

@@ -282,13 +282,13 @@ function Event_Edit() {
           }, {});
         } else {
           // Otherwise, fall back to the placeholder arguments
-          try {
-            argsToUse = JSON.parse(eventDetailsEntry.args);
-          } catch (parseError) {
-            console.error("Error parsing placeholder args:", parseError);
-            toast.error(`Invalid placeholder arguments for ${eventName}`);
-            return; // Exit if parsing fails
-          }
+          // try {
+          //   argsToUse = JSON.parse(eventDetailsEntry.args);
+          // } catch (parseError) {
+          //   console.error("Error parsing placeholder args:", parseError);
+          //   toast.error(`Invalid placeholder arguments for ${eventName}`);
+          //   return; // Exit if parsing fails
+          // }
         }
 
         const event = eventDetails.find((e) => e.name === eventName);
