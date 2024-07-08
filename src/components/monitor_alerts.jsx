@@ -7,7 +7,9 @@ import { showErrorAlert, showSuccessAlert } from "./toastifyalert";
 function Monitor_alerts() {
   const location = useLocation();
   const { mid } = location.state;
-  // console.log("transfered mid",mid);
+  const {network} = location.state;
+  console.log("transfered mid",mid);
+  console.log("Network",network);
   const  [alert,setAlert] = useState([]);
   const email = localStorage.getItem("email")
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -83,17 +85,17 @@ function Monitor_alerts() {
             <table className="min-w-full rounded-lg overflow-hidden">
                 <thead >
                     <tr className="bg-gray-200">
-                        <th className="px-4 py-2 border-2 border-gray-300"> Hash :</th>
+                        <th className="px-4 py-2 border-2 border-gray-300"> Link :</th>
                         <th className="px-4 py-2 border-2 border-gray-300">Created on:</th>
                         <th className="px-4 py-2 border-2 border-gray-300">From:</th>
                         <th className="px-4 py-2 border-2 border-gray-300 ">To:</th>
                         <th className="px-4 py-2 border-2 border-gray-300 ">More details:</th>
                     </tr>
                 </thead>
-
+                {/* {`${hash.slice(0, 5)}...${hash.slice(hash.length - 4)}`} */}
                 <tbody>
                     <tr>
-                        <td className="px-4 py-2 border-2 border-gray-300"><span className="text-lg  text-black ">{`${hash.slice(0, 5)}...${hash.slice(hash.length - 4)}`}</span></td>
+                        <td className="px-4 py-2 border-2 border-gray-300"><span className="text-lg  text-green-600 font-medium "><a href={network===80002?`https://amoy.polygonscan.com/tx/${hash}`:network===11155111?`https://sepolia.etherscan.io/tx/${hash}`:"#"} target="_blank" >{network===80002?`https://amoy.poly...${hash.slice(hash.length - 4)}`:network===11155111?`https://sepo...${hash.slice(hash.length - 4)}`:"Unknown"}  </a></span></td>
                         <td className="px-4 py-2 border-2 border-gray-300 text-black text-nowrap">{created_on.slice(0,10)} {created_on.slice(11,16)}</td>
 
                         <td className="px-4 py-2 border-2 border-gray-300"><span className="text-lg mt-auto text-black">{`${from_address.slice(0, 5)}...${from_address.slice(from_address.length - 4)}`}</span> </td>

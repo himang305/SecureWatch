@@ -98,7 +98,7 @@ const Monitor_cmp = (props) => {
                 <button
                   className="w-[70%] sm:w-[80%] md:w-[90%]  p-6  "
                   onClick={() => {
-                    navigate("/monitor_alerts", { state: { mid } });
+                    navigate("/monitor_alerts", { state: { mid,network } });
                   }}
                 >
                   <div className="">
