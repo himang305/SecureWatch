@@ -1,17 +1,12 @@
 import Navbar from "./navbar2";
 import { useLocation, useNavigate } from "react-router-dom";
-
 import * as React from "react";
-// import check from "../images/check-circle.png";
-// import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import Web3 from "web3";
-// import Select from "react-select";
 import Select, { components } from "react-select";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-//
 
 function Event_Edit() {
   const navigate = useNavigate();
@@ -24,7 +19,7 @@ function Event_Edit() {
   const [addressState, setAddressState] = useState(address || "");
   const [riskCategoryState, setRiskCategoryState] = useState(rk || "");
   const [abiState, setAbiState] = useState(abi || "");
-  // console.log(token);
+  // console.log("abiState",abiState);
   console.log(m_id);
   const mid = m_id;
 
@@ -56,7 +51,9 @@ function Event_Edit() {
       return;
     }
 
+
     const events = parsedAbi.filter((item) => item.type === "event");
+    console.log("New event is",events)
     setEventDetails(
       events.map((event) => ({
         name: event.name,
@@ -73,11 +70,13 @@ function Event_Edit() {
     riskCategoryState,
     abiState,
   ]);
+ 
 
   const options = eventDetails.map((event) => ({
     label: `${event.name} (${event.inputs})`,
     value: event.name,
   }));
+  console.log("options",options);
 
   // Handle event selection and prompt for arguments (UPDATED)
   const handleEventSelection = (selectedOptions) => {
@@ -280,6 +279,7 @@ function Event_Edit() {
             acc[argName] = userArgs[index];
             return acc;
           }, {});
+          console.log("argsToUse is:", argsToUse);
         } else {
           // Otherwise, fall back to the placeholder arguments
           // try {
@@ -484,6 +484,7 @@ function Event_Edit() {
       />
       <Navbar email={email} />
       <div className="w-full  mx-auto mt-10 md:mt-20 flex items-start justify-center flex-col md:flex-row md:gap-10 lg:gap-20">
+
         <div className="">
           <div className="flex">
             <div>
@@ -778,7 +779,6 @@ function Event_Edit() {
             Enter the Signature Name
           </div>
           <div className="my-auto ml-auto">
-            {/* w-inherit border-2 border-[#B4B4B4] shadow-md p-3 rounded-lg flex px-3 justify-between py-3 */}
             <div className="font-medium text-lg"></div>
             <div>
               <Select
@@ -861,15 +861,76 @@ function Event_Edit() {
 
               return (
                 <div key={eventName} className="font-medium">
-                  <div className="mt-3">{eventName}</div>
-                  <input
-                    className="w-full rounded-lg p-3 outline-none border border-[#4C4C4C]"
-                    style={{ backgroundColor: "white" }}
-                    // ... (other input properties)
-                    value={eventData.args || " "}
-                    onChange={(e) => handleArgumentChange(e, eventName)}
-                    placeholder={placeholder}
-                  />
+                  {eventName === "Transfer" ? (
+        <>
+          <div className="mt-3 text-black font-medium mb-3">{eventName} :</div>
+          <div className="flex flex-col gap-3">
+          <input
+            className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
+            style={{ backgroundColor: "white" }}
+            // ... (other input properties)
+            // value={eventData.args || " "}
+            onChange={(e) => handleArgumentChange(e, eventName)}
+            placeholder="from:address"
+          />
+          <input
+            className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
+            style={{ backgroundColor: "white" }}
+            // ... (other input properties)
+            // value={eventData.args || " "}
+            onChange={(e) => handleArgumentChange(e, eventName)}
+            placeholder="to:address"
+          />
+          <input
+            className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
+            style={{ backgroundColor: "white" }}
+            // ... (other input properties)
+            // value={eventData.args || " "}
+            onChange={(e) => handleArgumentChange(e, eventName)}
+            placeholder="uint256"
+          />
+          </div>
+        </>
+      ) : null}
+                  {eventName === "Approval" ? (
+        <>
+          <div className="mt-3 text-black font-medium mb-3">{eventName} :</div>
+          <div className="flex flex-col gap-3">
+          <input
+            className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
+            style={{ backgroundColor: "white" }}
+            // ... (other input properties)
+            // value={eventData.args || " "}
+            onChange={(e) => handleArgumentChange(e, eventName)}
+            placeholder="from:address"
+          />
+          <input
+            className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
+            style={{ backgroundColor: "white" }}
+            // ... (other input properties)
+            // value={eventData.args || " "}
+            onChange={(e) => handleArgumentChange(e, eventName)}
+            placeholder="to:address"
+          />
+          <div className="flex gap-3"> 
+            <select name="" id="" className="w-[50%] bg-white border rounded-lg border-black  py-2">
+              <option value="default" hidden >uint</option>
+              <option value="<"  >&lt;</option>
+              <option value=">"  >&gt;</option>
+              <option value="=="  >==</option>
+            </select>
+          <input
+            className="w-[50%] rounded-lg p-2 outline-none border border-[#4C4C4C]"
+            style={{ backgroundColor: "white" }}
+            // ... (other input properties)
+            // value={eventData.args || " "}
+            onChange={(e) => handleArgumentChange(e, eventName)}
+            placeholder="uint256"
+          />
+          </div>
+          </div>
+        </>
+      ) : null}
                 </div>
               );
             })}
@@ -1025,6 +1086,7 @@ function Event_Edit() {
             </div>
           </div>
         </div>
+
       </div>
     </div>
   );
