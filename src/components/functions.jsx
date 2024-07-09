@@ -6,7 +6,7 @@ function Functions() {
   const location = useLocation();
   const navigate = useNavigate();
   const { email, m_id, token } = location.state || "";
-  console.log(m_id);
+  // console.log(m_id);
   const [disp1, setDisp1] = useState("none");
   const [disp2, setDisp2] = useState("none");
   const [disp3, setDisp3] = useState("none");

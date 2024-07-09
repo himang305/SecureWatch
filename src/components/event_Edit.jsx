@@ -20,7 +20,7 @@ function Event_Edit() {
   const [riskCategoryState, setRiskCategoryState] = useState(rk || "");
   const [abiState, setAbiState] = useState(abi || "");
   // console.log("abiState",abiState);
-  console.log(m_id);
+  // console.log(m_id);
   const mid = m_id;
 
   const [disp1, setDisp1] = useState("none");
@@ -53,7 +53,7 @@ function Event_Edit() {
 
 
     const events = parsedAbi.filter((item) => item.type === "event");
-    console.log("New event is",events)
+    // console.log("New event is",events)
     setEventDetails(
       events.map((event) => ({
         name: event.name,
@@ -76,7 +76,7 @@ function Event_Edit() {
     label: `${event.name} (${event.inputs})`,
     value: event.name,
   }));
-  console.log("options",options);
+  // console.log("options",options);
 
   // Handle event selection and prompt for arguments (UPDATED)
   const handleEventSelection = (selectedOptions) => {
@@ -279,7 +279,7 @@ function Event_Edit() {
             acc[argName] = userArgs[index];
             return acc;
           }, {});
-          console.log("argsToUse is:", argsToUse);
+          // console.log("argsToUse is:", argsToUse);
         } else {
           // Otherwise, fall back to the placeholder arguments
           // try {
@@ -318,14 +318,14 @@ function Event_Edit() {
           //   signature: eventSignature,
           arguments: argsToUse, // Use the prioritized arguments here
         };
-        console.log("arg is:", argsToUse);
+        // console.log("arg is:", argsToUse);
 
         try {
           const response = await axios.post(
             "https://139-59-5-56.nip.io:3443/update_event",
             body
           );
-          console.log("Event added:", response.data);
+          // console.log("Event added:", response.data);
           // ... (rest of the logs are the same)
 
           toast.success("Event Added successfully!", {
@@ -464,7 +464,7 @@ function Event_Edit() {
       fetchEvents();
     }
   }, [eventDetails, m_id, value, rerender]);
-  console.log("evetn is:", event);
+  // console.log("evetn is:", event);
 
   return (
     <div
@@ -483,7 +483,7 @@ function Event_Edit() {
         pauseOnHover
       />
       <Navbar email={email} />
-      <div className="w-full  mx-auto mt-10 md:mt-20 flex items-start justify-center flex-col md:flex-row md:gap-10 lg:gap-20">
+      <div className="w-full mx-auto mt-10 md:mt-20 flex items-center justify-center flex-col gap-7  flex-wrap md:flex-row md:gap-10 lg:gap-20">
 
         <div className="">
           <div className="flex">
@@ -774,7 +774,7 @@ function Event_Edit() {
           </div>
         </div>
 
-        <div className="w-full md:w-1/3 lg:w-1/4 mt-5 md:mt-0 ">
+        <div className="">
           <div className="font-medium text-lg" style={{ color: "black" }}>
             Enter the Signature Name
           </div>
@@ -913,7 +913,7 @@ function Event_Edit() {
             placeholder="to:address"
           />
           <div className="flex gap-3"> 
-            <select name="" id="" className="w-[50%] bg-white border rounded-lg border-black  py-2">
+            <select name="" id="" className="w-[50%] bg-white border rounded-lg border-black  ">
               <option value="default" hidden >uint</option>
               <option value="<"  >&lt;</option>
               <option value=">"  >&gt;</option>
@@ -936,14 +936,14 @@ function Event_Edit() {
             })}
           </div>
           <button
-            className="py-3 w-full bg-[#28AA61] mt-10 rounded-lg text-white"
+            className="py-3 w-full bg-[#28AA61]  rounded-lg text-white"
             onClick={handleSaveMonitor}
           >
             Save Monitor
           </button>
         </div>
 
-        <div className="mt-4 md:mt-0 border border-[#0CA851] shadow-md p-5 rounded-xl">
+        <div className="border border-[#0CA851] shadow-md p-5 rounded-xl">
           <div className="text-lg font-medium" style={{ color: "black" }}>
             Monitor Summary
           </div>

@@ -85,11 +85,11 @@ function Monitor_alerts() {
             <table className="min-w-full rounded-lg overflow-hidden">
                 <thead >
                     <tr className="bg-gray-200">
-                        <th className="px-4 py-2 border-2 border-gray-300"> Link :</th>
-                        <th className="px-4 py-2 border-2 border-gray-300">Created on:</th>
-                        <th className="px-4 py-2 border-2 border-gray-300">From:</th>
-                        <th className="px-4 py-2 border-2 border-gray-300 ">To:</th>
-                        <th className="px-4 py-2 border-2 border-gray-300 ">More details:</th>
+                        <th className="px-4 py-2 border-2 border-gray-300 text-black"> Link :</th>
+                        <th className="px-4 py-2 border-2 border-gray-300 text-black">Created on:</th>
+                        <th className="px-4 py-2 border-2 border-gray-300 text-black">From:</th>
+                        <th className="px-4 py-2 border-2 border-gray-300 text-black ">To:</th>
+                        <th className="px-4 py-2 border-2 border-gray-300 text-black ">More details:</th>
                     </tr>
                 </thead>
                 {/* {`${hash.slice(0, 5)}...${hash.slice(hash.length - 4)}`} */}

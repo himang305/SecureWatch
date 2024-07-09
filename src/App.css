@@ -1,4 +1,6 @@
-
+html{
+  background-color: #f5f5f5;
+}
 .group button {
   background-color: #238acb;
   border: none;

@@ -36,7 +36,7 @@ function Alerts() {
   const { name, email, m_id, token, network, address, rk, selectedEventNames } =
     location.state || {};
 
-  console.log("netwrok in alers is:", network);
+  // console.log("netwrok in alers is:", network);
 
   const [open, setOpen] = useState(false);
   function openModal() {
@@ -66,10 +66,10 @@ function Alerts() {
         "https://139-59-5-56.nip.io:3443/update_monitor",
         postData
       );
-      console.log(response.data);
-      console.log("email is:", emails);
-      console.log("risk category is:", riskCategory);
-      console.log("monitor id is:", m_id);
+      // console.log(response.data);
+      // console.log("email is:", emails);
+      // console.log("risk category is:", riskCategory);
+      // console.log("monitor id is:", m_id);
       toast.success("Monitor Updated successfully!", {
         autoClose: 500,
         onClose: () => {
@@ -77,7 +77,7 @@ function Alerts() {
         },
       });
     } catch (error) {
-      console.error("Error updating monitor:", error);
+      // console.error("Error updating monitor:", error);
       toast.error("Failed to Update Monitor. Please try again!");
     }
   };
@@ -388,7 +388,7 @@ function Alerts() {
             </div>
           </div>
         </div>
-        <div className="w-full md:w-1/3 lg:w-1/4 mt-5 md:mt-0">
+        <div className="w-[97%] md:w-1/3 lg:w-1/4 mt-5 md:mt-0 mx-auto md:mx-0 ">
           <form onSubmit={handleSubmit}>
             {/* <div className="font-medium text-lg">
               Risk Category

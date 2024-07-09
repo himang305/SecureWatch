@@ -22,13 +22,13 @@ function Monitor_Edit() {
   const targetMids = query.get("id");
   console.log("MID = ", targetMids);
 
-  const [monitorName, setMonitorName] = React.useState("");
-  const [riskCategory, setRiskCategory] = React.useState("");
-  const [address, setAddress] = React.useState("");
-  const [contractName, setContractName] = React.useState("");
-  const [network, setNetwork] = React.useState("");
+  const [monitorName, setMonitorName] = useState("");
+  const [riskCategory, setRiskCategory] = useState("");
+  const [address, setAddress] = useState("");
+  const [contractName, setContractName] = useState("");
+  const [network, setNetwork] = useState("");
   const [networkName, setNetworkName] = useState("");
-  const [abi, setAbi] = React.useState("");
+  const [abi, setAbi] = useState("");
   const [selectedMonitor, setSelectedMonitor] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -36,9 +36,9 @@ function Monitor_Edit() {
     e.preventDefault();
 
     const data = {
-      monitor_id: selectedMonitor.mid,
       name: monitorName || selectedMonitor.name,
-      network: network || selectedMonitor.network,
+      monitor_id: selectedMonitor.mid,
+      // network: network || selectedMonitor.network,
       address: address || selectedMonitor.address,
       alert_type: 1,
       abi: abi || selectedMonitor.abi,
