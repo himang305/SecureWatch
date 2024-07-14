@@ -36,9 +36,9 @@ function Monitor_activity() {
   return (
     <div className='font-poppin pt-10 mx-2 min-h-screen' style={{'backgroundColor':'#FCFFFD'}}>
       <Navbar/>
-      <div className='w-4/6 mx-auto mt-10'>
-        <div className='flex justify-center items-center md:justify-between  flex-col md:flex-row'>
-        <div className='text-4xl font-medium text-center text-black'>Monitor Activity</div>
+      <div className=' mx-auto mt-10'>
+        <div className='w-4/6 mx-auto flex justify-center items-center md:justify-between  flex-col md:flex-row'>
+        <div className=' text-4xl font-medium text-center text-black'>Monitor Activity</div>
         <button onClick={()=>{
             setValue(value+1);
         }}>
@@ -66,7 +66,15 @@ function Monitor_activity() {
     return (
                   <tr key={index}>
                   <td className="px-4 py-2 border border-black"><span className="text-lg mt-auto text-black">{moniter.name}</span></td>
-                      <td className="px-4 py-2 border border-black"><span className="text-lg  text-green-600 font-medium ">{moniter.network}</span></td>
+                      <td className="px-4 py-2 border border-black"><span className="text-lg  text-black  ">{moniter.network === 80002
+                            ? "Amoy"
+                            : moniter.network === 1
+                            ? "Ethereum Mainnet"
+                            : moniter.network === 11155111
+                            ? "Sepolia Testnet"
+                            : moniter.network === 137
+                            ? "Polygon Mainnet"
+                            : "Unknown"}</span></td>
                       <td className="px-4 py-2 border border-black text-black text-nowrap">{moniter.created_on.slice(0,10)} {moniter.created_on.slice(11,16)}</td>
                       <td className="px-4 py-2 border border-black"><span className="text-lg mt-auto text-black">{`${moniter.address.slice(0, 5)}...${moniter.address.slice(moniter.address.length - 4)}`}</span> </td>  
                   </tr>
