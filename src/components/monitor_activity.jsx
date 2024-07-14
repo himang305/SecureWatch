@@ -17,6 +17,7 @@ function Monitor_activity() {
           });
           const data = await res.json();
           setMoniter(data);
+          
         };
         fetchMoniter();
       }, [value]);
@@ -33,9 +34,9 @@ function Monitor_activity() {
         );
       }
   return (
-    <div className='font-poppin pt-10 pb-72 mx-2 min-h-screen' style={{'backgroundColor':'#FCFFFD'}}>
+    <div className='font-poppin pt-10 mx-2 min-h-screen' style={{'backgroundColor':'#FCFFFD'}}>
       <Navbar/>
-      <div className='w-4/6 mx-auto mt-20'>
+      <div className='w-4/6 mx-auto mt-10'>
         <div className='flex justify-center items-center md:justify-between  flex-col md:flex-row'>
         <div className='text-4xl font-medium text-center text-black'>Monitor Activity</div>
         <button onClick={()=>{
@@ -48,35 +49,34 @@ function Monitor_activity() {
 </svg></div>
         </button>
         </div>
-        <div className='p-0 m-0'>
-        <div className='flex justify-between flex-wrap  bg-[#0CA8519C] font-medium rounded-xl px-4 py-2 mt-10 text-black'>
-            <div>DAY</div>
-            <div>TIME</div>
-            <div>NAME</div>
-            <div>NETWORK</div>
-            <div>AUTOTASK CONDITION</div>
-            <div>TRANSACTION</div>
-            <div>MATCHED ADDRESS</div>
-            <div>MATCH REASON</div>
-        </div>
-{moniter.monitors.map((moniter, index) => {
+      <div  className="w-[95%] lg:w-4/6 mx-auto  flex flex-col mb-2 mt-7 ">
+      <div className="overflow-x-auto rounded-lg border border-black custom-scrollbar">
+          <table className="min-w-full rounded-lg overflow-hidden">
+              <thead >
+                  <tr className="bg-[#0CA8519C]">
+                      <th className="px-4 py-2 border border-black text-black font-medium"> Name </th>
+                      <th className="px-4 py-2 border border-black text-black font-medium">Network</th>
+                      <th className="px-4 py-2 border border-black text-black font-medium">Created on</th>
+                      <th className="px-4 py-2 border border-black text-black font-medium ">Adderss</th>
+                  </tr>
+              </thead>
+              {/* {`${hash.slice(0, 5)}...${hash.slice(hash.length - 4)}`} */}
+              <tbody>
+              {moniter.monitors.map((moniter, index) => {
     return (
-        <div key={index} className='flex justify-between flex-wrap  border border-[#0CA8519C] font-medium rounded-xl px-4 py-2 mt-4 text-black '>
-            <div>{moniter.day}</div>
-            <div>{moniter.time}</div>
-            <div>{moniter.name}</div>
-            <div>{moniter.network}</div>
-            <div>{moniter.autotask_condition}</div>
-            <div>{moniter.transaction}</div>
-            <div>{moniter.address}</div>
-            <div>{moniter.match_reason}</div>
-        </div>
-    )
-}
-)}
-        </div>
-        </div>
-    </div>
+                  <tr key={index}>
+                  <td className="px-4 py-2 border border-black"><span className="text-lg mt-auto text-black">{moniter.name}</span></td>
+                      <td className="px-4 py-2 border border-black"><span className="text-lg  text-green-600 font-medium ">{moniter.network}</span></td>
+                      <td className="px-4 py-2 border border-black text-black text-nowrap">{moniter.created_on.slice(0,10)} {moniter.created_on.slice(11,16)}</td>
+                      <td className="px-4 py-2 border border-black"><span className="text-lg mt-auto text-black">{`${moniter.address.slice(0, 5)}...${moniter.address.slice(moniter.address.length - 4)}`}</span> </td>  
+                  </tr>
+                )})} 
+              </tbody>
+          </table>
+      </div>
+  </div>
+</div>
+</div>
   )
 }
 
