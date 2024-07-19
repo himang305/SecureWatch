@@ -11,22 +11,22 @@ import Web3 from "web3";
 import Select, { components } from "react-select";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useEffect } from "react";
 //
 
 function Event_Edit() {
+
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { name, email, m_id, token, network, abi, address, rk } =
-    location.state || "";
-  const [networkState, setNetworkState] = useState(network || ""); // Default to 'MAINNET' if not provided
-  //  const [contractNameState, setContractNameState] = useState(alert_data || "");
+  const { name, email, m_id, token, network, abi, address, rk } = location.state || "";
+  const [networkState, setNetworkState] = useState(network || ""); 
   const [addressState, setAddressState] = useState(address || "");
   const [riskCategoryState, setRiskCategoryState] = useState(rk || "");
   const [abiState, setAbiState] = useState(abi || "");
-  // console.log(token);
-  console.log(m_id);
   const mid = m_id;
+
+  console.log("Monitor Id:",m_id);
 
   const [disp1, setDisp1] = useState("none");
   const [disp2, setDisp2] = useState("none");
@@ -39,15 +39,16 @@ function Event_Edit() {
     else setDisp2("none");
   };
 
-  const [eventDetails, setEventDetails] = React.useState([]);
-  const [selectedEvents, setSelectedEvents] = React.useState({});
+  const [eventDetails, setEventDetails] = useState([]);
+  const [selectedEvents, setSelectedEvents] = useState({});
   const [selectedEventNames, setSelectedEventNames] = useState([]);
-  React.useEffect(() => {
+
+
+  useEffect(() => {
     if (!location.state || !location.state.abi) {
       console.error("ABI is not provided");
       return;
     }
-
     let parsedAbi;
     try {
       parsedAbi = JSON.parse(location.state.abi);
@@ -55,8 +56,8 @@ function Event_Edit() {
       console.error("Failed to parse ABI:", error);
       return;
     }
-
     const events = parsedAbi.filter((item) => item.type === "event");
+    console.log("Events are:",events);
     setEventDetails(
       events.map((event) => ({
         name: event.name,
@@ -68,12 +69,15 @@ function Event_Edit() {
   }, [
     location.state,
     networkState,
-    // contractNameState,
     addressState,
     riskCategoryState,
     abiState,
   ]);
 
+
+
+  console.log("event Details are:", eventDetails);
+  
   const options = eventDetails.map((event) => ({
     label: `${event.name} (${event.inputs})`,
     value: event.name,
@@ -464,7 +468,7 @@ function Event_Edit() {
       fetchEvents();
     }
   }, [eventDetails, m_id, value, rerender]);
-  console.log("evetn is:", event);
+  // console.log("evetn is:", event);
 
   return (
     <div
@@ -861,15 +865,76 @@ function Event_Edit() {
 
               return (
                 <div key={eventName} className="font-medium">
-                  <div className="mt-3">{eventName}</div>
-                  <input
-                    className="w-full rounded-lg p-3 outline-none border border-[#4C4C4C]"
-                    style={{ backgroundColor: "white" }}
-                    // ... (other input properties)
-                    value={eventData.args || " "}
-                    onChange={(e) => handleArgumentChange(e, eventName)}
-                    placeholder={placeholder}
-                  />
+                  {eventName === "Transfer" ? (
+        <>
+          <div className="mt-3 text-black font-medium mb-3">{eventName} :</div>
+          <div className="flex flex-col gap-3">
+          <input
+            className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
+            style={{ backgroundColor: "white" }}
+            // ... (other input properties)
+            // value={eventData.args || " "}
+            onChange={(e) => handleArgumentChange(e, eventName)}
+            placeholder="from:address"
+          />
+          <input
+            className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
+            style={{ backgroundColor: "white" }}
+            // ... (other input properties)
+            // value={eventData.args || " "}
+            onChange={(e) => handleArgumentChange(e, eventName)}
+            placeholder="to:address"
+          />
+          <input
+            className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
+            style={{ backgroundColor: "white" }}
+            // ... (other input properties)
+            // value={eventData.args || " "}
+            onChange={(e) => handleArgumentChange(e, eventName)}
+            placeholder="uint256"
+          />
+          </div>
+        </>
+      ) : null}
+                  {eventName === "Approval" ? (
+        <>
+          <div className="mt-3 text-black font-medium mb-3">{eventName} :</div>
+          <div className="flex flex-col gap-3">
+          <input
+            className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
+            style={{ backgroundColor: "white" }}
+            // ... (other input properties)
+            // value={eventData.args || " "}
+            onChange={(e) => handleArgumentChange(e, eventName)}
+            placeholder="from:address"
+          />
+          <input
+            className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
+            style={{ backgroundColor: "white" }}
+            // ... (other input properties)
+            // value={eventData.args || " "}
+            onChange={(e) => handleArgumentChange(e, eventName)}
+            placeholder="to:address"
+          />
+          <div className="flex gap-3"> 
+            <select name="" id="" className="w-[50%] bg-white border rounded-lg border-black  ">
+              <option value="default" hidden >uint</option>
+              <option value="<"  >&lt;</option>
+              <option value=">"  >&gt;</option>
+              <option value="=="  >==</option>
+            </select>
+          <input
+            className="w-[50%] rounded-lg p-2 outline-none border border-[#4C4C4C]"
+            style={{ backgroundColor: "white" }}
+            // ... (other input properties)
+            // value={eventData.args || " "}
+            onChange={(e) => handleArgumentChange(e, eventName)}
+            placeholder="uint256"
+          />
+          </div>
+          </div>
+        </>
+      ) : null}
                 </div>
               );
             })}

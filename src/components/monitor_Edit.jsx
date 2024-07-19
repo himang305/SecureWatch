@@ -110,9 +110,6 @@ function Monitor_Edit() {
 
 
   useEffect(() => {
-
-  
-
     const fetchMoniter = async () => {
       let data;
       try {
