@@ -22,13 +22,13 @@ function Monitor_Edit() {
   const targetMids = query.get("id");
   console.log("MID = ", targetMids);
 
-  const [monitorName, setMonitorName] = React.useState("");
-  const [riskCategory, setRiskCategory] = React.useState("");
-  const [address, setAddress] = React.useState("");
-  const [contractName, setContractName] = React.useState("");
-  const [network, setNetwork] = React.useState("");
+  const [monitorName, setMonitorName] = useState("");
+  const [riskCategory, setRiskCategory] = useState("");
+  const [address, setAddress] = useState("");
+  const [contractName, setContractName] = useState("");
+  const [network, setNetwork] = useState("");
   const [networkName, setNetworkName] = useState("");
-  const [abi, setAbi] = React.useState("");
+  const [abi, setAbi] = useState("");
   const [selectedMonitor, setSelectedMonitor] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -36,9 +36,9 @@ function Monitor_Edit() {
     e.preventDefault();
 
     const data = {
-      monitor_id: selectedMonitor.mid,
       name: monitorName || selectedMonitor.name,
-      network: network || selectedMonitor.network,
+      monitor_id: selectedMonitor.mid,
+      // network: network || selectedMonitor.network,
       address: address || selectedMonitor.address,
       alert_type: 1,
       abi: abi || selectedMonitor.abi,
@@ -472,7 +472,7 @@ function Monitor_Edit() {
         </div>
         <div className="mt-4 md:mt-0 w-full md:w-1/2 pb-20">
           <form onSubmit={handleSubmit}>
-            <div className="font-medium text-xl" style={{ color: "black" }}>
+            {/* <div className="font-medium text-xl" style={{ color: "black" }}>
               Name
             </div>
             <div
@@ -489,8 +489,8 @@ function Monitor_Edit() {
               placeholder={selectedMonitor.name}
               onChange={(e) => setMonitorName(e.target.value)}
               className="outline-none border-2 border-[#4C4C4C] w-full rounded-xl p-2 py-3 mt-1 "
-            />
-            <div
+            /> */}
+            {/* <div
               className="font-medium mt-5 text-lg"
               style={{ color: "black" }}
             >
@@ -539,7 +539,7 @@ function Monitor_Edit() {
               <option value="technical" className="text-[13px] text-[#959595]">
                 Technical
               </option>
-            </select>
+            </select> */}
 
             <div
               className="text-lg font-medium mt-5"
