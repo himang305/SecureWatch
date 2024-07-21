@@ -110,32 +110,35 @@ function Event_Edit() {
   };
   const handleSubmit = async () => {
     if (transfer && approval) {
+      if (events.length < 2) {
+        console.error("Not enough events to process both transfer and approval");
+        toast.error("Insufficient event data.");
+        return;
+      }
+  
       try {
         console.log("starting transfer and approval");
+        
         const response1 = await fetch("https://139-59-5-56.nip.io:3443/update_event", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(
-            {
-              name: events[0].name,
-              id: events[0].id,
-              arguments: transferInputs,
-
-            }
-          ),
+          body: JSON.stringify({
+            name: events[0]?.name, // Safeguard against undefined
+            id: events[0]?.id,
+            arguments: transferInputs,
+          }),
         });
+  
         const response2 = await fetch("https://139-59-5-56.nip.io:3443/update_event", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(
-            {
-              name: events[1].name,
-              id: events[1].id,
-              arguments: approvalInputs,
-
-            }
-          ),
+          body: JSON.stringify({
+            name: events[1]?.name,
+            id: events[1]?.id,
+            arguments: approvalInputs,
+          }),
         });
+  
         toast.success("Event Added successfully!", {
           autoClose: 500,
           onClose: () => {
@@ -147,20 +150,25 @@ function Event_Edit() {
         toast.error("Failed to Add Event. Please try again!");
       }
     }
-
+  
     if (transfer && !approval) {
+      if (events.length < 1) {
+        console.error("Not enough events to process transfer");
+        toast.error("Insufficient event data.");
+        return;
+      }
+  
       try {
         const response1 = await fetch("https://139-59-5-56.nip.io:3443/update_event", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(
-            {
-              name: events[0].name,
-              id: events[0].id,
-              arguments: transferInputs,
-            }
-          ),
+          body: JSON.stringify({
+            name: events[0]?.name, // Safeguard against undefined
+            id: events[0]?.id,
+            arguments: transferInputs,
+          }),
         });
+  
         toast.success("Event Added successfully!", {
           autoClose: 500,
           onClose: () => {
@@ -172,21 +180,25 @@ function Event_Edit() {
         toast.error("Failed to Add Event. Please try again!");
       }
     }
-
+  
     if (!transfer && approval) {
+      if (events.length < 1) {
+        console.error("Not enough events to process approval");
+        toast.error("Insufficient event data.");
+        return;
+      }
+  
       try {
         const response2 = await fetch("https://139-59-5-56.nip.io:3443/update_event", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(
-            {
-              name: events[1].name,
-              id: events[1].id,
-              arguments: approvalInputs,
-
-            }
-          ),
+          body: JSON.stringify({
+            name: events[0]?.name, // Safeguard against undefined
+            id: events[0]?.id,
+            arguments: approvalInputs,
+          }),
         });
+  
         toast.success("Event Added successfully!", {
           autoClose: 500,
           onClose: () => {
@@ -198,9 +210,8 @@ function Event_Edit() {
         toast.error("Failed to Add Event. Please try again!");
       }
     }
-
-
-  }
+  };
+  
 
   if (
     !events ||
@@ -1094,9 +1105,9 @@ function Event_Edit() {
                         <option value="default" hidden>
                           uint
                         </option>
-                        <option value="<">&lt;</option>
-                        <option value=">">&gt;</option>
-                        <option value="==">==</option>
+                        <option value="<::">&lt;</option>
+                        <option value=">::">&gt;</option>
+                        <option value="==::">==</option>
                       </select>
                       <input
                         className="w-[50%] rounded-lg p-2 outline-none border border-[#4C4C4C]"
@@ -1107,7 +1118,7 @@ function Event_Edit() {
                         onChange={(e) => {
                           setApprovalInputs({
                             ...approvalInputs,
-                            value: `${operator}::${e.target.value}`,
+                            value: `${e.target.value}`,
                           });
                         }}
                       />
