@@ -5,10 +5,22 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Navbar from "./navbar2";
+import Select from 'react-select'
 
 function Event_Edit() {
   const navigate = useNavigate();
   const location = useLocation();
+  const options = [
+    { value: 'Approval', label: 'Approval' },
+    { value: 'Transfer', label: 'Transfer' },
+  ]
+  const [selectedValues, setSelectedValues] = useState([])
+  useEffect(() => {
+    console.log(selectedValues);
+    console.log(selectedValues.includes('Approval'));
+    console.log(selectedValues.includes('Transfer'));
+
+  }, [selectedValues])
 
   const { name, email, m_id, token, network, abi, address, rk } = location.state || "";
   const [networkState, setNetworkState] = useState(network || "");
@@ -40,6 +52,7 @@ function Event_Edit() {
   const [approvalInputs, setApprovalInputs] = useState({
     from: "",
     to: "",
+    operator,
     value: "",
   });
   const [operator, setOperator] = useState("");
@@ -67,9 +80,11 @@ function Event_Edit() {
         data.monitors.forEach(event => {
           if (event.name === 'Transfer') {
             setTransferInputs(JSON.parse(event.arguments));
+            setSelectedValues(selectedValues => [...selectedValues, "Transfer"]);
           } else if (event.name === 'Approval') {
             const parsedArgs = JSON.parse(event.arguments);
             setApprovalInputs(parsedArgs);
+            setSelectedValues(selectedValues => [...selectedValues, "Approval"]);
 
             if (parsedArgs.value) {
               // Extract operator from value
@@ -109,110 +124,121 @@ function Event_Edit() {
     token: token,
   };
   const handleSubmit = async () => {
-    if (transfer && approval) {
-      if (events.length < 2) {
-        console.error("Not enough events to process both transfer and approval");
-        toast.error("Insufficient event data.");
-        return;
-      }
+    // Check the content of selectedValues
+    console.log("Selected values:", selectedValues);
   
-      try {
-        console.log("starting transfer and approval");
-        
-        const response1 = await fetch("https://139-59-5-56.nip.io:3443/update_event", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: events[0]?.name, // Safeguard against undefined
-            id: events[0]?.id,
-            arguments: transferInputs,
-          }),
-        });
-  
-        const response2 = await fetch("https://139-59-5-56.nip.io:3443/update_event", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: events[1]?.name,
-            id: events[1]?.id,
-            arguments: approvalInputs,
-          }),
-        });
-  
-        toast.success("Event Added successfully!", {
-          autoClose: 500,
-          onClose: () => {
-            navigate("/alert_edit", { state: navigationState });
-          },
-        });
-      } catch (error) {
-        console.error("Error sending event data:", error);
-        toast.error("Failed to Add Event. Please try again!");
-      }
+    // Check if either 'Transfer' or 'Approval' is selected
+    if (!selectedValues.includes('Transfer') && !selectedValues.includes('Approval')) {
+      console.error("No actions selected.");
+      toast.error("Please select at least one action.");
+      return;
     }
   
-    if (transfer && !approval) {
-      if (events.length < 1) {
-        console.error("Not enough events to process transfer");
-        toast.error("Insufficient event data.");
-        return;
+    try {
+      // Collect requests
+      const requests = [];
+  
+      // Handle 'Transfer' action if selected
+      if (selectedValues.includes('Transfer')) {
+        if (events.length < 1) {
+          console.error("Not enough events to process transfer");
+          toast.error("Insufficient event data.");
+          return;
+        }
+  
+        if (!transferInputs.from || !transferInputs.to || !transferInputs.value) {
+          console.error("Transfer inputs are incomplete.");
+          toast.error("Please fill out all transfer fields.");
+          return;
+        }
+  
+        requests.push(
+          fetch("https://139-59-5-56.nip.io:3443/update_event", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: events[0]?.name, // Safeguard against undefined
+              id: events[0]?.id,
+              arguments: transferInputs,
+            }),
+          })
+        );
       }
   
-      try {
-        const response1 = await fetch("https://139-59-5-56.nip.io:3443/update_event", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: events[0]?.name, // Safeguard against undefined
-            id: events[0]?.id,
-            arguments: transferInputs,
-          }),
-        });
+      // Handle 'Approval' action if selected
+      if (selectedValues.includes('Approval')) {
+        if (events.length < 1) {
+          console.error("Not enough events to process approval");
+          toast.error("Insufficient event data.");
+          return;
+        }
   
-        toast.success("Event Added successfully!", {
+        if (!approvalInputs.from || !approvalInputs.to || !approvalInputs.value || !operator || operator === "default") {
+          console.error("Approval inputs are incomplete.");
+          toast.error("Please fill out all approval fields.");
+          return;
+        }
+  
+        // Format the approval arguments with the operator and value
+        // const formattedApprovalArguments = JSON.stringify({
+        //   from: approvalInputs.from,
+        //   to: approvalInputs.to,
+        //   value: `${operator}${approvalInputs.value}` // Include the operator before the value
+        // });
+  
+        // Check if an Approval event already exists
+        const existingApprovalEvent = events.find(event => event.name === 'Approval');
+  
+        if (existingApprovalEvent) {
+          // Update the existing Approval event
+          requests.push(
+            fetch("https://139-59-5-56.nip.io:3443/update_event", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                name: existingApprovalEvent.name,
+                id: existingApprovalEvent.id,
+                arguments: approvalInputs,
+              }),
+            })
+          );
+        } else {
+          // Create a new Approval event
+          requests.push(
+            fetch("https://139-59-5-56.nip.io:3443/update_event", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                name: 'Approval',
+                id: Date.now(), // Generate a unique ID or use a proper unique identifier
+                arguments: approvalInputs,
+              }),
+            })
+          );
+        }
+      }
+  
+      // Execute all requests in parallel
+      const responses = await Promise.all(requests);
+  
+      // Check if all responses are successful
+      const allSuccessful = responses.every(response => response.ok);
+      if (allSuccessful) {
+        toast.success("Event(s) Added successfully!", {
           autoClose: 500,
           onClose: () => {
             navigate("/alert_edit", { state: navigationState });
           },
         });
-      } catch (error) {
-        console.error("Error sending event data:", error);
-        toast.error("Failed to Add Event. Please try again!");
+      } else {
+        throw new Error("Some requests failed.");
       }
-    }
-  
-    if (!transfer && approval) {
-      if (events.length < 1) {
-        console.error("Not enough events to process approval");
-        toast.error("Insufficient event data.");
-        return;
-      }
-  
-      try {
-        const response2 = await fetch("https://139-59-5-56.nip.io:3443/update_event", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: events[0]?.name, // Safeguard against undefined
-            id: events[0]?.id,
-            arguments: approvalInputs,
-          }),
-        });
-  
-        toast.success("Event Added successfully!", {
-          autoClose: 500,
-          onClose: () => {
-            navigate("/alert_edit", { state: navigationState });
-          },
-        });
-      } catch (error) {
-        console.error("Error sending event data:", error);
-        toast.error("Failed to Add Event. Please try again!");
-      }
+    } catch (error) {
+      console.error("Error sending event data:", error);
+      toast.error("Failed to Add Event. Please try again!");
     }
   };
   
-
   if (
     !events ||
     !Array.isArray(events) ||
@@ -995,7 +1021,16 @@ function Event_Edit() {
           </div>
           <div className="my-auto ml-auto">
             <div className="flex flex-col  gap-4 m-3">
-              <div className="flex items-center gap-1">
+              <Select options={options}
+                defaultValue={options.filter((option) => selectedValues.includes(option.value))}
+                isMulti
+                onChange={(selectedOptions) => {
+                  const values = selectedOptions.map((option) => option.value);
+                  setSelectedValues(values);
+                }}
+
+              />
+              {/* <div className="flex items-center gap-1">
                 <input
                   type="radio"
                   id="Transfer"
@@ -1025,12 +1060,12 @@ function Event_Edit() {
                 >
                   {events[1] ? events[1].name : "Approval"}
                 </label>
-              </div>
+              </div> */}
             </div>
 
             <div className="mt-5">
 
-              {transfer ? (
+              {selectedValues.includes('Transfer') && (
                 <>
                   <div className="mt-3 text-black font-medium mb-3">Transfer :</div>
                   <div className="flex flex-col gap-3">
@@ -1066,9 +1101,9 @@ function Event_Edit() {
                     />
                   </div>
                 </>
-              ) : null}
+              )}
 
-              {approval ? (
+              {selectedValues.includes('Approval') && (
                 <>
                   <div className="mt-3 text-black font-medium mb-3">Approval :</div>
                   <div className="flex flex-col gap-3">
@@ -1100,6 +1135,7 @@ function Event_Edit() {
                         onChange={(e) => {
                           setOperator(e.target.value);
                         }}
+                        value={operator || "default"}
                         required
                       >
                         <option value="default" hidden>
@@ -1116,16 +1152,14 @@ function Event_Edit() {
                         value={approvalInputs.value || ""}
                         required
                         onChange={(e) => {
-                          setApprovalInputs({
-                            ...approvalInputs,
-                            value: `${e.target.value}`,
-                          });
+                          setApprovalInputs({ ...approvalInputs, value: e.target.value });
                         }}
                       />
                     </div>
                   </div>
                 </>
-              ) : null}
+              )}
+
             </div>
 
           </div>
