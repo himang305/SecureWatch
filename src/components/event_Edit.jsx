@@ -44,18 +44,19 @@ function Event_Edit() {
   const [events, setEvents] = useState([]);
   const [transfer, setTransfer] = useState(false);
   const [approval, setApproval] = useState(false);
+  const [operator, setOperator] = useState("");
   const [transferInputs, setTransferInputs] = useState({
     from: "",
     to: "",
     value: "",
   });
   const [approvalInputs, setApprovalInputs] = useState({
-    from: "",
-    to: "",
+    owner: "",
+    spender: "",
     operator,
     value: "",
   });
-  const [operator, setOperator] = useState("");
+
 
   useEffect(() => {
     const fetchMonitorEvents = async () => {
@@ -76,29 +77,40 @@ function Event_Edit() {
         console.log(data);
         setEvents(data.monitors);
 
-        // Process each event to set inputs
         data.monitors.forEach(event => {
           if (event.name === 'Transfer') {
+            // Parse and set Transfer inputs
             setTransferInputs(JSON.parse(event.arguments));
             setSelectedValues(selectedValues => [...selectedValues, "Transfer"]);
           } else if (event.name === 'Approval') {
             const parsedArgs = JSON.parse(event.arguments);
-            setApprovalInputs(parsedArgs);
-            setSelectedValues(selectedValues => [...selectedValues, "Approval"]);
-
-            if (parsedArgs.value) {
-              // Extract operator from value
-              const operatorMatch = parsedArgs.value.match(/^(<|>|==)::/);
+            console.log(parsedArgs);
+        
+            // Extract operator from value if present
+            let operator = '';
+            let value = parsedArgs.value;
+        
+            if (value) {
+              const operatorMatch = value.match(/^(<|>|==)/);
               if (operatorMatch) {
-                setOperator(operatorMatch[1]);
-                setApprovalInputs({
-                  ...parsedArgs,
-                  value: parsedArgs.value.replace(/^(<|>|==)::/, '')
-                });
+                operator = operatorMatch[0]; // Extract the operator
+                value = value.replace(/^(<|>|==)/, ''); // Remove the operator from value
               }
             }
+        
+            // Set the state for Approval inputs
+            setApprovalInputs({
+              from: parsedArgs.from || '',
+              to: parsedArgs.to || '',
+              value: value || '', // Updated value without the operator
+              operator: operator || '' // Include operator in the state
+            });
+        
+            setSelectedValues(selectedValues => [...selectedValues, "Approval"]);
           }
         });
+        
+
       } catch (error) {
         console.error("Failed to fetch events:", error);
       }
@@ -111,6 +123,10 @@ function Event_Edit() {
   useEffect(() => {
     console.log("events are", events);
   }, [events]);
+
+  useEffect(() => {
+    console.log("operators are", operator);
+  }, [operator]);
 
 
 
@@ -179,12 +195,12 @@ function Event_Edit() {
           return;
         }
   
-        // Format the approval arguments with the operator and value
-        // const formattedApprovalArguments = JSON.stringify({
-        //   from: approvalInputs.from,
-        //   to: approvalInputs.to,
-        //   value: `${operator}${approvalInputs.value}` // Include the operator before the value
-        // });
+        // Combine the operator and value into a single formatted string
+        const formattedApprovalArguments = JSON.stringify({
+          from: approvalInputs.from,
+          to: approvalInputs.to,
+          value: `${operator}${approvalInputs.value}` // Include the operator before the value
+        });
   
         // Check if an Approval event already exists
         const existingApprovalEvent = events.find(event => event.name === 'Approval');
@@ -198,7 +214,7 @@ function Event_Edit() {
               body: JSON.stringify({
                 name: existingApprovalEvent.name,
                 id: existingApprovalEvent.id,
-                arguments: approvalInputs,
+                arguments: formattedApprovalArguments, // Use the formatted string
               }),
             })
           );
@@ -211,7 +227,7 @@ function Event_Edit() {
               body: JSON.stringify({
                 name: 'Approval',
                 id: Date.now(), // Generate a unique ID or use a proper unique identifier
-                arguments: approvalInputs,
+                arguments: formattedApprovalArguments, // Use the formatted string
               }),
             })
           );
@@ -238,6 +254,7 @@ function Event_Edit() {
       toast.error("Failed to Add Event. Please try again!");
     }
   };
+  
   
   if (
     !events ||
