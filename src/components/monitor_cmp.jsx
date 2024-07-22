@@ -14,14 +14,19 @@ const customStyles = {
     transform: "translate(-50%, -50%)",
   },
 };
-const Monitor_cmp = (props) => {
+const Monitor_cmp = ({address,abi}) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [value, setValue] = useState(10);
   const [moniter, setMoniter] = useState([]);
 
   const handleEditMonitor = (monitor_id) => {
-    navigate("/monitor_Edit?id="+monitor_id); 
+    navigate("/monitor_Edit?id=" + monitor_id);
+  };
+
+
+  const handleApiBuilder = () => {
+    navigate("/api_builder", { state: { address, abi } });
   };
 
   useEffect(() => {
@@ -36,6 +41,7 @@ const Monitor_cmp = (props) => {
         }),
       });
       const data = await res.json();
+      console.log(data);
       setMoniter(data);
     };
     fetchMoniter();
@@ -85,6 +91,7 @@ const Monitor_cmp = (props) => {
         const mid = i.mid;
         const created_on = i.created_on;
         const address = i.address;
+        const abi = i.abi;
         return (
           <div className="w-full flex justify-center items-center flex-col mx-auto ">
             <div className="w-full mx-auto flex justify-center items-center flex-col ">
@@ -96,9 +103,9 @@ const Monitor_cmp = (props) => {
                 }}
               >
                 <button
-                  className="w-[70%] sm:w-[80%] md:w-[90%]  p-6  "
+                  className="w-[70%] sm:w-[80%] md:w-[90%] p-6"
                   onClick={() => {
-                    navigate("/monitor_alerts", { state: { mid } });
+                    navigate("/monitor_alerts", { state: { mid,network } });
                   }}
                 >
                   <div className="">
@@ -112,23 +119,23 @@ const Monitor_cmp = (props) => {
                     </div>
                     <div className="flex gap-4 mt-5 flex-wrap items-center ">
                       <div>
-                        <div className="text-center font-medium text-black">
+                        <div className="lg:text-center text-left font-medium text-black">
                           Networks
                         </div>
                         <div className="bg-[#0CA851] px-3 py-2 rounded-md text-[13px] my-auto text-white">
                           {network === 80002
                             ? "Amoy"
                             : network === 1
-                            ? "Ethereum Mainnet"
-                            : network === 11155111
-                            ? "Sepolia Testnet"
-                            : network === 137
-                            ? "Polygon Mainnet"
-                            : "Unknown"}
+                              ? "Ethereum Mainnet"
+                              : network === 11155111
+                                ? "Sepolia Testnet"
+                                : network === 137
+                                  ? "Polygon Mainnet"
+                                  : "Unknown"}
                         </div>
                       </div>
                       <div>
-                        <div className="text-center font-medium text-black">
+                        <div className="lg:text-center text-left font-medium text-black">
                           Created on
                         </div>
                         <div className="bg-[#E9E9E9] px-3 py-2 rounded-md  my-auto flex gap-2">
@@ -186,7 +193,7 @@ const Monitor_cmp = (props) => {
                   </div>
                 </button>
 
-                <div className="flex   items-center p-6 w-[30%] sm:w-[20%] md:w-[10%] ">
+                <div className="lg:flex items-center p-6 w-[30%] sm:w-[20%] md:w-[10%] ">
                   <div className="flex flex-col justify-end gap-7 items-center">
                     <button onClick={() => handleEditMonitor(mid)}>
                       <img src={Edit} alt="" className="h-8 w-8" />
@@ -222,17 +229,22 @@ const Monitor_cmp = (props) => {
                             console.error("Error:", error);
                           });
                       }}
-                      className={`${
-                        status === 1 ? "bg-[#0CA851]" : "bg-[#B8B8B8]"
-                      } relative inline-flex h-6 w-11 items-center rounded-full`}
+                      className={`${status === 1 ? "bg-[#0CA851]" : "bg-[#B8B8B8]"
+                        } relative inline-flex h-6 w-11 items-center rounded-full`}
                     >
                       <span className="sr-only">Enable notifications</span>
                       <span
-                        className={`${
-                          status === 1 ? "translate-x-6" : "translate-x-1"
-                        } inline-block h-4 w-4 transform rounded-full bg-white transition`}
+                        className={`${status === 1 ? "translate-x-6" : "translate-x-1"
+                          } inline-block h-4 w-4 transform rounded-full bg-white transition`}
                       />
-                    </Switch>
+                    </Switch> 
+                    <button
+                        onClick={() => navigate("/api_builder", { state: { address, abi } })}
+                        className="px-4 py-2 bg-[#0CA851] text-white rounded-lg"
+                      >
+                        Interact
+                      </button>
+
 
                     {/* <div
                       className="cursor-pointer"

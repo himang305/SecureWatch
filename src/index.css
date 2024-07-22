@@ -9,13 +9,35 @@ html,body,#root{
     padding:0;
     background-color: white;
 }
+/* Style the scrollbar itself (horizontal) */
+.custom-scrollbar::-webkit-scrollbar {
+  height: 5px;
+  width: auto; /* Height of the horizontal scrollbar */
+}
+
+/* Style the handle */
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #888; /* Handle color */
+  border-radius: 4px;
+}
+
+/* Handle on hover */
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Style the track (optional) */
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  display: none; /* Track color */
+  border-radius: 4px;
+}
 #home_heading{
     border: 1px solid;
 border-image-source: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0) 100%);
 background: linear-gradient(180deg, #FFFFFF 0%, rgba(255, 255, 255, 0.746419) 66.42%, rgba(255, 255, 255, 0) 100%);
 background-color: white;
 }
-
 .ReactModal__Content{
   border:1px solid #0CA851 !important;
   max-width:500px;

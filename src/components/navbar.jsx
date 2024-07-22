@@ -98,7 +98,7 @@ function Navbar() {
         </div>   
         
         <div className="flex gap-1 sm:gap-3">
-        <Link to="/login">
+        <Link to="/login" className="hidden sm:block">
           <div className="bg-white rounded-full px-3 py-2 font-medium font-inter">
           Login
           </div>
@@ -179,6 +179,11 @@ function Navbar() {
 </div>
 </div>
 
+<Link to="/login" className="sm:hidden">
+          <div className="text-white font-medium font-inter">
+          Login
+          </div>
+        </Link>
         </div>
       )}
 
