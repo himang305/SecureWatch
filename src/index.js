@@ -2,6 +2,8 @@ import '@rainbow-me/rainbowkit/styles.css';
 import './polyfills';
 import './index.css';
 import React from 'react';
+import 'react-toastify/dist/ReactToastify.css';
+import { toast } from "react-toastify";
 import ReactDOM from 'react-dom/client';
 import reportWebVitals from './reportWebVitals';
 import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit';
@@ -17,9 +19,9 @@ import {
   lineaSepolia
 } from 'wagmi/chains';
 
+import { ToastContainer } from 'react-toastify';
 import App from './App';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ToastContainer } from 'react-toastify';
 
 const config = getDefaultConfig({
   appName: 'walletConnect',
@@ -48,11 +50,11 @@ root.render(
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
-          <App />
           <ToastContainer />
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
+    <App />
   </React.StrictMode>
 );
 

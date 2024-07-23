@@ -56,6 +56,7 @@ function Event_Edit() {
     operator,
     value: "",
   });
+ const [prevOperator, setPrevOperator] = useState("");
 
 
   useEffect(() => {
@@ -86,10 +87,10 @@ function Event_Edit() {
             // Parse the arguments and extract values
             setSelectedValues(selectedValues => [...selectedValues, "Approval"]);
             const parsedArgs = parseArguments(event.arguments);
-            console.log(parsedArgs);
+            console.log("parsed args are:",parsedArgs);
 
             // Extract operator from value if present
-            let operator = '';
+            let operator = ''
             let value = parsedArgs.value;
 
             if (value) {
@@ -97,17 +98,20 @@ function Event_Edit() {
               const operatorMatch = value.match(/^(<|>|==)::/);
               if (operatorMatch) {
                 operator = operatorMatch[0].replace('::', ''); // Extract the operator without "::"
+                console.log("Prev operator is:",operator);
                 value = value.replace(/^(<|>|==)::/, ''); // Remove the operator from value
               }
             }
 
             // Set the state for Approval inputs
             setApprovalInputs({
-              from: parsedArgs.from || '',
-              to: parsedArgs.to || '',
-              value: value || '', // Updated value without the operator
-              operator: operator || '' // Include operator in the state
+              owner: parsedArgs.owner || '',
+              spender: parsedArgs.spender || '',
+              operator: operator || '', // Include operator in the state
+              value: value || '' // Updated value without the operator
             });
+            setPrevOperator(operator);
+            // console.log("Changed prev operator",typeof prevOperator);
           }
         });
 
@@ -218,7 +222,7 @@ function parseArguments(argumentsString) {
           return;
         }
 
-        if (!approvalInputs.from || !approvalInputs.to || !approvalInputs.value || !operator || operator === "default") {
+        if (!approvalInputs.owner || !approvalInputs.spender || !approvalInputs.value || !operator || operator === "default") {
           console.error("Approval inputs are incomplete.");
           toast.error("Please fill out all approval fields.");
           return;
@@ -226,8 +230,8 @@ function parseArguments(argumentsString) {
 
         // Combine the operator and value into a single formatted string
         const formattedApprovalArguments = JSON.stringify({
-          from: approvalInputs.from,
-          to: approvalInputs.to,
+          owner: approvalInputs.owner,
+          spender: approvalInputs.spender,
           value: `${operator}${approvalInputs.value}` // Include the operator before the value
         });
 
@@ -1076,37 +1080,6 @@ function parseArguments(argumentsString) {
                 }}
 
               />
-              {/* <div className="flex items-center gap-1">
-                <input
-                  type="radio"
-                  id="Transfer"
-                  value="Transfer"
-                  required
-                  className="radio radio-success bg-black"
-                  onChange={() => setTransfer(!transfer)}
-                />
-                <label
-                  htmlFor="Transfer"
-                  className="text-md font-medium text-black"
-                >
-                  {events[0].name}
-                </label>
-              </div>
-              <div className="flex items-center gap-1">
-                <input
-                  type="radio"
-                  value="Approval"
-                  id="Approval"
-                  className="radio radio-success bg-black"
-                  onChange={() => setApproval(!approval)}
-                />
-                <label
-                  htmlFor="Approval"
-                  className="text-md font-medium text-black"
-                >
-                  {events[1] ? events[1].name : "Approval"}
-                </label>
-              </div> */}
             </div>
 
             <div className="mt-5">
@@ -1157,20 +1130,20 @@ function parseArguments(argumentsString) {
                       className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
                       style={{ backgroundColor: "white" }}
                       placeholder="Owner:address"
-                      value={approvalInputs.from || ""}
+                      value={approvalInputs.owner || ""}
                       required
                       onChange={(e) => {
-                        setApprovalInputs({ ...approvalInputs, from: e.target.value });
+                        setApprovalInputs({ ...approvalInputs, owner: e.target.value });
                       }}
                     />
                     <input
                       className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
                       style={{ backgroundColor: "white" }}
                       placeholder="Spender:address"
-                      value={approvalInputs.to || ""}
+                      value={approvalInputs.spender || ""}
                       required
                       onChange={(e) => {
-                        setApprovalInputs({ ...approvalInputs, to: e.target.value });
+                        setApprovalInputs({ ...approvalInputs, spender: e.target.value });
                       }}
                     />
                     <div className="flex gap-3">
@@ -1178,18 +1151,16 @@ function parseArguments(argumentsString) {
                         name=""
                         id=""
                         className="w-[50%] bg-white border rounded-lg border-black"
+                        // value={`${operator}::` || ""}
                         onChange={(e) => {
                           setOperator(e.target.value);
                         }}
-                        value={operator || "default"}
                         required
                       >
-                        <option value="default" hidden>
-                          uint
-                        </option>
-                        <option value="<::">&lt;</option>
-                        <option value=">::">&gt;</option>
-                        <option value="==::">==</option>
+                        <option hidden selected={prevOperator==""} >uint</option>
+                        <option  value="<::" selected={prevOperator=="<"}>&lt;</option>
+                        <option  value=">::" selected={prevOperator==">"}>&gt;</option>
+                        <option  value="==::" selected={prevOperator=="=="}>==</option>
                       </select>
                       <input
                         className="w-[50%] rounded-lg p-2 outline-none border border-[#4C4C4C]"
