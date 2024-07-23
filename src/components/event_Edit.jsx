@@ -122,7 +122,6 @@ function parseArguments(argumentsString) {
     const cleanString = argumentsString.startsWith('"') && argumentsString.endsWith('"')
       ? argumentsString.slice(1, -1)
       : argumentsString;
-
     // Attempt to unescape the string
     const unescapedString = cleanString.replace(/\\(.)/g, "$1");
 
