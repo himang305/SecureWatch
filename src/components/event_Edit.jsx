@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Web3 from "web3";
-import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -10,17 +8,15 @@ import Select from 'react-select'
 function Event_Edit() {
   const navigate = useNavigate();
   const location = useLocation();
+
   const options = [
     { value: 'Approval', label: 'Approval' },
     { value: 'Transfer', label: 'Transfer' },
   ]
+  const [foundedEvents, setFoundedEvents] = useState([]);
   const [selectedValues, setSelectedValues] = useState([])
-  useEffect(() => {
-    console.log(selectedValues);
-    console.log(selectedValues.includes('Approval'));
-    console.log(selectedValues.includes('Transfer'));
-
-  }, [selectedValues])
+  console.log("Founded events:", foundedEvents);
+  console.log("Selected values:", selectedValues);
 
   const { name, email, m_id, token, network, abi, address, rk } = location.state || "";
   const [networkState, setNetworkState] = useState(network || "");
@@ -41,24 +37,15 @@ function Event_Edit() {
   };
 
   const [loading, setLoading] = useState(false);
-  const [events, setEvents] = useState([]);
-  const [transfer, setTransfer] = useState(false);
-  const [approval, setApproval] = useState(false);
-  const [operator, setOperator] = useState("");
-  const [transferInputs, setTransferInputs] = useState({
-    from: "",
-    to: "",
-    value: "",
-  });
-  const [approvalInputs, setApprovalInputs] = useState({
-    owner: "",
-    spender: "",
-    operator,
-    value: "",
-  });
- const [prevOperator, setPrevOperator] = useState("");
+  const [events, setEvents] = useState({});
+  const [transferOperator, setTransferOperator]=useState("")
+  const [approvalOperator, setApprovalOperator] = useState("");
+  const [transferInputs, setTransferInputs] = useState({ from: "", to: "", value: "" });
+  const [approvalInputs, setApprovalInputs] = useState({ owner: "", spender: "", value: "" });
+  console.log("Transfer operator is:",transferOperator);
+  console.log("Approval operator is:",approvalOperator);
 
-
+//useEffect for fetch the Previous events
   useEffect(() => {
     const fetchMonitorEvents = async () => {
       try {
@@ -75,48 +62,92 @@ function Event_Edit() {
         }
 
         const data = await res.json();
-        console.log(data);
         setEvents(data.monitors);
 
         data.monitors.forEach(event => {
           if (event.name === 'Transfer') {
+            // setSelectedValues(selectedValues => [...selectedValues, "Transfer"]);
+            setSelectedValues(selectedValues => {
+              if (!selectedValues.includes("Transfer")) {
+                return [...selectedValues, "Transfer"];
+              }
+              return selectedValues;
+            });
+            setFoundedEvents(foundedEvents =>
+              {
+                if (!foundedEvents.includes("Transfer")) {
+                  return [...foundedEvents, "Transfer"];
+                }
+                return foundedEvents;
+              });
+
             // Parse and set Transfer inputs
-            setSelectedValues(selectedValues => [...selectedValues, "Transfer"]);
-            setTransferInputs(parseArguments(event.arguments));
-          } else if (event.name === 'Approval') {
-            // Parse the arguments and extract values
-            setSelectedValues(selectedValues => [...selectedValues, "Approval"]);
             const parsedArgs = parseArguments(event.arguments);
-            console.log("parsed args are:",parsedArgs);
+            
+            let operator = ''
+            let value = parsedArgs.value;
+
+            if (value) {
+              // Extract the operator from the beginning of the value along with "::"
+              const operatorMatch = value.match(/^(<|>|==)::/);
+              if (operatorMatch) {
+                operator = operatorMatch[0]; // Keep the operator with "::"
+                // console.log("Prev operator is:", operator);
+                value = value.replace(/^(<|>|==)::/, ''); // Remove the operator with "::" from value
+              }
+            }
+
+            setTransferInputs({
+              from: parsedArgs.from || '',
+              to: parsedArgs.to || '',
+              value: value || ''
+            });
+            setTransferOperator(operator);
+
+          } else if (event.name === 'Approval') {
+            setSelectedValues(selectedValues => {
+              if (!selectedValues.includes("Approval")) {
+                return [...selectedValues, "Approval"];
+              }
+              return selectedValues;
+            });
+            setFoundedEvents(foundedEvents =>
+              {
+                if (!foundedEvents.includes("Approval")) {
+                  return [...foundedEvents, "Approval"];
+                }
+                return foundedEvents;
+              }
+            );
+            // setSelectedValues(selectedValues => [...selectedValues, "Approval"]);
+            // Parse the arguments and extract values
+            const parsedArgs = parseArguments(event.arguments);
+            // console.log("parsed args are:",parsedArgs);
 
             // Extract operator from value if present
             let operator = ''
             let value = parsedArgs.value;
 
             if (value) {
-              // Extract the operator from the beginning of the value
+              // Extract the operator from the beginning of the value along with "::"
               const operatorMatch = value.match(/^(<|>|==)::/);
               if (operatorMatch) {
-                operator = operatorMatch[0].replace('::', ''); // Extract the operator without "::"
-                console.log("Prev operator is:",operator);
-                value = value.replace(/^(<|>|==)::/, ''); // Remove the operator from value
+                operator = operatorMatch[0]; // Keep the operator with "::"
+                // console.log("Prev operator is:", operator);
+                value = value.replace(/^(<|>|==)::/, ''); // Remove the operator with "::" from value
               }
             }
 
-            // Set the state for Approval inputs
             setApprovalInputs({
               owner: parsedArgs.owner || '',
               spender: parsedArgs.spender || '',
-              operator: operator || '', // Include operator in the state
               value: value || '' // Updated value without the operator
             });
-            setPrevOperator(operator);
-            // console.log("Changed prev operator",typeof prevOperator);
+            setApprovalOperator(operator);
+
           }
         });
 
-        // Helper function to handle various JSON formats
-        // Helper function to handle various JSON formats
         // Helper function to handle various JSON formats
 function parseArguments(argumentsString) {
   let parsedArgs;
@@ -139,11 +170,6 @@ function parseArguments(argumentsString) {
 
   return parsedArgs;
 }
-
-
-
-
-
       } catch (error) {
         console.error("Failed to fetch events:", error);
       }
@@ -157,10 +183,11 @@ function parseArguments(argumentsString) {
     console.log("events are", events);
   }, [events]);
 
-  useEffect(() => {
-    console.log("operators are", operator);
-  }, [operator]);
+  useEffect(()=>{
+    console.log("Transfer inputs are:",transferInputs);
+    console.log("Approval inputs are:",approvalInputs);
 
+  },[transferInputs,approvalInputs])
 
 
   const navigationState = {
@@ -172,9 +199,9 @@ function parseArguments(argumentsString) {
     email: email,
     token: token,
   };
+
   const handleSubmit = async () => {
-    // Check the content of selectedValues
-    console.log("Selected values:", selectedValues);
+  
 
     // Check if either 'Transfer' or 'Approval' is selected
     if (!selectedValues.includes('Transfer') && !selectedValues.includes('Approval')) {
@@ -182,109 +209,260 @@ function parseArguments(argumentsString) {
       toast.error("Please select at least one action.");
       return;
     }
+    try{
 
-    try {
-      // Collect requests
-      const requests = [];
+      if(selectedValues.includes('Transfer') && selectedValues.includes('Approval') && foundedEvents.includes('Transfer') && foundedEvents.includes('Approval')){
+        
+      //prevent from empty values
+      if (!transferInputs.from || !transferInputs.to || !transferInputs.value || !transferOperator || transferOperator === "default") {
+        console.error("Transfer inputs are incomplete.");
+        toast.error("Please fill out all transfer fields.");
+        return;
+      }
+      if (!approvalInputs.owner || !approvalInputs.spender || !approvalInputs.value || !approvalOperator|| approvalOperator === "default") {
+        console.error("Approval inputs are incomplete.");
+        toast.error("Please fill out all approval fields.");
+        return;
+      }
 
-      // Handle 'Transfer' action if selected
-      if (selectedValues.includes('Transfer')) {
-        if (events.length < 1) {
-          console.error("Not enough events to process transfer");
-          toast.error("Insufficient event data.");
-          return;
-        }
-
-        if (!transferInputs.from || !transferInputs.to || !transferInputs.value) {
-          console.error("Transfer inputs are incomplete.");
-          toast.error("Please fill out all transfer fields.");
-          return;
-        }
-
-        requests.push(
-          fetch("https://139-59-5-56.nip.io:3443/update_event", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              name: events[0]?.name, // Safeguard against undefined
-              id: events[0]?.id,
-              arguments: transferInputs,
+      // Fetch data from both APIs in parallel
+      const [transferRes, approvalRes] = await Promise.all([
+        fetch("https://139-59-5-56.nip.io:3443/update_event", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: events.find((event) => event.name === "Transfer").id,
+            name: "Transfer",
+            arguments: JSON.stringify({
+              from: transferInputs.from,
+              to: transferInputs.to,
+              value: transferOperator + transferInputs.value
             }),
-          })
-        );
-      }
-
-      // Handle 'Approval' action if selected
-      if (selectedValues.includes('Approval')) {
-        if (events.length < 1) {
-          console.error("Not enough events to process approval");
-          toast.error("Insufficient event data.");
-          return;
-        }
-
-        if (!approvalInputs.owner || !approvalInputs.spender || !approvalInputs.value || !operator || operator === "default") {
-          console.error("Approval inputs are incomplete.");
-          toast.error("Please fill out all approval fields.");
-          return;
-        }
-
-        // Combine the operator and value into a single formatted string
-        const formattedApprovalArguments = JSON.stringify({
-          owner: approvalInputs.owner,
-          spender: approvalInputs.spender,
-          value: `${operator}${approvalInputs.value}` // Include the operator before the value
-        });
-
-        // Check if an Approval event already exists
-        const existingApprovalEvent = events.find(event => event.name === 'Approval');
-
-        if (existingApprovalEvent) {
-          // Update the existing Approval event
-          requests.push(
-            fetch("https://139-59-5-56.nip.io:3443/update_event", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                name: existingApprovalEvent.name,
-                id: existingApprovalEvent.id,
-                arguments: formattedApprovalArguments, // Use the formatted string
-              }),
-            })
-          );
-        } else {
-          // Create a new Approval event
-          requests.push(
-            fetch("https://139-59-5-56.nip.io:3443/update_event", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                name: 'Approval',
-                id: Date.now(), // Generate a unique ID or use a proper unique identifier
-                arguments: formattedApprovalArguments, // Use the formatted string
-              }),
-            })
-          );
-        }
-      }
-
-      // Execute all requests in parallel
-      const responses = await Promise.all(requests);
-
-      // Check if all responses are successful
-      const allSuccessful = responses.every(response => response.ok);
-      if (allSuccessful) {
-        toast.success("Event(s) Added successfully!", {
+          }),
+        }),
+        fetch("https://139-59-5-56.nip.io:3443/update_event", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: events.find((event) => event.name === "Approval").id,
+            name: "Approval",
+            arguments: JSON.stringify({
+              owner: approvalInputs.owner,
+              spender: approvalInputs.spender,
+              value: approvalOperator + approvalInputs.value
+            }),
+          }),
+        }),
+      ]);
+      // if all response was sucess then show success toast, if any error occured then thow error toast
+      if (transferRes.ok && approvalRes.ok) {
+        toast.success("Events Updated successfully!", {
           autoClose: 500,
           onClose: () => {
             navigate("/alert_edit", { state: navigationState });
           },
         });
       } else {
-        throw new Error("Some requests failed.");
+        throw new Error('Error fetching data');
+        toast.error("Failed to update Events. Please try again!");
       }
-    } catch (error) {
+
+      }
+      else if(selectedValues.includes('Transfer') && foundedEvents.includes('Transfer') && !selectedValues.includes('Approval')){
+
+        if (!transferInputs.from || !transferInputs.to || !transferInputs.value || !transferOperator || transferOperator === "default") {
+          console.error("Transfer inputs are incomplete.");
+          toast.error("Please fill out all transfer fields.");
+          return;
+        }
+        const transferRes = await fetch("https://139-59-5-56.nip.io:3443/update_event", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: events.find((event) => event.name === "Transfer").id,
+            name: "Transfer",
+            arguments: JSON.stringify({
+              from: transferInputs.from,
+              to: transferInputs.to,
+              value: transferOperator + transferInputs.value
+            }),
+          }),
+        });
+        if (transferRes.ok) {
+          toast.success("Events Updated successfully!", {
+            autoClose: 500,
+            onClose: () => {
+              navigate("/alert_edit", { state: navigationState });
+            },
+          });
+        } else {
+          throw new Error('Error fetching data');
+          toast.error("Failed to update Events. Please try again!");
+        }
+      }
+      else if(selectedValues.includes('Approval') && foundedEvents.includes('Approval') && !selectedValues.includes('Transfer')){
+        if (!approvalInputs.owner || !approvalInputs.spender || !approvalInputs.value || !approvalOperator|| approvalOperator === "default") {
+          console.error("Approval inputs are incomplete.");
+          toast.error("Please fill out all approval fields.");
+          return;
+        }
+        const approvalRes = await fetch("https://139-59-5-56.nip.io:3443/update_event", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: events.find((event) => event.name === "Approval").id,
+            name: "Approval",
+            arguments: JSON.stringify({
+              owner: approvalInputs.owner,
+              spender: approvalInputs.spender,
+              value: approvalOperator + approvalInputs.value
+            }),
+          }),
+        });
+        if (approvalRes.ok) {
+          toast.success("Events Updated successfully!", {
+            autoClose: 500,
+            onClose: () => {
+              navigate("/alert_edit", { state: navigationState });
+            },
+          });
+        } else {
+          throw new Error('Error fetching data');
+          toast.error("Failed to update Events. Please try again!");
+        }
+      }
+      else if(!foundedEvents.includes('Approval') && !foundedEvents.includes('Transfer') && selectedValues.includes('Approval') && selectedValues.includes('Transfer')){
+        if (!transferInputs.from || !transferInputs.to || !transferInputs.value || !transferOperator || transferOperator === "default") {
+          console.error("Transfer inputs are incomplete.");
+          toast.error("Please fill out all transfer fields.");
+          return;
+        }
+        if (!approvalInputs.owner || !approvalInputs.spender || !approvalInputs.value || !approvalOperator|| approvalOperator === "default") {
+          console.error("Approval inputs are incomplete.");
+          toast.error("Please fill out all approval fields.");
+          return;
+        }
+        const [transferRes, approvalRes] = await Promise.all([
+          fetch("https://139-59-5-56.nip.io:3443/add_event", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: "Transfer",
+              mid: m_id,
+              arguments: JSON.stringify({
+                from: transferInputs.from,
+                to: transferInputs.to,
+                value: transferOperator + transferInputs.value
+              }),
+            }),
+          }),
+          fetch("https://139-59-5-56.nip.io:3443/add_event", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: "Approval",
+              id: m_id,
+              arguments: JSON.stringify({
+                owner: approvalInputs.owner,
+                spender: approvalInputs.spender,
+                value: approvalOperator + approvalInputs.value
+              }),
+            }),
+          }),
+        ]);
+        if (transferRes.ok && approvalRes.ok) {
+          toast.success("Events Updated successfully!", {
+            autoClose: 500,
+            onClose: () => {
+              navigate("/alert_edit", { state: navigationState });
+            },
+          });
+        } else {
+          throw new Error('Error fetching data');
+          toast.error("Failed to update Events. Please try again!");
+        }
+      }
+      else if(!foundedEvents.includes('Approval') && selectedValues.includes('Approval') && !selectedValues.includes('Transfer')){
+        if (!approvalInputs.owner || !approvalInputs.spender || !approvalInputs.value || !approvalOperator|| approvalOperator === "default") {
+          console.error("Approval inputs are incomplete.");
+          toast.error("Please fill out all approval fields.");
+          return;
+        }
+        const approvalRes = await fetch("https://139-59-5-56.nip.io:3443/add_event", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: "Approval",
+            mid: m_id,
+            arguments: JSON.stringify({
+              owner: approvalInputs.owner,
+              spender: approvalInputs.spender,
+              value: approvalOperator + approvalInputs.value
+            }),
+          }),
+        });
+        if (approvalRes.ok) {
+          toast.success("Events Updated successfully!", {
+            autoClose: 500,
+            onClose: () => {
+              navigate("/alert_edit", { state: navigationState });
+            },
+          });
+        } else {
+          throw new Error('Error fetching data');
+          toast.error("Failed to update Events. Please try again!");
+        }
+      }
+      else if(!foundedEvents.includes('Transfer') && selectedValues.includes('Transfer') && !selectedValues.includes('Approval')){
+        if (!transferInputs.from || !transferInputs.to || !transferInputs.value || !transferOperator || transferOperator === "default") {
+          console.error("Transfer inputs are incomplete.");
+          toast.error("Please fill out all transfer fields.");
+          return;
+        }
+        const transferRes = await fetch("https://139-59-5-56.nip.io:3443/add_event", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: "Transfer",
+            mid: m_id,
+            arguments: JSON.stringify({
+              from: transferInputs.from,
+              to: transferInputs.to,
+              value: transferOperator + transferInputs.value
+            }),
+          }),
+        });
+        if (transferRes.ok) {
+          toast.success("Events Updated successfully!", {
+            autoClose: 500,
+            onClose: () => {
+              navigate("/alert_edit", { state: navigationState });
+            },
+          });
+        } else {
+          throw new Error('Error fetching data');
+          toast.error("Failed to update Events. Please try again!");
+        }
+      }
+    }catch (error) {
       console.error("Error sending event data:", error);
-      toast.error("Failed to Add Event. Please try again!");
+      toast.error("Failed to update Event. Please try again!");
     }
   };
 
@@ -1071,7 +1249,8 @@ function parseArguments(argumentsString) {
           </div>
           <div className="my-auto ml-auto">
             <div className="flex flex-col  gap-4 m-3">
-              <Select options={options}
+              <Select 
+                options={options}
                 defaultValue={options.filter((option) => selectedValues.includes(option.value))}
                 isMulti
                 onChange={(selectedOptions) => {
@@ -1108,16 +1287,31 @@ function parseArguments(argumentsString) {
                         setTransferInputs({ ...transferInputs, to: e.target.value });
                       }}
                     />
-                    <input
-                      className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
-                      style={{ backgroundColor: "white" }}
-                      placeholder="uint256"
-                      value={transferInputs.value || ""}
-                      required
-                      onChange={(e) => {
-                        setTransferInputs({ ...transferInputs, value: e.target.value });
-                      }}
-                    />
+                     <div className="flex gap-3">
+                      <select
+                        className="w-[50%] bg-white border rounded-lg border-black"
+                        onChange={(e) => {
+                          setTransferOperator(e.target.value);
+                        }}
+                        required
+                        value={transferOperator || ""}
+                      >
+                        <option hidden selected={transferOperator=='' || transferOperator==undefined || transferOperator==null}>uint</option>
+                        <option  value="<::" selected={transferOperator=="<::"}>&lt;</option>
+                        <option  value=">::" selected={transferOperator==">::"}>&gt;</option>
+                        <option  value="==::" selected={transferOperator=="==::"}>==</option>
+                      </select>
+                      <input
+                        className="w-[50%] rounded-lg p-2 outline-none border border-[#4C4C4C]"
+                        style={{ backgroundColor: "white" }}
+                        placeholder="uint256"
+                        value={transferInputs.value || ""}
+                        required
+                        onChange={(e) => {
+                          setTransferInputs({ ...transferInputs, value: e.target.value });
+                        }}
+                      />
+                    </div>
                   </div>
                 </>
               )}
@@ -1151,16 +1345,16 @@ function parseArguments(argumentsString) {
                         name=""
                         id=""
                         className="w-[50%] bg-white border rounded-lg border-black"
-                        // value={`${operator}::` || ""}
                         onChange={(e) => {
-                          setOperator(e.target.value);
+                          setApprovalOperator(e.target.value);
                         }}
                         required
+                        value={approvalOperator||""}
                       >
-                        <option hidden selected={prevOperator==""} >uint</option>
-                        <option  value="<::" selected={prevOperator=="<"}>&lt;</option>
-                        <option  value=">::" selected={prevOperator==">"}>&gt;</option>
-                        <option  value="==::" selected={prevOperator=="=="}>==</option>
+                        <option hidden selected={approvalOperator=='' || approvalOperator==undefined || approvalOperator==null}>uint</option>
+                        <option  value="<::" selected={approvalOperator=="<::"}>&lt;</option>
+                        <option  value=">::" selected={approvalOperator==">::"}>&gt;</option>
+                        <option  value="==::" selected={approvalOperator== "==::" }>==</option>
                       </select>
                       <input
                         className="w-[50%] rounded-lg p-2 outline-none border border-[#4C4C4C]"
