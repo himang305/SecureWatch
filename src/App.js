@@ -22,6 +22,8 @@ import ApiBuilder from "./components/api_builder.jsx";
 import MonitorAlerts from "./components/monitor_alerts.jsx";
 import Forgotpassword from "./components/Forgotpassword.jsx";
 import Otpverify from "./components/Otpverify.jsx";
+import 'react-toastify/dist/ReactToastify.css';
+import { toast } from "react-toastify";
 
 function App() {
   return (

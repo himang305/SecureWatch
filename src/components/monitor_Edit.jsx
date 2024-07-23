@@ -22,7 +22,12 @@ function Monitor_Edit() {
   const targetMids = query.get("id");
   console.log("MID = ", targetMids);
 
-  const [monitorName, setMonitorName] = useState("");
+  const { mid } = location.state;
+  const { name } = location.state;
+  // const { address }= location.state;
+  // const {network} = location.state;
+
+  const [monitorName, setMonitorName] = useState(name || "");
   const [riskCategory, setRiskCategory] = useState("");
   const [address, setAddress] = useState("");
   const [contractName, setContractName] = useState("");
@@ -542,13 +547,14 @@ function Monitor_Edit() {
               className="text-lg font-medium mt-5"
               style={{ color: "black" }}
             >
-              Contract Name
+              Monitor Name
             </div>
             <input
               style={{ backgroundColor: "white" }}
               type="text"
               placeholder="Enter text"
               onChange={(e) => setContractName(e.target.value)}
+              value={monitorName}
               className="outline-none border-2 border-[] py-3 rounded-xl  w-full px-"
             />
             {/* #4C4C4C */}

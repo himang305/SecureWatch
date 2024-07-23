@@ -20,9 +20,9 @@ const Monitor_cmp = (props) => {
   const [value, setValue] = useState(10);
   const [moniter, setMoniter] = useState([]);
 
-  const handleEditMonitor = (monitor_id) => {
-    navigate("/monitor_Edit?id="+monitor_id); 
-  };
+  // const handleEditMonitor = (monitor_id) => {
+  //   navigate("/monitor_Edit?id="+monitor_id); 
+  // };
 
   useEffect(() => {
     const fetchMoniter = async () => {
@@ -188,7 +188,9 @@ const Monitor_cmp = (props) => {
 
                 <div className="flex   items-center p-6 w-[30%] sm:w-[20%] md:w-[10%] ">
                   <div className="flex flex-col justify-end gap-7 items-center">
-                    <button onClick={() => handleEditMonitor(mid)}>
+                    <button onClick={() =>{
+                      navigate("/monitor_Edit?id="+mid, { state: { mid,name,network,address } });
+                    }}>
                       <img src={Edit} alt="" className="h-8 w-8" />
                     </button>
                     <Switch
