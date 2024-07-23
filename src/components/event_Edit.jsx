@@ -1156,7 +1156,7 @@ function parseArguments(argumentsString) {
                     <input
                       className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
                       style={{ backgroundColor: "white" }}
-                      placeholder="from:address"
+                      placeholder="Owner:address"
                       value={approvalInputs.from || ""}
                       required
                       onChange={(e) => {
@@ -1166,7 +1166,7 @@ function parseArguments(argumentsString) {
                     <input
                       className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
                       style={{ backgroundColor: "white" }}
-                      placeholder="to:address"
+                      placeholder="Spender:address"
                       value={approvalInputs.to || ""}
                       required
                       onChange={(e) => {
