@@ -1,16 +1,58 @@
+import '@rainbow-me/rainbowkit/styles.css';
+import './polyfills';
+import './index.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './output.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit';
+import { WagmiProvider } from 'wagmi';
+import {
+  arbitrum,
+  base,
+  mainnet,
+  optimism,
+  polygon,
+  polygonMumbai,
+  sepolia,
+  lineaSepolia
+} from 'wagmi/chains';
+
+import App from './App';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ToastContainer } from 'react-toastify';
 
+const config = getDefaultConfig({
+  appName: 'walletConnect',
+  projectId: 'Securedapp',
+  chains: [
+    mainnet,
+    polygon,
+    polygonMumbai,
+    optimism,
+    arbitrum,
+    base,
+    sepolia,
+    lineaSepolia,
+    ...(process.env.REACT_APP_ENABLE_TESTNETS === 'true' ? [sepolia]||[lineaSepolia] : []),
+  ],
+});
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(
+  document.getElementById('root')
+);
+
+const queryClient = new QueryClient();
+
 root.render(
   <React.StrictMode>
-    <App />
-    <ToastContainer/>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider>
+          <App />
+          <ToastContainer />
+        </RainbowKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   </React.StrictMode>
 );
 
