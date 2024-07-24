@@ -1,31 +1,27 @@
-import Navbar from "./navbar2";
+import React,{ useState,useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-
-import * as React from "react";
-// import check from "../images/check-circle.png";
-// import { Link, useLocation } from "react-router-dom";
-import { useState } from "react";
-import axios from "axios";
-import Web3 from "web3";
-// import Select from "react-select";
-import Select, { components } from "react-select";
+import Navbar from "./navbar2";
+import Select from "react-select";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-//
 
 function Events() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { name, email, m_id, token, network, abi, address, rk } =
-    location.state || "";
-  const [networkState, setNetworkState] = useState(network || ""); // Default to 'MAINNET' if not provided
-  //  const [contractNameState, setContractNameState] = useState(alert_data || "");
+  const options = [
+    { value: 'Approval', label: 'Approval' },
+    { value: 'Transfer', label: 'Transfer' },
+  ]
+  const [selectedValues, setSelectedValues] = useState([])
+
+
+  const { name, email, m_id, token, network, abi, address, rk } = location.state || "";
+  const [networkState, setNetworkState] = useState(network || "");
   const [addressState, setAddressState] = useState(address || "");
   const [riskCategoryState, setRiskCategoryState] = useState(rk || "");
   const [abiState, setAbiState] = useState(abi || "");
-  // console.log(token);
-  // console.log(m_id);
+  console.log("M_id in events page:",m_id);
   const mid = m_id;
 
   const [disp1, setDisp1] = useState("none");
@@ -42,204 +38,184 @@ function Events() {
   const [eventDetails, setEventDetails] = React.useState([]);
   const [selectedEvents, setSelectedEvents] = React.useState({});
   const [selectedEventNames, setSelectedEventNames] = useState([]);
-  React.useEffect(() => {
-    if (!location.state || !location.state.abi) {
-      console.error("ABI is not provided");
+
+
+  const [events, setEvents] = useState({});
+  const [transferOperator, setTransferOperator]=useState("")
+  const [approvalOperator, setApprovalOperator] = useState("");
+  const [transferInputs, setTransferInputs] = useState({ from: "", to: "", value: "" });
+  const [approvalInputs, setApprovalInputs] = useState({ owner: "", spender: "", value: "" });
+
+
+
+  useEffect(()=>{
+    console.log("Transfer inputs are:",transferInputs);
+    console.log("Approval inputs are:",approvalInputs);
+
+  },[transferInputs,approvalInputs])
+
+  const navigationState = {
+    monitorName: name,
+    network: networkState,
+    address: addressState,
+    rk: riskCategoryState,
+    m_id: m_id,
+    email: email,
+    token: token,
+  };
+
+  const handleSubmit = async () => {
+  
+    // Check if either 'Transfer' or 'Approval' is selected
+    if (!selectedValues.includes('Transfer') && !selectedValues.includes('Approval')) {
+      console.error("No actions selected.");
+      toast.error("Please select at least one action.");
       return;
     }
+    try{
 
-    let parsedAbi;
-    try {
-      parsedAbi = JSON.parse(location.state.abi);
-    } catch (error) {
-      console.error("Failed to parse ABI:", error);
-      return;
-    }
-
-    const events = parsedAbi.filter((item) => item.type === "event");
-    setEventDetails(
-      events.map((event) => ({
-        name: event.name,
-        inputs: event.inputs
-          .map((input) => `${input.name}: ${input.type}`)
-          .join(", "),
-      }))
-    );
-  }, [
-    location.state,
-    networkState,
-    // contractNameState,
-    addressState,
-    riskCategoryState,
-    abiState,
-  ]);
-
-  const options = eventDetails.map((event) => ({
-    label: `${event.name} (${event.inputs})`,
-    value: event.name,
-  }));
-
-  // Handle event selection and prompt for arguments (UPDATED)
-  const handleEventSelection = (selectedOptions) => {
-    const newSelectedEvents = {};
-    selectedOptions.forEach((option) => {
-      const eventName = option.value;
-      if (!selectedEvents[eventName]) {
-        newSelectedEvents[eventName] = {
-          args: "",
-          argDetails: eventDetails
-            .find((event) => event.name === eventName)
-            .inputs.split(", ")
-            .map((arg) => arg.split(": ")[0])
-            .join(", "),
-        };
-      } else {
-        newSelectedEvents[eventName] = selectedEvents[eventName]; // Preserve existing args
+      if(selectedValues.includes('Transfer') && selectedValues.includes('Approval')){
+        
+      //prevent from empty values
+      if (!transferInputs.from || !transferInputs.to || !transferInputs.value || !transferOperator || transferOperator === "default") {
+        console.error("Transfer inputs are incomplete.");
+        toast.error("Please fill out all transfer fields.");
+        return;
       }
-    });
-    setSelectedEvents(newSelectedEvents);
-    setSelectedEventNames(selectedOptions.map((option) => option.label));
-  };
+      if (!approvalInputs.owner || !approvalInputs.spender || !approvalInputs.value || !approvalOperator|| approvalOperator === "default") {
+        console.error("Approval inputs are incomplete.");
+        toast.error("Please fill out all approval fields.");
+        return;
+      }
 
-  const handleArgumentChange = (event, eventName) => {
-    const value = event.target.value;
-    setSelectedEvents((prevEvents) => ({
-      ...prevEvents,
-      [eventName]: {
-        ...prevEvents[eventName],
-        args: value,
-      },
-    }));
-  };
-
-  const web3 = new Web3();
-
-  const handleSaveMonitor = async () => {
-    if (!Array.isArray(eventDetails)) {
-      console.error("eventDetails is not an array:", eventDetails);
-      return; // Exit if eventDetails is not an array
-    }
-
-    let navigationState = {
-      monitorName: name,
-      network: network,
-      address: address,
-      rk: rk,
-      m_id: mid,
-      email: email,
-      token: token,
-      selectedEventNames: Object.entries(selectedEvents).map(
-        ([eventName, eventData]) => {
-          const argTypes = eventDetails
-            .find((e) => e.name === eventName)
-            .inputs.split(", ")
-            .map((arg) => arg.split(": ")[1]) // Extract only the types
-            .join(", "); // Join types with commas
-          return {
-            name: eventName,
-            argTypes: argTypes,
-          };
-        }
-      ), // Storing the names of selected events
-    };
-
-    Object.entries(selectedEvents).forEach(
-      async ([eventName, eventDetailsEntry]) => {
-        const argsArray = eventDetailsEntry.args
-          .split(",")
-          .map((arg) => arg.trim());
-
-        const event = eventDetails.find((e) => e.name === eventName);
-        if (!event) return;
-
-        const argDetails = event.inputs.split(", ").map((arg) => {
-          const [name, type] = arg.split(": ");
-          return name;
+      // Fetch data from both APIs in parallel
+      const [transferRes, approvalRes] = await Promise.all([
+        fetch("https://139-59-5-56.nip.io:3443/add_event", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: "Transfer",
+            mid: m_id,
+            arguments: JSON.stringify({
+              from: transferInputs.from,
+              to: transferInputs.to,
+              value: transferOperator + transferInputs.value
+            }),
+          }),
+        }),
+        fetch("https://139-59-5-56.nip.io:3443/add_event", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: "Approval",
+            mid: m_id,
+            arguments: JSON.stringify({
+              owner: approvalInputs.owner,
+              spender: approvalInputs.spender,
+              value: approvalOperator + approvalInputs.value
+            }),
+          }),
+        }),
+      ]);
+      // if all response was sucess then show success toast, if any error occured then thow error toast
+      if (transferRes.ok && approvalRes.ok) {
+        toast.success("Events added successfully!", {
+          autoClose: 500,
+          onClose: () => {
+            navigate("/alerts", { state: navigationState });
+          },
         });
+      } else {
+        throw new Error('Error fetching data');
+        toast.error("Failed to add Events. Please try again!");
+      }
 
-        const argsObject = argsArray.reduce((acc, arg, index) => {
-          const argName = argDetails[index]; // Get the actual argument name
-          acc[argName] = arg;
-          return acc;
-        }, {});
-
-        // const event = eventDetails.find((e) => e.name === eventName);
-        if (!event) {
-          console.error("Event not found in eventDetails:", eventName);
-          return; // Exit if the event is not found
-        }
-
-        // Check if 'inputs' is available and correctly formatted
-        if (!event.inputs || typeof event.inputs !== "string") {
-          console.error(
-            "Event inputs are not correctly formatted:",
-            event.inputs
-          );
+      }
+      else if(selectedValues.includes('Transfer') && !selectedValues.includes('Approval')){
+        if (!transferInputs.from || !transferInputs.to || !transferInputs.value || !transferOperator || transferOperator === "default") {
+          console.error("Transfer inputs are incomplete.");
+          toast.error("Please fill out all transfer fields.");
           return;
         }
-
-        const eventSignatureInputs = event.inputs
-          .split(", ")
-          .map((input) => {
-            const [name, type] = input.split(": ");
-            return type;
-          })
-          .join(",");
-
-        // The correct format for encodeEventSignature: "EventName(type1,type2,...)"
-        const eventSignatureData = `${event.name}(${eventSignatureInputs})`;
-        let eventSignature;
-        try {
-          eventSignature =
-            web3.eth.abi.encodeEventSignature(eventSignatureData);
-        } catch (error) {
-          console.error(
-            "Failed to encode event signature:",
-            error,
-            "with data:",
-            eventSignatureData
-          );
-          return;
-        }
-
-        const body = {
-          name: eventName,
-          mid: mid,
-          signature: eventSignature,
-          arguments: argsObject,
-        };
-
-        try {
-          const response = await axios.post(
-            "https://139-59-5-56.nip.io:3443/add_event",
-            body
-          );
-          console.log("Event added:", response.data);
-          console.log("Arguments Object:", argsObject);
-          console.log("signature is:", eventSignature);
-          console.log("network in event is", network);
-          console.log("event is:", selectedEventNames);
-          console.log("monitor id is:", m_id);
-          console.log("event name is:", eventName);
-          // Navigate to alerts with updated navigation state
-          toast.success("Event Added successfully!", {
+        const transferRes = await fetch("https://139-59-5-56.nip.io:3443/add_event", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: "Transfer",
+            mid: m_id,
+            arguments: JSON.stringify({
+              from: transferInputs.from,
+              to: transferInputs.to,
+              value: transferOperator + transferInputs.value
+            }),
+          }),
+        });
+        if (transferRes.ok) {
+          toast.success("Events added successfully!", {
             autoClose: 500,
             onClose: () => {
               navigate("/alerts", { state: navigationState });
             },
           });
-        } catch (error) {
-          console.error("Error sending event data:", error);
-          toast.error("Failed to Add Event. Please try again!");
+        } else {
+          throw new Error('Error fetching data');
+          toast.error("Failed to add Events. Please try again!");
         }
       }
-    );
+      else if (selectedValues.includes('Approval') && !selectedValues.includes('Transfer')){
+        if (!approvalInputs.owner || !approvalInputs.spender || !approvalInputs.value || !approvalOperator|| approvalOperator === "default") {
+          console.error("Approval inputs are incomplete.");
+          toast.error("Please fill out all approval fields.");
+          return;
+        }
+        const approvalRes = await fetch("https://139-59-5-56.nip.io:3443/add_event", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: "Approval",
+            mid: m_id,
+            arguments: JSON.stringify({
+              owner: approvalInputs.owner,
+              spender: approvalInputs.spender,
+              value: approvalOperator + approvalInputs.value
+            }),
+          }),
+        });
+        if (approvalRes.ok) {
+          toast.success("Events added successfully!", {
+            autoClose: 500,
+            onClose: () => {
+              navigate("/alerts", { state: navigationState });
+            },
+          });
+        } else {
+          throw new Error('Error fetching data');
+          toast.error("Failed to add Events. Please try again!");
+        }
+      }
+      
+    }catch (error) {
+      console.error("Error sending event data:", error);
+      toast.error("Failed to update Event. Please try again!");
+    }
   };
+
+
+ 
+
+
+  
   return (
     <div
-      className="font-poppin pt-2 bg-white min-h-full"
-      style={{ backgroundColor: "#FCFFFD" }}
-    >
+      className="font-poppin pt-2 bg-white min-h-full"  >
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -253,6 +229,7 @@ function Events() {
       />
       <Navbar email={email} />
       <div className="w-full  mx-auto mt-10 md:mt-20 flex items-start justify-center flex-col md:flex-row md:gap-10 lg:gap-20">
+
         <div className="">
           <div className="flex">
             <div>
@@ -541,91 +518,141 @@ function Events() {
             </div>
           </div>
         </div>
-
-        <div className="w-full md:w-1/3 lg:w-1/4 mt-5 md:mt-0 ">
+        
+        <div className="">
           <div className="font-medium text-lg" style={{ color: "black" }}>
-            Enter the Signature Name
+            Choose the Signature Name
           </div>
           <div className="my-auto ml-auto">
-            {/* w-inherit border-2 border-[#B4B4B4] shadow-md p-3 rounded-lg flex px-3 justify-between py-3 */}
-            <div className="font-medium text-lg"></div>
-            <div>
-              <Select
+            <div className="flex flex-col  gap-4 m-3">
+              <Select 
                 options={options}
+                defaultValue={options.filter((option) => selectedValues.includes(option.value))}
                 isMulti
-                closeMenuOnSelect={false}
-                components={{ Option: components.Option }}
-                onChange={handleEventSelection}
-                className=""
-                classNamePrefix="select"
-                placeholder="Search and select events..."
-                noOptionsMessage={() => "No events found"}
-                value={options.filter((option) =>
-                  selectedEventNames.includes(option.label)
-                )} // Filter options based on selectedEventNames
+                onChange={(selectedOptions) => {
+                  const values = selectedOptions.map((option) => option.value);
+                  setSelectedValues(values);
+                }}
+
               />
             </div>
-          </div>
-          {/* <div className="rounded-lg border-2 border-[#B4B4B4] border-t-0 shadow-md">
-            <div className="p-3">
-              <input
-                type="checkbox"
-                id="val1"
-                value="val1"
-                className="checked:bg-green-600 mr-2"
-                onChange={handleToggle1}
-              />
-              <label htmlFor="opt1">Approval (address, address, uint256)</label>
+
+            <div className="mt-5">
+
+              {selectedValues.includes('Transfer') && (
+                <>
+                  <div className="mt-3 text-black font-medium mb-3">Transfer :</div>
+                  <div className="flex flex-col gap-3">
+                    <input
+                      className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
+                      style={{ backgroundColor: "white" }}
+                      placeholder="from:address"
+                      value={transferInputs.from || ""}
+                      required
+                      onChange={(e) => {
+                        setTransferInputs({ ...transferInputs, from: e.target.value });
+                      }}
+                    />
+                    <input
+                      className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
+                      style={{ backgroundColor: "white" }}
+                      placeholder="to:address"
+                      value={transferInputs.to || ""}
+                      required
+                      onChange={(e) => {
+                        setTransferInputs({ ...transferInputs, to: e.target.value });
+                      }}
+                    />
+                     <div className="flex gap-3">
+                      <select
+                        className="w-[50%] bg-white border rounded-lg border-black"
+                        onChange={(e) => {
+                          setTransferOperator(e.target.value);
+                        }}
+                        required
+                        value={transferOperator || ""}
+                      >
+                        <option hidden selected={transferOperator=='' || transferOperator==undefined || transferOperator==null}>uint</option>
+                        <option  value="<::" selected={transferOperator=="<::"}>&lt;</option>
+                        <option  value=">::" selected={transferOperator==">::"}>&gt;</option>
+                        <option  value="==::" selected={transferOperator=="==::"}>==</option>
+                      </select>
+                      <input
+                        className="w-[50%] rounded-lg p-2 outline-none border border-[#4C4C4C]"
+                        style={{ backgroundColor: "white" }}
+                        placeholder="uint256"
+                        value={transferInputs.value || ""}
+                        required
+                        onChange={(e) => {
+                          setTransferInputs({ ...transferInputs, value: e.target.value });
+                        }}
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {selectedValues.includes('Approval') && (
+                <>
+                  <div className="mt-3 text-black font-medium mb-3">Approval :</div>
+                  <div className="flex flex-col gap-3">
+                    <input
+                      className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
+                      style={{ backgroundColor: "white" }}
+                      placeholder="Owner:address"
+                      value={approvalInputs.owner || ""}
+                      required
+                      onChange={(e) => {
+                        setApprovalInputs({ ...approvalInputs, owner: e.target.value });
+                      }}
+                    />
+                    <input
+                      className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
+                      style={{ backgroundColor: "white" }}
+                      placeholder="Spender:address"
+                      value={approvalInputs.spender || ""}
+                      required
+                      onChange={(e) => {
+                        setApprovalInputs({ ...approvalInputs, spender: e.target.value });
+                      }}
+                    />
+                    <div className="flex gap-3">
+                      <select
+                        name=""
+                        id=""
+                        className="w-[50%] bg-white border rounded-lg border-black"
+                        onChange={(e) => {
+                          setApprovalOperator(e.target.value);
+                        }}
+                        required
+                        value={approvalOperator||""}
+                      >
+                        <option hidden selected={approvalOperator=='' || approvalOperator==undefined || approvalOperator==null}>uint</option>
+                        <option  value="<::" selected={approvalOperator=="<::"}>&lt;</option>
+                        <option  value=">::" selected={approvalOperator==">::"}>&gt;</option>
+                        <option  value="==::" selected={approvalOperator== "==::" }>==</option>
+                      </select>
+                      <input
+                        className="w-[50%] rounded-lg p-2 outline-none border border-[#4C4C4C]"
+                        style={{ backgroundColor: "white" }}
+                        placeholder="uint256"
+                        value={approvalInputs.value || ""}
+                        required
+                        onChange={(e) => {
+                          setApprovalInputs({ ...approvalInputs, value: e.target.value });
+                        }}
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+
             </div>
-            <div className="p-3">
-              <input
-                type="checkbox"
-                id="val2"
-                value="val1"
-                className="checked:bg-green-600 mr-2"
-                onChange={handleToggle2}
-              />
-              <label htmlFor="opt1">Transfer (address, address, uint256)</label>
-            </div>
-          </div>
-          <div className="mt-5" style={{ display: disp1 }}>
-            <div className="font-medium">
-              Approval (address, address, uint256)
-            </div>
-            <input
-              type="text"
-              className="w-full p-3 rounded-lg outline-none border border-[#4C4C4C]"
-              placeholder="Variables: owner, spender, value"
-            />
-          </div>
-          <div className="mt-5" style={{ display: disp2 }}>
-            <div className="font-medium">
-              Approval (address, address, uint256)
-            </div>
-            <input
-              type="text"
-              className="w-full rounded-lg p-3 outline-none border border-[#4C4C4C]"
-              placeholder="Variables: owner, spender, value"
-            />
-          </div> */}
-          <div className="mt-5">
-            {Object.entries(selectedEvents).map(([eventName, eventData]) => (
-              <div key={eventName} className="font-medium">
-                <div className="mt-3">{eventName}</div>
-                <input
-                  className="w-full rounded-lg p-3 outline-none border border-[#4C4C4C]"
-                  style={{ backgroundColor: "white" }}
-                  type="text"
-                  value={eventData.args}
-                  onChange={(e) => handleArgumentChange(e, eventName)}
-                  placeholder={` ${eventData.argDetails} `}
-                />
-              </div>
-            ))}
+
           </div>
           <button
-            className="py-3 w-full bg-[#28AA61] mt-10 rounded-lg text-white"
-            onClick={handleSaveMonitor}
+            className="py-3 w-full bg-[#28AA61]  rounded-lg text-white mt-5"
+            onClick={handleSubmit}
           >
             Save Monitor
           </button>
@@ -765,6 +792,7 @@ function Events() {
             </div>
           </div>
         </div>
+
       </div>
     </div>
   );

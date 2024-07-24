@@ -98,7 +98,7 @@ function Alerts_Edit() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          user_id: 12,
+          user_id: 6,
         }),
       });
       const data = await res.json();
