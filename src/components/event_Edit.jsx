@@ -272,73 +272,6 @@ function parseArguments(argumentsString) {
       }
 
       }
-      else if(selectedValues.includes('Transfer') && foundedEvents.includes('Transfer') && !selectedValues.includes('Approval')){
-
-        if (!transferInputs.from || !transferInputs.to || !transferInputs.value || !transferOperator || transferOperator === "default") {
-          console.error("Transfer inputs are incomplete.");
-          toast.error("Please fill out all transfer fields.");
-          return;
-        }
-        const transferRes = await fetch("https://139-59-5-56.nip.io:3443/update_event", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            id: events.find((event) => event.name === "Transfer").id,
-            name: "Transfer",
-            arguments: JSON.stringify({
-              from: transferInputs.from,
-              to: transferInputs.to,
-              value: transferOperator + transferInputs.value
-            }),
-          }),
-        });
-        if (transferRes.ok) {
-          toast.success("Events Updated successfully!", {
-            autoClose: 500,
-            onClose: () => {
-              navigate("/alert_edit", { state: navigationState });
-            },
-          });
-        } else {
-          throw new Error('Error fetching data');
-          toast.error("Failed to update Events. Please try again!");
-        }
-      }
-      else if(selectedValues.includes('Approval') && foundedEvents.includes('Approval') && !selectedValues.includes('Transfer')){
-        if (!approvalInputs.owner || !approvalInputs.spender || !approvalInputs.value || !approvalOperator|| approvalOperator === "default") {
-          console.error("Approval inputs are incomplete.");
-          toast.error("Please fill out all approval fields.");
-          return;
-        }
-        const approvalRes = await fetch("https://139-59-5-56.nip.io:3443/update_event", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            id: events.find((event) => event.name === "Approval").id,
-            name: "Approval",
-            arguments: JSON.stringify({
-              owner: approvalInputs.owner,
-              spender: approvalInputs.spender,
-              value: approvalOperator + approvalInputs.value
-            }),
-          }),
-        });
-        if (approvalRes.ok) {
-          toast.success("Events Updated successfully!", {
-            autoClose: 500,
-            onClose: () => {
-              navigate("/alert_edit", { state: navigationState });
-            },
-          });
-        } else {
-          throw new Error('Error fetching data');
-          toast.error("Failed to update Events. Please try again!");
-        }
-      }
       else if(!foundedEvents.includes('Approval') && !foundedEvents.includes('Transfer') && selectedValues.includes('Approval') && selectedValues.includes('Transfer')){
         if (!transferInputs.from || !transferInputs.to || !transferInputs.value || !transferOperator || transferOperator === "default") {
           console.error("Transfer inputs are incomplete.");
@@ -373,7 +306,7 @@ function parseArguments(argumentsString) {
             },
             body: JSON.stringify({
               name: "Approval",
-              id: m_id,
+              mid: m_id,
               arguments: JSON.stringify({
                 owner: approvalInputs.owner,
                 spender: approvalInputs.spender,
@@ -394,28 +327,29 @@ function parseArguments(argumentsString) {
           toast.error("Failed to update Events. Please try again!");
         }
       }
-      else if(!foundedEvents.includes('Approval') && selectedValues.includes('Approval') && !selectedValues.includes('Transfer')){
-        if (!approvalInputs.owner || !approvalInputs.spender || !approvalInputs.value || !approvalOperator|| approvalOperator === "default") {
-          console.error("Approval inputs are incomplete.");
-          toast.error("Please fill out all approval fields.");
+      else if(selectedValues.includes('Transfer') && !selectedValues.includes('Approval') && foundedEvents.includes('Transfer') ){
+
+        if (!transferInputs.from || !transferInputs.to || !transferInputs.value || !transferOperator || transferOperator === "default") {
+          console.error("Transfer inputs are incomplete.");
+          toast.error("Please fill out all transfer fields.");
           return;
         }
-        const approvalRes = await fetch("https://139-59-5-56.nip.io:3443/add_event", {
+        const transferRes = await fetch("https://139-59-5-56.nip.io:3443/update_event", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            name: "Approval",
-            mid: m_id,
+            id: events.find((event) => event.name === "Transfer").id,
+            name: "Transfer",
             arguments: JSON.stringify({
-              owner: approvalInputs.owner,
-              spender: approvalInputs.spender,
-              value: approvalOperator + approvalInputs.value
+              from: transferInputs.from,
+              to: transferInputs.to,
+              value: transferOperator + transferInputs.value
             }),
           }),
         });
-        if (approvalRes.ok) {
+        if (transferRes.ok) {
           toast.success("Events Updated successfully!", {
             autoClose: 500,
             onClose: () => {
@@ -427,7 +361,7 @@ function parseArguments(argumentsString) {
           toast.error("Failed to update Events. Please try again!");
         }
       }
-      else if(!foundedEvents.includes('Transfer') && selectedValues.includes('Transfer') && !selectedValues.includes('Approval')){
+      else if(  selectedValues.includes('Transfer') && !selectedValues.includes('Approval') && !foundedEvents.includes('Transfer')){
         if (!transferInputs.from || !transferInputs.to || !transferInputs.value || !transferOperator || transferOperator === "default") {
           console.error("Transfer inputs are incomplete.");
           toast.error("Please fill out all transfer fields.");
@@ -460,6 +394,182 @@ function parseArguments(argumentsString) {
           toast.error("Failed to update Events. Please try again!");
         }
       }
+      else if(selectedValues.includes('Approval') && !selectedValues.includes('Transfer') && foundedEvents.includes('Approval')){
+        if (!approvalInputs.owner || !approvalInputs.spender || !approvalInputs.value || !approvalOperator|| approvalOperator === "default") {
+          console.error("Approval inputs are incomplete.");
+          toast.error("Please fill out all approval fields.");
+          return;
+        }
+        const approvalRes = await fetch("https://139-59-5-56.nip.io:3443/update_event", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: events.find((event) => event.name === "Approval").id,
+            name: "Approval",
+            arguments: JSON.stringify({
+              owner: approvalInputs.owner,
+              spender: approvalInputs.spender,
+              value: approvalOperator + approvalInputs.value
+            }),
+          }),
+        });
+        if (approvalRes.ok) {
+          toast.success("Events Updated successfully!", {
+            autoClose: 500,
+            onClose: () => {
+              navigate("/alert_edit", { state: navigationState });
+            },
+          });
+        } else {
+          throw new Error('Error fetching data');
+          toast.error("Failed to update Events. Please try again!");
+        }
+      }
+      else if( selectedValues.includes('Approval') && !selectedValues.includes('Transfer') && !foundedEvents.includes('Approval') ){
+        if (!approvalInputs.owner || !approvalInputs.spender || !approvalInputs.value || !approvalOperator|| approvalOperator === "default") {
+          console.error("Approval inputs are incomplete.");
+          toast.error("Please fill out all approval fields.");
+          return;
+        }
+        const approvalRes = await fetch("https://139-59-5-56.nip.io:3443/add_event", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: "Approval",
+            mid: m_id,
+            arguments: JSON.stringify({
+              owner: approvalInputs.owner,
+              spender: approvalInputs.spender,
+              value: approvalOperator + approvalInputs.value
+            }),
+          }),
+        });
+        if (approvalRes.ok) {
+          toast.success("Events Updated successfully!", {
+            autoClose: 500,
+            onClose: () => {
+              navigate("/alert_edit", { state: navigationState });
+            },
+          });
+        } else {
+          throw new Error('Error fetching data');
+          toast.error("Failed to update Events. Please try again!");
+        }
+      }
+      else if(selectedValues.includes('Transfer') && selectedValues.includes('Approval') && !foundedEvents.includes('Transfer') && foundedEvents.includes('Approval')){
+        if (!transferInputs.from || !transferInputs.to || !transferInputs.value || !transferOperator || transferOperator === "default") {
+          console.error("Transfer inputs are incomplete.");
+          toast.error("Please fill out all transfer fields.");
+          return;
+        }
+        if (!approvalInputs.owner || !approvalInputs.spender || !approvalInputs.value || !approvalOperator|| approvalOperator === "default") {
+          console.error("Approval inputs are incomplete.");
+          toast.error("Please fill out all approval fields.");
+          return;
+        }
+        const [transferRes, approvalRes] = await Promise.all([
+          fetch("https://139-59-5-56.nip.io:3443/add_event", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: "Transfer",
+              mid: m_id,
+              arguments: JSON.stringify({
+                from: transferInputs.from,
+                to: transferInputs.to,
+                value: transferOperator + transferInputs.value
+              }),
+            }),
+          }),
+          fetch("https://139-59-5-56.nip.io:3443/update_event", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              id: events.find((event) => event.name === "Approval").id,
+              name: "Approval",
+              arguments: JSON.stringify({
+                owner: approvalInputs.owner,
+                spender: approvalInputs.spender,
+                value: approvalOperator + approvalInputs.value
+              }),
+            }),
+          }),
+        ]);
+        if (transferRes.ok && approvalRes.ok) {
+          toast.success("Events Updated successfully!", {
+            autoClose: 500,
+            onClose: () => {
+              navigate("/alert_edit", { state: navigationState });
+            },
+          });
+        } else {
+          throw new Error('Error fetching data');
+          toast.error("Failed to update Events. Please try again!");
+        }
+      }
+      else if (selectedValues.includes('Transfer') && selectedValues.includes('Approval') && foundedEvents.includes('Transfer') && !foundedEvents.includes('Approval')) {
+        if (!transferInputs.from || !transferInputs.to || !transferInputs.value || !transferOperator || transferOperator === "default") {
+          console.error("Transfer inputs are incomplete.");
+          toast.error("Please fill out all transfer fields.");
+          return;
+        }
+        if (!approvalInputs.owner || !approvalInputs.spender || !approvalInputs.value || !approvalOperator|| approvalOperator === "default") {
+          console.error("Approval inputs are incomplete.");
+          toast.error("Please fill out all approval fields.");
+          return;
+        }
+        const [transferRes, approvalRes] = await Promise.all([
+          fetch("https://139-59-5-56.nip.io:3443/update_event", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              id: events.find((event) => event.name === "Transfer").id,
+              name: "Transfer",
+              arguments: JSON.stringify({
+                from: transferInputs.from,
+                to: transferInputs.to,
+                value: transferOperator + transferInputs.value
+              }),
+            }),
+          }),
+          fetch("https://139-59-5-56.nip.io:3443/add_event", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: "Approval",
+              mid: m_id,
+              arguments: JSON.stringify({
+                owner: approvalInputs.owner,
+                spender: approvalInputs.spender,
+                value: approvalOperator + approvalInputs.value
+              }),
+            }),
+          }),
+        ]);
+        if (transferRes.ok && approvalRes.ok) {
+          toast.success("Events Updated successfully!", {
+            autoClose: 500,
+            onClose: () => {
+              navigate("/alert_edit", { state: navigationState });
+            },
+          });
+        } else {
+          throw new Error('Error fetching data');
+          toast.error("Failed to update Events. Please try again!");
+        }
+      }
     }catch (error) {
       console.error("Error sending event data:", error);
       toast.error("Failed to update Event. Please try again!");
@@ -469,8 +579,7 @@ function parseArguments(argumentsString) {
 
   if (
     !events ||
-    !Array.isArray(events) ||
-    events.length === 0
+    !Array.isArray(events)
   ) {
     return (
       <div
