@@ -63,9 +63,9 @@ console.log(userEmail);
 
 
   return (
-      <div className="bg-white pt-12">
+      <div className="bg-white pt-12 pb-10">
         <Navbar email={userEmail} />
-        <div className="w-4/6 mx-auto">
+        <div className="w-4/6 mx-auto ">
           <div className="mt-10 flex justify-center items-center gap-6 flex-wrap ">
             <div className="flex gap-2">
               {/* <div className="font-poppin font-medium text-lg sm:text-ml md:text-2xl lg:text-3xl text-[#0CA851]  bg-[#A7FFCE] p-2 rounded-2xl text-center">

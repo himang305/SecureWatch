@@ -33,8 +33,7 @@ function Alerts() {
   // const { email, m_id, token } = location.state || "";
   // // console.log(m_id);
 
-  const { name, email, m_id, token, network, address, rk, selectedEventNames } =
-    location.state || {};
+  const { name, email, m_id, token, network, address, rk, selectedEventNames } = location.state || {};
 
   // console.log("netwrok in alers is:", network);
 

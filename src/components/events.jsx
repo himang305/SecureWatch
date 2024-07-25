@@ -215,7 +215,7 @@ function Events() {
   
   return (
     <div
-      className="font-poppin pt-2 bg-white min-h-full"  >
+      className="font-poppin pt-2 bg-white min-h-full pb-10 lg:pb-0"  >
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -228,7 +228,7 @@ function Events() {
         pauseOnHover
       />
       <Navbar email={email} />
-      <div className="w-full  mx-auto mt-10 md:mt-20 flex items-start justify-center flex-col md:flex-row md:gap-10 lg:gap-20">
+      <div className="w-full mx-auto mt-10 md:mt-20 flex items-center justify-center flex-col gap-7  flex-wrap md:flex-row md:gap-10 lg:gap-20">
 
         <div className="">
           <div className="flex">
@@ -658,7 +658,7 @@ function Events() {
           </button>
         </div>
 
-        <div className="mt-4 md:mt-0 border border-[#0CA851] shadow-md p-5 rounded-xl">
+        <div className="mt-4 md:mt-0 border border-[#0CA851] shadow-md p-5 rounded-xl ">
           <div className="text-lg font-medium" style={{ color: "black" }}>
             Monitor Summary
           </div>
