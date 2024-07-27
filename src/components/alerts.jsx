@@ -22,10 +22,10 @@ const customStyles = {
 
 function Alerts() {
   const [emailInput, setEmailInput] = useState(""); // State to handle email inputs
-  const [riskCategory, setRiskCategory] = React.useState("");
   const [isSaved, setIsSaved] = useState(false);
-
+  
   // const [selectedOption, setSelectedOption] = useState("");
+  const [riskCategory, setRiskCategory] = useState("");
   const [actionType, setActionType] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
@@ -50,6 +50,20 @@ function Alerts() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if(riskCategory===""|| riskCategory==="default" || actionType==="" || actionType ==="default"){
+      console.error("No actions selected.");
+      setOpen(false)
+      toast.error("Please select all required fields!");
+      return;
+    }
+    if (actionType=== "email"){
+      if(emailInput===""|| emailInput=== undefined || emailInput=== null){
+        setOpen(false)
+      console.error("Please enter an valid email.");
+      toast.error("Please enter an valid email.");
+      return;
+      }
+    }
     const emails = emailInput.split(",").map((email) => email.trim());
     const emailString = emails.join(",");
     const postData = {
@@ -85,6 +99,10 @@ function Alerts() {
   // const handleOptionSelect = (option) => {
   //   setSelectedOption(option);
   // };
+  const copyMessage = () => {
+    navigator.clipboard.writeText(address);
+    toast.success("Address Copied successfully!");
+  }
   return (
     <div
       className="font-poppin pt-2 bg-white min-h-full"
@@ -389,61 +407,7 @@ function Alerts() {
         </div>
         <div className="w-[97%] md:w-1/3 lg:w-1/4 mt-5 md:mt-0 mx-auto md:mx-0 ">
           <form onSubmit={handleSubmit}>
-            {/* <div className="font-medium text-lg">
-              Risk Category
-              <div className="w-inherit border-2 border-[#bea4a4] shadow-md p-3 rounded-lg flex px-3 justify-between py-3">
-                <div className="text-lg font-medium">{selectedOption}</div>
-                <div>
-                  <svg
-                    width="21"
-                    height="22"
-                    viewBox="0 0 21 22"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M5.52539 8.4642L10.596 13.5348L15.6667 8.4642"
-                      stroke="black"
-                      strokeWidth="1.69021"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-              </div>
-              <div className="rounded-lg border-2 border-[#B4B4B4] border-t-0 shadow-md">
-                <div
-                  className={`p-3 ${
-                    selectedOption === "Low Severity" ? "bg-gray-200" : ""
-                  }`}
-                  onClick={() => handleOptionSelect("Low Severity")}
-                >
-                  <label htmlFor="opt1" className="text-[#8E8E8E] text-[13px]">
-                    Low Severity
-                  </label>
-                </div>
-                <div
-                  className={`p-3 ${
-                    selectedOption === "Medium Severity" ? "bg-gray-200" : ""
-                  }`}
-                  onClick={() => handleOptionSelect("Medium Severity")}
-                >
-                  <label htmlFor="opt2" className="text-[#8E8E8E] text-[13px]">
-                    Medium Severity
-                  </label>
-                </div>
-                <div
-                  className={`p-3 ${
-                    selectedOption === "High Severity" ? "bg-gray-200" : ""
-                  }`}
-                  onClick={() => handleOptionSelect("High Severity")}
-                >
-                  <label htmlFor="opt3" className="text-[#8E8E8E] text-[13px]">
-                    High Severity
-                  </label>
-                </div>
-              </div>
-            </div> */}
+            
             <div
               className="font-medium mt-5 text-lg"
               style={{ color: "black" }}
@@ -455,7 +419,7 @@ function Alerts() {
               name="category"
               id="category"
               // value={formData.category}
-
+              required
               onChange={(e) => setRiskCategory(e.target.value)}
               defaultValue="none"
               className="outline-none border-2 border-[#4C4C4C] py-3 rounded-xl  w-full px-3"
@@ -499,16 +463,17 @@ function Alerts() {
                     style={{ backgroundColor: "white" }}
                     className="outline-none border-2 border-[#4C4C4C] py-3 rounded-xl  w-full px-3"
                     value={actionType}
+                    required
                     onChange={(e) => setActionType(e.target.value)}
                   >
-                    <option value="">Select Action</option>
+                    <option value="default" hidden>Select Action</option>
                     <option value="email">Email</option>
                     <option value="other">Other Action</option>
                   </select>
                   {actionType === "email" && (
                     <input
                       style={{ backgroundColor: "white" }}
-                      type="text"
+                      type="email"
                       value={emailInput}
                       onChange={(e) => setEmailInput(e.target.value)}
                       className="mt-2 w-full border-2 border-gray-300 p-2 rounded-lg"
@@ -535,75 +500,7 @@ function Alerts() {
                 </div>
               </div>
             </div>
-            {/* <div className="mt-5">
-              <div className="font-medium">
-                Execute an Incident Response Scenario
-              </div>
-              <div className="w-inherit border-2 border-[#B4B4B4] shadow-md p-3 rounded-lg flex px-3 justify-between py-3">
-                <div className="font-medium">None</div>
-                <div>
-                  <svg
-                    width="21"
-                    height="22"
-                    viewBox="0 0 21 22"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M5.52539 8.4642L10.596 13.5348L15.6667 8.4642"
-                      stroke="black"
-                      stroke-width="1.69021"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div> */}
-            {/* <div className="flex gap-2">
-              <div className="mt-5 w-1/4">
-                <div className="font-medium">Alert</div>
-                <input
-                  type="text"
-                  value="1"
-                  className="w-full rounded-lg p-3 outline-none border border-black"
-                  placeholder="Variables: owner, spender, value"
-                />
-              </div>
-              <div className="mt-5 w-3/4">
-                <div className="font-medium">
-                  Minimum time between notifications
-                </div>
-                <div className="flex gap-1">
-                  <input
-                    type="text"
-                    value="0"
-                    className="w-1/2 rounded-lg p-3 outline-none border border-black"
-                    placeholder="Variables: owner, spender, value"
-                  />
-                  <div className="w-1/2 border border-black shadow-md p-3 rounded-lg flex px-3 justify-between py-3">
-                    <div className="font-medium">Minute</div>
-                    <div>
-                      <svg
-                        width="21"
-                        height="22"
-                        viewBox="0 0 21 22"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M5.52539 8.4642L10.596 13.5348L15.6667 8.4642"
-                          stroke="black"
-                          stroke-width="1.69021"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div> */}
+            
 
             <button
               className="py-3 w-full bg-[#28AA61] mt-10 rounded-lg text-white"
@@ -650,8 +547,10 @@ function Alerts() {
             </div>
             <div className="flex gap-1">
               <div className=" bg-[#E9E9E9] rounded-md p-2 text-[13px]">
-                {address}
+                {address.slice(0, 6)}...{address.slice(-4)}
               </div>
+              <button onClick={copyMessage}>
+
               <div className="my-auto">
                 <svg
                   width="19"
@@ -688,6 +587,7 @@ function Alerts() {
                   </defs>
                 </svg>
               </div>
+              </button>
             </div>
           </div>
           <div className="mt-3">

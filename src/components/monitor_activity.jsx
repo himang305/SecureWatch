@@ -34,7 +34,7 @@ function Monitor_activity() {
         );
       }
   return (
-    <div className='font-poppin pt-10 mx-2 min-h-screen' style={{'backgroundColor':'#FCFFFD'}}>
+    <div className='font-poppin pt-10 mx-2 min-h-screen w-full bg-white' style={{'backgroundColor':'#FCFFFD'}}>
       <Navbar/>
       <div className=' mx-auto mt-10'>
         <div className='w-4/6 mx-auto flex justify-center items-center md:justify-between  flex-col md:flex-row'>

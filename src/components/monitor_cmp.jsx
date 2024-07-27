@@ -85,6 +85,8 @@ const Monitor_cmp = (props) => {
         const mid = i.mid;
         const created_on = i.created_on;
         const address = i.address;
+        const alert_data = i.alert_data;
+        const alert_type = i.alert_type;
         return (
           <div className="w-full flex justify-center items-center flex-col mx-auto ">
             <div className="w-full mx-auto flex justify-center items-center flex-col ">
@@ -189,7 +191,7 @@ const Monitor_cmp = (props) => {
                 <div className="flex   items-center p-6 w-[30%] sm:w-[20%] md:w-[10%] ">
                   <div className="flex flex-col justify-end gap-7 items-center">
                     <button onClick={() =>{
-                      navigate("/monitor_Edit?id="+mid, { state: { mid,name,network,address } });
+                      navigate("/monitor_Edit?id="+mid, { state: { mid,name,network,address,alert_data,alert_type } });
                     }}>
                       <img src={Edit} alt="" className="h-8 w-8" />
                     </button>

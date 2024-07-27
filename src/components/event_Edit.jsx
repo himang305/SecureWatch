@@ -9,20 +9,19 @@ function Event_Edit() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const options = [
-    { value: 'Approval', label: 'Approval' },
-    { value: 'Transfer', label: 'Transfer' },
-  ]
+  const [options, setOptions] = useState([]);
   const [foundedEvents, setFoundedEvents] = useState([]);
   const [selectedValues, setSelectedValues] = useState([])
-  console.log("Founded events:", foundedEvents);
-  console.log("Selected values:", selectedValues);
+  const [totalEvents, setTotalEvents] = useState([])
+  console.log("Selected values:", selectedValues.length);
 
-  const { name, email, m_id, token, network, abi, address, rk } = location.state || "";
+  const { name, email, m_id, token, network, abi, address, rk,alert_data,alert_type } = location.state || "";
   const [networkState, setNetworkState] = useState(network || "");
   const [addressState, setAddressState] = useState(address || "");
   const [riskCategoryState, setRiskCategoryState] = useState(rk || "");
+  const [eventOperators, setEventOperators] = useState({});
   const [abiState, setAbiState] = useState(abi || "");
+  const [eventInputs, setEventInputs] = useState({});
   const mid = m_id;
 
   const [disp1, setDisp1] = useState("none");
@@ -38,17 +37,60 @@ function Event_Edit() {
 
   const [loading, setLoading] = useState(false);
   const [events, setEvents] = useState({});
-  const [transferOperator, setTransferOperator]=useState("")
-  const [approvalOperator, setApprovalOperator] = useState("");
-  const [transferInputs, setTransferInputs] = useState({ from: "", to: "", value: "" });
-  const [approvalInputs, setApprovalInputs] = useState({ owner: "", spender: "", value: "" });
-  console.log("Transfer operator is:",transferOperator);
-  console.log("Approval operator is:",approvalOperator);
 
-//useEffect for fetch the Previous events
+
+
+
+  useEffect(() => {
+    if (!location.state || !location.state.abi) {
+      console.error("ABI is not provided");
+      return;
+    }
+
+    let parsedAbi;
+    try {
+      parsedAbi = JSON.parse(location.state.abi);
+    } catch (error) {
+      console.error("Failed to parse ABI:", error);
+      return;
+    }
+
+    const events = parsedAbi.filter((item) => item.type === "event");
+    setFoundedEvents(
+      events.map((event) => ({
+        name: event.name,
+        inputs: event.inputs
+          .map((input) => `${input.name}: ${input.type}`)
+          .join(", "),
+      }))
+    );
+  }, [
+    location.state,
+    networkState,
+    addressState,
+    riskCategoryState,
+    abiState,
+  ]);
+
+  useEffect(() => {
+    const parsedOptions = foundedEvents.map((event) => ({
+      label: `${event.name} `,
+      value: event.name,
+    }));
+    // (${event.inputs})
+    console.log("Parsed options are:", parsedOptions);
+    setTotalEvents(parsedOptions)
+  }, [foundedEvents])
+
+
+
   useEffect(() => {
     const fetchMonitorEvents = async () => {
       try {
+        if (!m_id) {
+          console.warn('m_id is not set');
+          return;
+        }
         const res = await fetch("https://139-59-5-56.nip.io:3443/get_event", {
           method: "POST",
           headers: {
@@ -60,116 +102,40 @@ function Event_Edit() {
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
-
         const data = await res.json();
-        setEvents(data.monitors);
+        const events = data.monitors || [];
 
-        data.monitors.forEach(event => {
-          if (event.name === 'Transfer') {
-            // setSelectedValues(selectedValues => [...selectedValues, "Transfer"]);
-            setSelectedValues(selectedValues => {
-              if (!selectedValues.includes("Transfer")) {
-                return [...selectedValues, "Transfer"];
-              }
-              return selectedValues;
-            });
-            setFoundedEvents(foundedEvents =>
-              {
-                if (!foundedEvents.includes("Transfer")) {
-                  return [...foundedEvents, "Transfer"];
-                }
-                return foundedEvents;
-              });
+        // Initialize options
+        const newOptions = events.map(event => ({
+          label: event.name,
+          value: event.name,
+        }));
+        setOptions(newOptions);
 
-            // Parse and set Transfer inputs
-            const parsedArgs = parseArguments(event.arguments);
-            
-            let operator = ''
-            let value = parsedArgs.value;
+        // Initialize eventInputs and eventOperators
+        const newEventInputs = {};
+        const newEventOperators = {};
 
-            if (value) {
-              // Extract the operator from the beginning of the value along with "::"
-              const operatorMatch = value.match(/^(<|>|==)::/);
-              if (operatorMatch) {
-                operator = operatorMatch[0]; // Keep the operator with "::"
-                // console.log("Prev operator is:", operator);
-                value = value.replace(/^(<|>|==)::/, ''); // Remove the operator with "::" from value
-              }
+        events.forEach(event => {
+          const parsedArgs = parseArguments(event.arguments);
+          newEventInputs[event.name] = parsedArgs;
+
+          if (parsedArgs.value) {
+            const operatorMatch = parsedArgs.value.match(/^(<|>|==)::/);
+            if (operatorMatch) {
+              newEventOperators[event.name] = operatorMatch[0];
             }
-
-            setTransferInputs({
-              from: parsedArgs.from || '',
-              to: parsedArgs.to || '',
-              value: value || ''
-            });
-            setTransferOperator(operator);
-
-          } else if (event.name === 'Approval') {
-            setSelectedValues(selectedValues => {
-              if (!selectedValues.includes("Approval")) {
-                return [...selectedValues, "Approval"];
-              }
-              return selectedValues;
-            });
-            setFoundedEvents(foundedEvents =>
-              {
-                if (!foundedEvents.includes("Approval")) {
-                  return [...foundedEvents, "Approval"];
-                }
-                return foundedEvents;
-              }
-            );
-            // setSelectedValues(selectedValues => [...selectedValues, "Approval"]);
-            // Parse the arguments and extract values
-            const parsedArgs = parseArguments(event.arguments);
-            // console.log("parsed args are:",parsedArgs);
-
-            // Extract operator from value if present
-            let operator = ''
-            let value = parsedArgs.value;
-
-            if (value) {
-              // Extract the operator from the beginning of the value along with "::"
-              const operatorMatch = value.match(/^(<|>|==)::/);
-              if (operatorMatch) {
-                operator = operatorMatch[0]; // Keep the operator with "::"
-                // console.log("Prev operator is:", operator);
-                value = value.replace(/^(<|>|==)::/, ''); // Remove the operator with "::" from value
-              }
-            }
-
-            setApprovalInputs({
-              owner: parsedArgs.owner || '',
-              spender: parsedArgs.spender || '',
-              value: value || '' // Updated value without the operator
-            });
-            setApprovalOperator(operator);
-
           }
         });
 
-        // Helper function to handle various JSON formats
-function parseArguments(argumentsString) {
-  let parsedArgs;
+        setEvents(events);
+        setEventInputs(newEventInputs);
+        setEventOperators(newEventOperators);
 
-  try {
-    // Remove leading and trailing quotes if present
-    const cleanString = argumentsString.startsWith('"') && argumentsString.endsWith('"')
-      ? argumentsString.slice(1, -1)
-      : argumentsString;
-    // Attempt to unescape the string
-    const unescapedString = cleanString.replace(/\\(.)/g, "$1");
+        // Select previously updated events
+        const previouslySelected = Object.keys(newEventInputs);
+        setSelectedValues(previouslySelected);
 
-    // Parse the unescaped string
-    parsedArgs = JSON.parse(unescapedString);
-
-  } catch (error) {
-    console.error("Failed to parse arguments:", error);
-    parsedArgs = {};
-  }
-
-  return parsedArgs;
-}
       } catch (error) {
         console.error("Failed to fetch events:", error);
       }
@@ -180,14 +146,60 @@ function parseArguments(argumentsString) {
 
 
   useEffect(() => {
-    console.log("events are", events);
-  }, [events]);
+    console.log("Events are:", events);
+    console.log("Event Inputs are:",eventInputs);
+    console.log("Event Operators are:",eventOperators);
+    console.log("Selected values:", selectedValues);
+  }, [events, eventInputs, eventOperators, selectedValues]);
 
-  useEffect(()=>{
-    console.log("Transfer inputs are:",transferInputs);
-    console.log("Approval inputs are:",approvalInputs);
+  const parseArguments = (argumentsString) => {
+    try {
+      const cleanString = argumentsString.startsWith('"') && argumentsString.endsWith('"')
+        ? argumentsString.slice(1, -1)
+        : argumentsString;
+      const unescapedString = cleanString.replace(/\\(.)/g, "$1");
+      return JSON.parse(unescapedString);
+    } catch (error) {
+      console.error("Failed to parse arguments:", error);
+      return {};
+    }
+  };
 
-  },[transferInputs,approvalInputs])
+  const handleInputChange = (eventName, inputName, value) => {
+    setEventInputs(prevInputs => ({
+      ...prevInputs,
+      [eventName]: {
+        ...prevInputs[eventName],
+        [inputName]: value
+      }
+    }));
+  };
+
+
+
+  const handleOperatorChange = (eventName,inputName, value) => {
+    setEventInputs(prevInputs => ({
+      ...prevInputs,
+      [eventName]: {
+        ...prevInputs[eventName],
+        [inputName]: value.concat(/^\d/.test(prevInputs[eventName][inputName]) ? prevInputs[eventName][inputName] : prevInputs[eventName][inputName].startsWith('<') || prevInputs[eventName][inputName].startsWith('>') ? prevInputs[eventName][inputName].substring(3) : prevInputs[eventName][inputName].substring(4))        
+      }
+    }));
+  };
+
+  const handleSelectChange = (selectedOptions) => {
+    const values = selectedOptions.map(option => option.value);
+    setSelectedValues(values);
+  };
+
+  // Ensure ABI data is correctly parsed
+  const abiData = JSON.parse(abiState || '[]');
+  const abiEventsMap = abiData.reduce((acc, e) => {
+    acc[e.name] = e;
+    return acc;
+  }, {});
+
+
 
 
   const navigationState = {
@@ -198,384 +210,250 @@ function parseArguments(argumentsString) {
     m_id: m_id,
     email: email,
     token: token,
+    alert_data: alert_data,
+    alert_type: alert_type,
   };
 
   const handleSubmit = async () => {
+    try {
+      const errors = [];
+      const processingEvents = [];
+      const successStatus = new Map(); // Track success status for each event
+      let hasChanges = false;
   
-
-    // Check if either 'Transfer' or 'Approval' is selected
-    if (!selectedValues.includes('Transfer') && !selectedValues.includes('Approval')) {
-      console.error("No actions selected.");
-      toast.error("Please select at least one action.");
-      return;
-    }
-    try{
-
-      if(selectedValues.includes('Transfer') && selectedValues.includes('Approval') && foundedEvents.includes('Transfer') && foundedEvents.includes('Approval')){
-        
-      //prevent from empty values
-      if (!transferInputs.from || !transferInputs.to || !transferInputs.value || !transferOperator || transferOperator === "default") {
-        console.error("Transfer inputs are incomplete.");
-        toast.error("Please fill out all transfer fields.");
-        return;
-      }
-      if (!approvalInputs.owner || !approvalInputs.spender || !approvalInputs.value || !approvalOperator|| approvalOperator === "default") {
-        console.error("Approval inputs are incomplete.");
-        toast.error("Please fill out all approval fields.");
-        return;
-      }
-
-      // Fetch data from both APIs in parallel
-      const [transferRes, approvalRes] = await Promise.all([
-        fetch("https://139-59-5-56.nip.io:3443/update_event", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            id: events.find((event) => event.name === "Transfer").id,
-            name: "Transfer",
-            arguments: JSON.stringify({
-              from: transferInputs.from,
-              to: transferInputs.to,
-              value: transferOperator + transferInputs.value
-            }),
-          }),
-        }),
-        fetch("https://139-59-5-56.nip.io:3443/update_event", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            id: events.find((event) => event.name === "Approval").id,
-            name: "Approval",
-            arguments: JSON.stringify({
-              owner: approvalInputs.owner,
-              spender: approvalInputs.spender,
-              value: approvalOperator + approvalInputs.value
-            }),
-          }),
-        }),
-      ]);
-      // if all response was sucess then show success toast, if any error occured then thow error toast
-      if (transferRes.ok && approvalRes.ok) {
-        toast.success("Events Updated successfully!", {
-          autoClose: 500,
-          onClose: () => {
-            navigate("/alert_edit", { state: navigationState });
-          },
+      // Helper function to validate inputs
+      const validateInputs = (eventType, inputs) => {
+        const requiredFields = Object.keys(inputs).filter(field => inputs[field] !== undefined && inputs[field] !== null);
+        const incompleteFields = requiredFields.filter(field => !inputs[field]);
+  
+        if (incompleteFields.length > 0) {
+          errors.push({
+            eventType,
+            message: `${eventType} inputs are incomplete. Please fill in all required fields.`
+          });
+          return false;
+        }
+        return true;
+      };
+  
+      // Helper function to send requests
+      const sendRequest = async (url, method, data) => {
+        const response = await fetch(url, {
+          method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
         });
+        if (!response.ok) {
+          throw new Error(`Error fetching data from ${url}`);
+        }
+        return response.json(); // Return response JSON for further processing
+      };
+  
+      // Helper function to prepare event data
+      const prepareEventData = (eventType, inputs) => {
+        const cleanedValue = (inputs.value || "")
+        return {
+          name: eventType,
+          arguments: {
+            ...inputs,
+            value: cleanedValue,
+          },
+        };
+      };
+  
+      // Fetch existing events from the monitor
+      const fetchEventsFromMonitor = async (monitorId) => {
+        const response = await fetch('https://139-59-5-56.nip.io:3443/get_event', {
+          method: 'POST',
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mid: monitorId }),
+        });
+        if (!response.ok) {
+          throw new Error('Error fetching event data');
+        }
+        return response.json(); // Return response JSON for further processing
+      };
+  
+      // Fetch events from monitor
+      const monitorEventsResponse = await fetchEventsFromMonitor(m_id);
+  
+      // Log the entire response to verify structure
+      console.log("Fetched monitor events response:", monitorEventsResponse);
+  
+      // Extract the monitorEvents array from the response
+      const monitorEvents = monitorEventsResponse.monitors || []; // Default to empty array if missing
+  
+      // Check if monitorEvents is an array
+      if (Array.isArray(monitorEvents)) {
+        // Create a map of existing events by their ID for quick lookup
+        const eventMap = new Map(monitorEvents.map(event => [event.id, event]));
+  
+        // Log the eventMap to verify its content
+        console.log("Event map:", Array.from(eventMap.entries()));
+  
+        // Process each selected event dynamically
+        for (const eventType of selectedValues) {
+          const inputs = eventInputs[eventType] || {};
+  
+          // Log inputs to verify data
+          console.log(`Processing eventType: ${eventType}`);
+          console.log(`Inputs for ${eventType}:`, inputs);
+  
+          // Validate inputs
+          if (!validateInputs(eventType, inputs)) {
+            continue;
+          }
+  
+          // Prepare request data
+          const eventData = prepareEventData(eventType, inputs);
+          console.log(`Prepared event data for ${eventType}:`, eventData);
+          
+         
+  
+          // Check if the event ID exists in the fetched monitor events
+          const eventId = inputs.id;
+  
+          // Debugging logs
+          console.log(`Event ID to check: ${eventId}`);
+  
+          // Find the existing event based on ID or fallback to name
+          let existingEvent = eventId ? eventMap.get(eventId) : null;
+  
+          if (!existingEvent && eventId === undefined) {
+            // If no event found by ID and ID is undefined, try to find by name (fallback method)
+            const normalizedEventType = eventType.trim().toLowerCase();
+            existingEvent = monitorEvents.find(event => event.name.trim().toLowerCase() === normalizedEventType);
+          }
+  
+          console.log(`Existing event:`, existingEvent);
+          console.log("Existing event arugments:", existingEvent?.arguments);
+          console.log("xisting event arugments value:", eventData.arguments.value);
+          
+          if(eventData.arguments.value=="" || eventData.arguments.value=== undefined || eventData.arguments.value=== null){
+            console.warn("Invalid value field, please enter the valid value for all fields.");
+              toast.error("Invalid value field, please enter the valid value for all fields.");
+              return false;
+          }
+
+          if (eventData.arguments.value) {
+            const operators = ['<', '>', '=']; // Define the valid operators
+            const operator = eventData.arguments.value.charAt(0); // Get the first character of the value
+          // <:: >:: ==::
+            if (!operators.includes(operator)) {
+              console.warn("Invalid value field in argsObject.");
+              toast.error("Please choose a valid operator (<, >, =) for each value field.");
+              return false; // Exit if the value field is invalid
+            }
+          
+            // Function to check if a character is a digit
+            const isDigit = (char) => /\d/.test(char);
+          
+            // Check if the value is valid based on the operator
+            if (operator === '<' || operator === '>') {
+              const thirdChar = eventData.arguments.value.charAt(3);
+              if (!isDigit(thirdChar)) {
+                console.warn("Invalid number after operator in argsObject.");
+                toast.error("Please enter a valid number after the operator for all value field.");
+                return false; // Exit if the value field is invalid
+              }
+            } else if (operator === '=') {
+              const fourthChar = eventData.arguments.value.charAt(4);
+              if (!isDigit(fourthChar)) {
+                console.warn("Invalid number after operator in argsObject.");
+                toast.error("Please enter a valid number after the operator for all value field.");
+                return false; // Exit if the value field is invalid
+              }
+            }
+          }
+  
+          // Check for valid existing event and process accordingly
+          if (existingEvent) {
+            // If event is found and the name matches, update it
+            if (existingEvent.name.trim().toLowerCase() === eventType.trim().toLowerCase()) {
+              console.log(`Updating existing event: ${eventType} with ID: ${existingEvent.id}`);
+              
+              const requestData = { id: existingEvent.id, ...eventData };
+  
+              processingEvents.push(
+                sendRequest("https://139-59-5-56.nip.io:3443/update_event", "POST", requestData)
+                  .then(response => {
+                    console.log(`${eventType} updated successfully!`, response);
+                    successStatus.set(eventType, true); // Mark as successful
+                    hasChanges = true;
+                  })
+                  .catch(error => {
+                    console.error(`Error updating ${eventType}:`, error);
+                    errors.push({
+                      eventType,
+                      message: `Failed to update ${eventType} event. Please try again!`
+                    });
+                    successStatus.set(eventType, false); // Mark as failed
+                  })
+              );
+            } else {
+              console.log(`Event name mismatch: '${eventType}' does not match '${existingEvent.name}'. Skipping.`);
+              successStatus.set(eventType, false); // Mark as failed
+            }
+          } else {
+            // If event is not found, add it
+            console.log(`Adding new event: ${eventType}`);
+            const requestData = { mid: m_id, ...eventData };
+  
+            processingEvents.push(
+              sendRequest("https://139-59-5-56.nip.io:3443/add_event", "POST", requestData)
+                .then(response => {
+                  console.log(`${eventType} added successfully!`, response);
+                  successStatus.set(eventType, true); // Mark as successful
+                  hasChanges = true;
+                })
+                .catch(error => {
+                  console.error(`Error adding ${eventType}:`, error);
+                  errors.push({
+                    eventType,
+                    message: `Failed to add ${eventType} event. Please try again!`
+                  });
+                  successStatus.set(eventType, false); // Mark as failed
+                })
+            );
+          }
+        }
+  
+        // Wait for all event requests to complete
+        await Promise.all(processingEvents);
+  
+        // Display success and error toasts
+        const allSuccessful = Array.from(successStatus.values()).every(status => status);
+  
+        if (allSuccessful) {
+          // Display success toasts
+          selectedValues.forEach(eventType => {
+            if (successStatus.get(eventType)) {
+              toast.success(`${eventType} event processed successfully!`);
+            }
+          });
+          toast.success("Event updated successfully!", {
+            autoClose: 500,
+            onClose: () => {
+              navigate("/alert_edit", { state: navigationState });
+            },
+          });
+          // Redirect after success toasts are shown
+          
+        } else {
+          // Display validation errors for incomplete inputs
+          toast.error("Faild to update event. Please try again!");
+          errors.forEach(({ eventType, message }) => toast.error(message));
+        }
       } else {
-        throw new Error('Error fetching data');
-        toast.error("Failed to update Events. Please try again!");
+        console.error("monitorEvents is not an array or is missing.");
       }
-
-      }
-      else if(!foundedEvents.includes('Approval') && !foundedEvents.includes('Transfer') && selectedValues.includes('Approval') && selectedValues.includes('Transfer')){
-        if (!transferInputs.from || !transferInputs.to || !transferInputs.value || !transferOperator || transferOperator === "default") {
-          console.error("Transfer inputs are incomplete.");
-          toast.error("Please fill out all transfer fields.");
-          return;
-        }
-        if (!approvalInputs.owner || !approvalInputs.spender || !approvalInputs.value || !approvalOperator|| approvalOperator === "default") {
-          console.error("Approval inputs are incomplete.");
-          toast.error("Please fill out all approval fields.");
-          return;
-        }
-        const [transferRes, approvalRes] = await Promise.all([
-          fetch("https://139-59-5-56.nip.io:3443/add_event", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              name: "Transfer",
-              mid: m_id,
-              arguments: JSON.stringify({
-                from: transferInputs.from,
-                to: transferInputs.to,
-                value: transferOperator + transferInputs.value
-              }),
-            }),
-          }),
-          fetch("https://139-59-5-56.nip.io:3443/add_event", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              name: "Approval",
-              mid: m_id,
-              arguments: JSON.stringify({
-                owner: approvalInputs.owner,
-                spender: approvalInputs.spender,
-                value: approvalOperator + approvalInputs.value
-              }),
-            }),
-          }),
-        ]);
-        if (transferRes.ok && approvalRes.ok) {
-          toast.success("Events Updated successfully!", {
-            autoClose: 500,
-            onClose: () => {
-              navigate("/alert_edit", { state: navigationState });
-            },
-          });
-        } else {
-          throw new Error('Error fetching data');
-          toast.error("Failed to update Events. Please try again!");
-        }
-      }
-      else if(selectedValues.includes('Transfer') && !selectedValues.includes('Approval') && foundedEvents.includes('Transfer') ){
-
-        if (!transferInputs.from || !transferInputs.to || !transferInputs.value || !transferOperator || transferOperator === "default") {
-          console.error("Transfer inputs are incomplete.");
-          toast.error("Please fill out all transfer fields.");
-          return;
-        }
-        const transferRes = await fetch("https://139-59-5-56.nip.io:3443/update_event", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            id: events.find((event) => event.name === "Transfer").id,
-            name: "Transfer",
-            arguments: JSON.stringify({
-              from: transferInputs.from,
-              to: transferInputs.to,
-              value: transferOperator + transferInputs.value
-            }),
-          }),
-        });
-        if (transferRes.ok) {
-          toast.success("Events Updated successfully!", {
-            autoClose: 500,
-            onClose: () => {
-              navigate("/alert_edit", { state: navigationState });
-            },
-          });
-        } else {
-          throw new Error('Error fetching data');
-          toast.error("Failed to update Events. Please try again!");
-        }
-      }
-      else if(  selectedValues.includes('Transfer') && !selectedValues.includes('Approval') && !foundedEvents.includes('Transfer')){
-        if (!transferInputs.from || !transferInputs.to || !transferInputs.value || !transferOperator || transferOperator === "default") {
-          console.error("Transfer inputs are incomplete.");
-          toast.error("Please fill out all transfer fields.");
-          return;
-        }
-        const transferRes = await fetch("https://139-59-5-56.nip.io:3443/add_event", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: "Transfer",
-            mid: m_id,
-            arguments: JSON.stringify({
-              from: transferInputs.from,
-              to: transferInputs.to,
-              value: transferOperator + transferInputs.value
-            }),
-          }),
-        });
-        if (transferRes.ok) {
-          toast.success("Events Updated successfully!", {
-            autoClose: 500,
-            onClose: () => {
-              navigate("/alert_edit", { state: navigationState });
-            },
-          });
-        } else {
-          throw new Error('Error fetching data');
-          toast.error("Failed to update Events. Please try again!");
-        }
-      }
-      else if(selectedValues.includes('Approval') && !selectedValues.includes('Transfer') && foundedEvents.includes('Approval')){
-        if (!approvalInputs.owner || !approvalInputs.spender || !approvalInputs.value || !approvalOperator|| approvalOperator === "default") {
-          console.error("Approval inputs are incomplete.");
-          toast.error("Please fill out all approval fields.");
-          return;
-        }
-        const approvalRes = await fetch("https://139-59-5-56.nip.io:3443/update_event", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            id: events.find((event) => event.name === "Approval").id,
-            name: "Approval",
-            arguments: JSON.stringify({
-              owner: approvalInputs.owner,
-              spender: approvalInputs.spender,
-              value: approvalOperator + approvalInputs.value
-            }),
-          }),
-        });
-        if (approvalRes.ok) {
-          toast.success("Events Updated successfully!", {
-            autoClose: 500,
-            onClose: () => {
-              navigate("/alert_edit", { state: navigationState });
-            },
-          });
-        } else {
-          throw new Error('Error fetching data');
-          toast.error("Failed to update Events. Please try again!");
-        }
-      }
-      else if( selectedValues.includes('Approval') && !selectedValues.includes('Transfer') && !foundedEvents.includes('Approval') ){
-        if (!approvalInputs.owner || !approvalInputs.spender || !approvalInputs.value || !approvalOperator|| approvalOperator === "default") {
-          console.error("Approval inputs are incomplete.");
-          toast.error("Please fill out all approval fields.");
-          return;
-        }
-        const approvalRes = await fetch("https://139-59-5-56.nip.io:3443/add_event", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: "Approval",
-            mid: m_id,
-            arguments: JSON.stringify({
-              owner: approvalInputs.owner,
-              spender: approvalInputs.spender,
-              value: approvalOperator + approvalInputs.value
-            }),
-          }),
-        });
-        if (approvalRes.ok) {
-          toast.success("Events Updated successfully!", {
-            autoClose: 500,
-            onClose: () => {
-              navigate("/alert_edit", { state: navigationState });
-            },
-          });
-        } else {
-          throw new Error('Error fetching data');
-          toast.error("Failed to update Events. Please try again!");
-        }
-      }
-      else if(selectedValues.includes('Transfer') && selectedValues.includes('Approval') && !foundedEvents.includes('Transfer') && foundedEvents.includes('Approval')){
-        if (!transferInputs.from || !transferInputs.to || !transferInputs.value || !transferOperator || transferOperator === "default") {
-          console.error("Transfer inputs are incomplete.");
-          toast.error("Please fill out all transfer fields.");
-          return;
-        }
-        if (!approvalInputs.owner || !approvalInputs.spender || !approvalInputs.value || !approvalOperator|| approvalOperator === "default") {
-          console.error("Approval inputs are incomplete.");
-          toast.error("Please fill out all approval fields.");
-          return;
-        }
-        const [transferRes, approvalRes] = await Promise.all([
-          fetch("https://139-59-5-56.nip.io:3443/add_event", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              name: "Transfer",
-              mid: m_id,
-              arguments: JSON.stringify({
-                from: transferInputs.from,
-                to: transferInputs.to,
-                value: transferOperator + transferInputs.value
-              }),
-            }),
-          }),
-          fetch("https://139-59-5-56.nip.io:3443/update_event", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              id: events.find((event) => event.name === "Approval").id,
-              name: "Approval",
-              arguments: JSON.stringify({
-                owner: approvalInputs.owner,
-                spender: approvalInputs.spender,
-                value: approvalOperator + approvalInputs.value
-              }),
-            }),
-          }),
-        ]);
-        if (transferRes.ok && approvalRes.ok) {
-          toast.success("Events Updated successfully!", {
-            autoClose: 500,
-            onClose: () => {
-              navigate("/alert_edit", { state: navigationState });
-            },
-          });
-        } else {
-          throw new Error('Error fetching data');
-          toast.error("Failed to update Events. Please try again!");
-        }
-      }
-      else if (selectedValues.includes('Transfer') && selectedValues.includes('Approval') && foundedEvents.includes('Transfer') && !foundedEvents.includes('Approval')) {
-        if (!transferInputs.from || !transferInputs.to || !transferInputs.value || !transferOperator || transferOperator === "default") {
-          console.error("Transfer inputs are incomplete.");
-          toast.error("Please fill out all transfer fields.");
-          return;
-        }
-        if (!approvalInputs.owner || !approvalInputs.spender || !approvalInputs.value || !approvalOperator|| approvalOperator === "default") {
-          console.error("Approval inputs are incomplete.");
-          toast.error("Please fill out all approval fields.");
-          return;
-        }
-        const [transferRes, approvalRes] = await Promise.all([
-          fetch("https://139-59-5-56.nip.io:3443/update_event", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              id: events.find((event) => event.name === "Transfer").id,
-              name: "Transfer",
-              arguments: JSON.stringify({
-                from: transferInputs.from,
-                to: transferInputs.to,
-                value: transferOperator + transferInputs.value
-              }),
-            }),
-          }),
-          fetch("https://139-59-5-56.nip.io:3443/add_event", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              name: "Approval",
-              mid: m_id,
-              arguments: JSON.stringify({
-                owner: approvalInputs.owner,
-                spender: approvalInputs.spender,
-                value: approvalOperator + approvalInputs.value
-              }),
-            }),
-          }),
-        ]);
-        if (transferRes.ok && approvalRes.ok) {
-          toast.success("Events Updated successfully!", {
-            autoClose: 500,
-            onClose: () => {
-              navigate("/alert_edit", { state: navigationState });
-            },
-          });
-        } else {
-          throw new Error('Error fetching data');
-          toast.error("Failed to update Events. Please try again!");
-        }
-      }
-    }catch (error) {
-      console.error("Error sending event data:", error);
-      toast.error("Failed to update Event. Please try again!");
+    } catch (error) {
+      console.error("Unexpected error:", error);
+      toast.error("An unexpected error occurred. Please try again!");
     }
   };
-
+  
+  
 
   if (
     !events ||
@@ -1043,6 +921,10 @@ function parseArguments(argumentsString) {
       </div>
     );
   }
+  const copyMessage = () => {
+    navigator.clipboard.writeText(addressState);
+    toast.success("Address Copied successfully!");
+  }
 
   return (
     <div
@@ -1063,7 +945,7 @@ function parseArguments(argumentsString) {
       <Navbar email={email} />
       <div className="w-full mx-auto mt-10 md:mt-20 flex items-center justify-center flex-col gap-7  flex-wrap md:flex-row md:gap-10 lg:gap-20">
 
-        <div className="">
+        <div className="sm:ml-5 md:ml-10 lg:ml-40 ">
           <div className="flex">
             <div>
               <svg
@@ -1352,137 +1234,91 @@ function parseArguments(argumentsString) {
           </div>
         </div>
 
-        <div className="">
-          <div className="font-medium text-lg" style={{ color: "black" }}>
-            Choose the Signature Name
-          </div>
-          <div className="my-auto ml-auto">
-            <div className="flex flex-col  gap-4 m-3">
-              <Select 
-                options={options}
-                defaultValue={options.filter((option) => selectedValues.includes(option.value))}
-                isMulti
-                onChange={(selectedOptions) => {
-                  const values = selectedOptions.map((option) => option.value);
-                  setSelectedValues(values);
-                }}
-
-              />
+        <div className="w-[90%] sm:w-80 lg:w-[500px] mx-auto mt-5 mb-5 md:mt-0 md:mb-0  h-[500px] flex flex-col justify-start items-center md:overflow-y-auto  lg:pt-10">
+          <div className="flex flex-col justify-center items-center gap-6">
+            <div className="font-medium text-lg" style={{ color: "black" }}>
+              Choose the Signature Name
             </div>
 
-            <div className="mt-5">
-
-              {selectedValues.includes('Transfer') && (
-                <>
-                  <div className="mt-3 text-black font-medium mb-3">Transfer :</div>
-                  <div className="flex flex-col gap-3">
-                    <input
-                      className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
-                      style={{ backgroundColor: "white" }}
-                      placeholder="from:address"
-                      value={transferInputs.from || ""}
-                      required
-                      onChange={(e) => {
-                        setTransferInputs({ ...transferInputs, from: e.target.value });
-                      }}
-                    />
-                    <input
-                      className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
-                      style={{ backgroundColor: "white" }}
-                      placeholder="to:address"
-                      value={transferInputs.to || ""}
-                      required
-                      onChange={(e) => {
-                        setTransferInputs({ ...transferInputs, to: e.target.value });
-                      }}
-                    />
-                     <div className="flex gap-3">
-                      <select
-                        className="w-[50%] bg-white border rounded-lg border-black"
-                        onChange={(e) => {
-                          setTransferOperator(e.target.value);
-                        }}
-                        required
-                        value={transferOperator || ""}
-                      >
-                        <option hidden selected={transferOperator=='' || transferOperator==undefined || transferOperator==null}>uint</option>
-                        <option  value="<::" selected={transferOperator=="<::"}>&lt;</option>
-                        <option  value=">::" selected={transferOperator==">::"}>&gt;</option>
-                        <option  value="==::" selected={transferOperator=="==::"}>==</option>
-                      </select>
-                      <input
-                        className="w-[50%] rounded-lg p-2 outline-none border border-[#4C4C4C]"
-                        style={{ backgroundColor: "white" }}
-                        placeholder="uint256"
-                        value={transferInputs.value || ""}
-                        required
-                        onChange={(e) => {
-                          setTransferInputs({ ...transferInputs, value: e.target.value });
-                        }}
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {selectedValues.includes('Approval') && (
-                <>
-                  <div className="mt-3 text-black font-medium mb-3">Approval :</div>
-                  <div className="flex flex-col gap-3">
-                    <input
-                      className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
-                      style={{ backgroundColor: "white" }}
-                      placeholder="Owner:address"
-                      value={approvalInputs.owner || ""}
-                      required
-                      onChange={(e) => {
-                        setApprovalInputs({ ...approvalInputs, owner: e.target.value });
-                      }}
-                    />
-                    <input
-                      className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
-                      style={{ backgroundColor: "white" }}
-                      placeholder="Spender:address"
-                      value={approvalInputs.spender || ""}
-                      required
-                      onChange={(e) => {
-                        setApprovalInputs({ ...approvalInputs, spender: e.target.value });
-                      }}
-                    />
-                    <div className="flex gap-3">
-                      <select
-                        name=""
-                        id=""
-                        className="w-[50%] bg-white border rounded-lg border-black"
-                        onChange={(e) => {
-                          setApprovalOperator(e.target.value);
-                        }}
-                        required
-                        value={approvalOperator||""}
-                      >
-                        <option hidden selected={approvalOperator=='' || approvalOperator==undefined || approvalOperator==null}>uint</option>
-                        <option  value="<::" selected={approvalOperator=="<::"}>&lt;</option>
-                        <option  value=">::" selected={approvalOperator==">::"}>&gt;</option>
-                        <option  value="==::" selected={approvalOperator== "==::" }>==</option>
-                      </select>
-                      <input
-                        className="w-[50%] rounded-lg p-2 outline-none border border-[#4C4C4C]"
-                        style={{ backgroundColor: "white" }}
-                        placeholder="uint256"
-                        value={approvalInputs.value || ""}
-                        required
-                        onChange={(e) => {
-                          setApprovalInputs({ ...approvalInputs, value: e.target.value });
-                        }}
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
-
+            <div className="my-auto   min-w-full">
+              <div className="flex flex-col gap-4 m-3">
+                <Select
+                  isMulti
+                  options={totalEvents}
+                  defaultValue={options}
+                  onChange={handleSelectChange}
+                />
+              </div>
             </div>
-
           </div>
+
+
+          <div className="w-full  max-h-[400px] p-5 overflow-y-auto mb-2 edit-event mt-2">
+                {selectedValues.length === 0 ? (
+                  <p>No events selected.</p>
+                ) : (
+                  selectedValues.map(eventName => {
+                    const abiEvent = abiEventsMap[eventName];
+                    if (!abiEvent) {
+                      console.warn(`ABI Event not found for: ${eventName}`);
+                      return null;
+                    }
+                    console.log("abiEvent", abiEvent);
+
+                    return (
+                      <div key={eventName}>
+                        <div className="mt-3 text-black font-medium mb-3">{eventName} :</div>
+                        <div className="flex flex-col gap-3">
+                          {abiEvent.inputs.map(input => (
+                            <div>
+                            <input
+                              key={input.name}
+                              className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
+                              style={{ backgroundColor: "white" }}
+                              placeholder={`${input.name}: ${input.type}`}
+                              value={eventInputs[eventName]?.[input.name] || ""}
+                              required
+                              onChange={(e) => handleInputChange(eventName, input.name, e.target.value)}
+                            />
+                            {input.name === 'value' && ( <div className="flex gap-3">
+                              <select
+                                className="w-full py-2 bg-white border rounded-lg border-black mt-5"
+                                onChange={(e) => handleOperatorChange(eventName, input.name ,e.target.value)}
+                                required
+                                // value={eventInputs[eventName]?.[input.name].slice(0,1) || ""}
+                              >
+                                <option hidden value="default">Select operator</option>
+                                <option value="<::">&lt;</option>
+                                <option value=">::">&gt;</option>
+                                <option value="==::">==</option>
+                              </select>
+                            </div>)}
+                          
+                          </div>
+                          )
+                          )}
+                          {/* {abiEvent.inputs.some(input => input.name === 'value') && (
+                            <div className="flex gap-3">
+                              <select
+                                className="w-full py-2 bg-white border rounded-lg border-black"
+                                onChange={(e) => handleOperatorChange(eventName, e.target.value)}
+                                required
+                                value={eventOperators[eventName] || ""}
+                              >
+                                <option hidden value="default">uint</option>
+                                <option value="<::">&lt;</option>
+                                <option value=">::">&gt;</option>
+                                <option value="==::">==</option>
+                              </select>
+                            </div>
+                          )} */}
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+
           <button
             className="py-3 w-full bg-[#28AA61]  rounded-lg text-white mt-5"
             onClick={handleSubmit}
@@ -1491,7 +1327,7 @@ function parseArguments(argumentsString) {
           </button>
         </div>
 
-        <div className="border border-[#0CA851] shadow-md p-5 rounded-xl">
+        <div className="mt-4 md:mt-0 border border-[#0CA851] mx-auto shadow-md p-4 md:p-10 rounded-xl mb-3 md:mb-0">
           <div className="text-lg font-medium" style={{ color: "black" }}>
             Monitor Summary
           </div>
@@ -1534,8 +1370,9 @@ function parseArguments(argumentsString) {
             </div>
             <div className="flex gap-1">
               <div className=" bg-[#E9E9E9] rounded-md p-2 text-[13px]">
-                {addressState}
+                {addressState.slice(0, 6) + "..." + addressState.slice(-4)}
               </div>
+              <button onClick={copyMessage}>
               <div className="my-auto">
                 <svg
                   width="19"
@@ -1572,6 +1409,7 @@ function parseArguments(argumentsString) {
                   </defs>
                 </svg>
               </div>
+              </button>
             </div>
           </div>
           <div className="mt-3">
@@ -1636,7 +1474,7 @@ function parseArguments(argumentsString) {
         </div>
 
       </div>
-    </div>
+    </div >
   );
 }
 

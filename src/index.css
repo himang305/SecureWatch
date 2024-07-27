@@ -32,6 +32,28 @@ html,body,#root{
   display: none; /* Track color */
   border-radius: 4px;
 }
+.edit-event::-webkit-scrollbar {
+  height: 5px;
+  width: 4px; /* Height of the horizontal scrollbar */
+}
+
+/* Style the handle */
+.edit-event::-webkit-scrollbar-thumb {
+  background: #888; /* Handle color */
+  border-radius: 2px;
+}
+
+/* Handle on hover */
+.edit-event::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Style the track (optional) */
+.edit-event::-webkit-scrollbar-track {
+  background: #f1f1f1;
+   /* Track color */
+  border-radius: 4px;
+}
 #home_heading{
     border: 1px solid;
 border-image-source: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0) 100%);

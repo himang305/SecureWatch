@@ -24,6 +24,8 @@ function Monitor_Edit() {
 
   const { mid } = location.state;
   const { name } = location.state;
+  const {alert_data}= location.state;
+  const {alert_type}= location.state;
   // const { address }= location.state;
   // const {network} = location.state;
 
@@ -63,7 +65,7 @@ function Monitor_Edit() {
       // console.log(" ABI  is:", abi);
       // console.log(" user id is", user_Id);
 
-      toast.success("Monitor created successfully!", {
+      toast.success("Details updated successfully!", {
         autoClose: 500,
         onClose: () => {
           navigate("/event_Edit", {
@@ -76,6 +78,8 @@ function Monitor_Edit() {
               m_id: selectedMonitor.mid,
               email: email,
               token: token,
+              alert_data: alert_data || "",
+              alert_type: alert_type || "",
             },
           });
         },
@@ -474,75 +478,7 @@ function Monitor_Edit() {
         </div>
         <div className="mt-4 md:mt-0 w-full md:w-1/2 pb-20">
           <form onSubmit={handleSubmit}>
-            {/* <div className="font-medium text-xl" style={{ color: "black" }}>
-              Name
-            </div>
-            <div
-              className="text-lg text-[#989898] mt-1"
-              style={{ color: "black" }}
-            >
-              Give your monitor a name to make it easier to identify it. Only
-              for display purposes.
-            </div>
-            <input
-              style={{ backgroundColor: "white" }}
-              type="text"
-              name="name"
-              placeholder={selectedMonitor.name}
-              onChange={(e) => setMonitorName(e.target.value)}
-              className="outline-none border-2 border-[#4C4C4C] w-full rounded-xl p-2 py-3 mt-1 "
-            /> */}
-            {/* <div
-              className="font-medium mt-5 text-lg"
-              style={{ color: "black" }}
-            >
-              Risk Category
-            </div>
-            <select
-              style={{ backgroundColor: "white" }}
-              name="category"
-              id="category"
-              placeholder={selectedMonitor.c}
-              // value={formData.category}
-
-              onChange={(e) => setRiskCategory(e.target.value)}
-              className="outline-none border-2 border-[] py-3 rounded-xl  w-full px-3"
-            >
-              <option
-                value="none"
-                selected
-                disabled
-                hidden
-                className="text-xl font-medium"
-              >
-                None
-              </option>
-              <option
-                value="governance"
-                className="text-[13px] text-[#959595] "
-              >
-                Governance
-              </option>
-              <option
-                value="access control"
-                className="text-[13px] text-[#959595]"
-              >
-                Access Control
-              </option>
-              <option
-                value="suspicious activity"
-                className="text-[13px] text-[#959595]"
-              >
-                Suspicious Activity
-              </option>
-              <option value="financial" className="text-[13px] text-[#959595]">
-                Financial
-              </option>
-              <option value="technical" className="text-[13px] text-[#959595]">
-                Technical
-              </option>
-            </select> */}
-
+        
             <div
               className="text-lg font-medium mt-5"
               style={{ color: "black" }}

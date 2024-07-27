@@ -1,27 +1,31 @@
-import React,{ useState,useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "./navbar2";
-import Select from "react-select";
+import { useLocation, useNavigate } from "react-router-dom";
+
+import * as React from "react";
+// import check from "../images/check-circle.png";
+// import { Link, useLocation } from "react-router-dom";
+import { useState } from "react";
+import axios from "axios";
+import Web3 from "web3";
+// import Select from "react-select";
+import Select, { components } from "react-select";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+//
 
 function Events() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const options = [
-    { value: 'Approval', label: 'Approval' },
-    { value: 'Transfer', label: 'Transfer' },
-  ]
-  const [selectedValues, setSelectedValues] = useState([])
-
-
-  const { name, email, m_id, token, network, abi, address, rk } = location.state || "";
-  const [networkState, setNetworkState] = useState(network || "");
+  const { name, email, m_id, token, network, abi, address, rk } =
+    location.state || "";
+  const [networkState, setNetworkState] = useState(network || ""); // Default to 'MAINNET' if not provided
+  //  const [contractNameState, setContractNameState] = useState(alert_data || "");
   const [addressState, setAddressState] = useState(address || "");
   const [riskCategoryState, setRiskCategoryState] = useState(rk || "");
   const [abiState, setAbiState] = useState(abi || "");
-  console.log("M_id in events page:",m_id);
+  // console.log(token);
+  // console.log(m_id);
   const mid = m_id;
 
   const [disp1, setDisp1] = useState("none");
@@ -38,184 +42,317 @@ function Events() {
   const [eventDetails, setEventDetails] = React.useState([]);
   const [selectedEvents, setSelectedEvents] = React.useState({});
   const [selectedEventNames, setSelectedEventNames] = useState([]);
-
-
-  const [events, setEvents] = useState({});
-  const [transferOperator, setTransferOperator]=useState("")
-  const [approvalOperator, setApprovalOperator] = useState("");
-  const [transferInputs, setTransferInputs] = useState({ from: "", to: "", value: "" });
-  const [approvalInputs, setApprovalInputs] = useState({ owner: "", spender: "", value: "" });
-
-
-
-  useEffect(()=>{
-    console.log("Transfer inputs are:",transferInputs);
-    console.log("Approval inputs are:",approvalInputs);
-
-  },[transferInputs,approvalInputs])
-
-  const navigationState = {
-    monitorName: name,
-    network: networkState,
-    address: addressState,
-    rk: riskCategoryState,
-    m_id: m_id,
-    email: email,
-    token: token,
+  const handleAddEvent = (eventName, argDetails) => {
+    const args = argDetails.split(',').map(arg => arg.trim());
+    setSelectedEvents(prevState => ({
+      ...prevState,
+      [eventName]: {
+        argDetails,
+        args: Array(args.length).fill(''), // Initialize as an array of empty strings
+        operators: Array(args.length).fill('') // Initialize operators similarly
+      }
+    }));
   };
 
-  const handleSubmit = async () => {
-  
-    // Check if either 'Transfer' or 'Approval' is selected
-    if (!selectedValues.includes('Transfer') && !selectedValues.includes('Approval')) {
-      console.error("No actions selected.");
-      toast.error("Please select at least one action.");
+  const handleArgumentChange = (event, eventName, index) => {
+    const newValue = event.target.value;
+    setSelectedEvents(prevEvents => {
+      // Make sure event.args is an array
+      const eventData = prevEvents[eventName] || { args: [], operators: [] };
+      // console.log("Event Data:", eventData);
+      const updatedArgs = [...eventData.args];
+      updatedArgs[index] = newValue;
+      // console.log("Updated Args:", updatedArgs);
+      return {
+        ...prevEvents,
+        [eventName]: {
+          ...eventData,
+          args: updatedArgs
+        }
+      };
+    });
+  };
+
+  const handleOperatorChange = (e, eventName, index) => {
+    const newOperator = e.target.value;
+    setSelectedEvents(prevEvents => {
+      const eventData = prevEvents[eventName] || { args: [], operators: [] };
+      const updatedOperators = [...(eventData.operators || [])];
+      updatedOperators[index] = newOperator;
+      return {
+        ...prevEvents,
+        [eventName]: {
+          ...eventData,
+          operators: updatedOperators
+        }
+      };
+    });
+  };
+
+
+  React.useEffect(() => {
+    if (!location.state || !location.state.abi) {
+      console.error("ABI is not provided");
       return;
     }
-    try{
 
-      if(selectedValues.includes('Transfer') && selectedValues.includes('Approval')){
+    let parsedAbi;
+    try {
+      parsedAbi = JSON.parse(location.state.abi);
+    } catch (error) {
+      console.error("Failed to parse ABI:", error);
+      return;
+    }
+
+    const events = parsedAbi.filter((item) => item.type === "event");
+    setEventDetails(
+      events.map((event) => ({
+        name: event.name,
+        inputs: event.inputs
+          .map((input) => `${input.name}: ${input.type}`)
+          .join(", "),
+      }))
+    );
+  }, [
+    location.state,
+    networkState,
+    // contractNameState,
+    addressState,
+    riskCategoryState,
+    abiState,
+  ]);
+
+  const options = eventDetails.map((event) => ({
+    label: `${event.name} `,
+    value: event.name,
+  }));
+  // (${event.inputs})
+  // Handle event selection and prompt for arguments (UPDATED)
+  const handleEventSelection = (selectedOptions) => {
+    const newSelectedEvents = {};
+    selectedOptions.forEach((option) => {
+      const eventName = option.value;
+      if (!selectedEvents[eventName]) {
+        newSelectedEvents[eventName] = {
+          args: "",
+          argDetails: eventDetails
+            .find((event) => event.name === eventName)
+            .inputs.split(", ")
+            .map((arg) => arg.split(": ")[0])
+            .join(", "),
+        };
+      } else {
+        newSelectedEvents[eventName] = selectedEvents[eventName]; // Preserve existing args
+      }
+    });
+    setSelectedEvents(newSelectedEvents);
+    setSelectedEventNames(selectedOptions.map((option) => option.label));
+  };
+
+
+  const web3 = new Web3();
+
+  const handleSaveMonitor = async () => {
+    // Validate if eventDetails is an array
+    if (!Array.isArray(eventDetails)) {
+      console.error("eventDetails is not an array:", eventDetails);
+      return; // Exit if eventDetails is not an array
+    }
+  
+    // Validate if all selected events have their arguments filled
+    const allEventsValid = Object.entries(selectedEvents).every(([eventName, eventDataEntry]) => {
+      const event = eventDetails.find((e) => e.name === eventName);
+      if (!event) {
+        console.error("Event not found in eventDetails:", eventName);
+        return false; // Skip if the event is not found
+      }
+      console.log("Event Data Entry is:", eventDataEntry);
+  
+      // Ensure args is an array
+      const argsArray = Array.isArray(eventDataEntry.args)
+        ? eventDataEntry.args
+        : eventDataEntry.args.split(",").map(arg => arg.trim());
+        console.log("Args Array is:", argsArray);
+  
+      // Map argument details from event inputs
+      const argDetails = event.inputs.split(", ").map((arg) => {
+        const [name] = arg.split(": ");
+        return name;
+      });
+      console.log("Arg Details is:", argDetails);
+  
+      // Create an object of arguments
+      const argsObject = argDetails.reduce((acc, argName, index) => {
+        acc[argName] = argsArray[index];
+        return acc;
+      }, {});
+      console.log("Args Object is:", argsObject);
+
+      // Validate the value field in argsObject
+    //   if(argsObject.value){
+    //     const operators = ['<', '>', '=']; // Add more operators if needed
+    //     const operator = argsObject.value.charAt(0);
+    //     if (!operators.includes(operator)) {
+    //       console.warn("Invalid value field in argsObject.");
+    //       toast.error("Please choose a valid operator (<, >, ==) for each value field.");
+    //       return false; // Exit if the value field is invalid
+    //   } 
+    // }
+    if (argsObject.value) {
+      const operators = ['<', '>', '=']; // Define the valid operators
+      const operator = argsObject.value.charAt(0); // Get the first character of the value
+    // <:: >:: ==::
+      if (!operators.includes(operator)) {
+        console.warn("Invalid value field in argsObject.");
+        toast.error("Please choose a valid operator (<, >, =) for each value field.");
+        return false; // Exit if the value field is invalid
+      }
+    
+      // Function to check if a character is a digit
+      const isDigit = (char) => /\d/.test(char);
+    
+      // Check if the value is valid based on the operator
+      if (operator === '<' || operator === '>') {
+        const thirdChar = argsObject.value.charAt(3);
+        if (!isDigit(thirdChar)) {
+          console.warn("Invalid number after operator in argsObject.");
+          toast.error("Please enter a valid number after the operator.");
+          return false; // Exit if the value field is invalid
+        }
+      } else if (operator === '=') {
+        const fourthChar = argsObject.value.charAt(4);
+        if (!isDigit(fourthChar)) {
+          console.warn("Invalid number after operator in argsObject.");
+          toast.error("Please enter a valid number after the operator.");
+          return false; // Exit if the value field is invalid
+        }
+      }
+    }
+    
+      
+
+      
+  
+      // Validate if all required arguments are provided
+      const allArgsFilled = argDetails.every((argName, index) => argsArray[index] && argsArray[index].trim() !== "");
+      return allArgsFilled;
+    });
+  
+    if (!allEventsValid) {
+      console.warn("Not all arguments are filled for every selected event.");
+      toast.error("Please provide values for all required arguments for every selected event.");
+      return; // Exit if any event is missing arguments
+    }
+  
+    // Prepare data for valid events
+    const validEventEntries = Object.entries(selectedEvents);
+  
+    // Prepare navigation state
+    const navigationState = {
+      monitorName: name,
+      network: network,
+      address: address,
+      rk: rk,
+      m_id: mid,
+      email: email,
+      token: token,
+      selectedEventNames: selectedEventNames,
+    };
+  
+    // Process each event
+    const eventPromises = validEventEntries.map(async ([eventName, eventDataEntry]) => {
+      const event = eventDetails.find((e) => e.name === eventName);
+      if (!event) {
+        console.error("Event not found in eventDetails:", eventName);
+        return; // Exit if the event is not found
+      }
+  
+      // Ensure args is an array
+      const argsArray = Array.isArray(eventDataEntry.args)
+        ? eventDataEntry.args
+        : eventDataEntry.args.split(",").map(arg => arg.trim());
+
+      // Map argument details from event inputs
+      const argDetails = event.inputs.split(", ").map((arg) => {
+        const [name] = arg.split(": ");
+        return name;
+      });
+  
+      // Create an object of arguments
+      const argsObject = argDetails.reduce((acc, argName, index) => {
+        acc[argName] = argsArray[index];
+        return acc;
+      }, {});
+  
+      // Check if 'inputs' is available and correctly formatted
+      if (!event.inputs || typeof event.inputs !== "string") {
+        console.error("Event inputs are not correctly formatted:", event.inputs);
+        return;
+      }
+  
+      // Generate the event signature
+      const eventSignatureInputs = event.inputs.split(", ")
+        .map((input) => {
+          const [, type] = input.split(": ");
+          return type;
+        })
+        .join(",");
+  
+      const eventSignatureData = `${event.name}(${eventSignatureInputs})`;
+      let eventSignature;
+      try {
+        eventSignature = web3.eth.abi.encodeEventSignature(eventSignatureData);
+      } catch (error) {
+        console.error("Failed to encode event signature:", error, "with data:", eventSignatureData);
+        return;
+      }
+  
+      const body = {
+        name: eventName,
+        mid: mid,
+        signature: eventSignature,
+        arguments: argsObject,
+      };
+  
+      // Send data to the server
+      try {
+        const response = await axios.post("https://139-59-5-56.nip.io:3443/add_event", body);
+        console.log("Event added:", response.data);
+        console.log("Arguments Object:", argsObject);
+        console.log("signature is:", eventSignature);
+        console.log("network in event is", network);
+        console.log("event is:", selectedEventNames);
+        console.log("monitor id is:", m_id);
+        console.log("event name is:", eventName);
         
-      //prevent from empty values
-      if (!transferInputs.from || !transferInputs.to || !transferInputs.value || !transferOperator || transferOperator === "default") {
-        console.error("Transfer inputs are incomplete.");
-        toast.error("Please fill out all transfer fields.");
-        return;
-      }
-      if (!approvalInputs.owner || !approvalInputs.spender || !approvalInputs.value || !approvalOperator|| approvalOperator === "default") {
-        console.error("Approval inputs are incomplete.");
-        toast.error("Please fill out all approval fields.");
-        return;
-      }
-
-      // Fetch data from both APIs in parallel
-      const [transferRes, approvalRes] = await Promise.all([
-        fetch("https://139-59-5-56.nip.io:3443/add_event", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: "Transfer",
-            mid: m_id,
-            arguments: JSON.stringify({
-              from: transferInputs.from,
-              to: transferInputs.to,
-              value: transferOperator + transferInputs.value
-            }),
-          }),
-        }),
-        fetch("https://139-59-5-56.nip.io:3443/add_event", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: "Approval",
-            mid: m_id,
-            arguments: JSON.stringify({
-              owner: approvalInputs.owner,
-              spender: approvalInputs.spender,
-              value: approvalOperator + approvalInputs.value
-            }),
-          }),
-        }),
-      ]);
-      // if all response was sucess then show success toast, if any error occured then thow error toast
-      if (transferRes.ok && approvalRes.ok) {
-        toast.success("Events added successfully!", {
+        // Show success message and navigate to alerts
+        toast.success("Event Added successfully!", {
           autoClose: 500,
           onClose: () => {
             navigate("/alerts", { state: navigationState });
           },
         });
-      } else {
-        throw new Error('Error fetching data');
-        toast.error("Failed to add Events. Please try again!");
+      } catch (error) {
+        console.error("Error sending event data:", error);
+        toast.error("Failed to Add Event. Please try again!");
       }
-
-      }
-      else if(selectedValues.includes('Transfer') && !selectedValues.includes('Approval')){
-        if (!transferInputs.from || !transferInputs.to || !transferInputs.value || !transferOperator || transferOperator === "default") {
-          console.error("Transfer inputs are incomplete.");
-          toast.error("Please fill out all transfer fields.");
-          return;
-        }
-        const transferRes = await fetch("https://139-59-5-56.nip.io:3443/add_event", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: "Transfer",
-            mid: m_id,
-            arguments: JSON.stringify({
-              from: transferInputs.from,
-              to: transferInputs.to,
-              value: transferOperator + transferInputs.value
-            }),
-          }),
-        });
-        if (transferRes.ok) {
-          toast.success("Events added successfully!", {
-            autoClose: 500,
-            onClose: () => {
-              navigate("/alerts", { state: navigationState });
-            },
-          });
-        } else {
-          throw new Error('Error fetching data');
-          toast.error("Failed to add Events. Please try again!");
-        }
-      }
-      else if (selectedValues.includes('Approval') && !selectedValues.includes('Transfer')){
-        if (!approvalInputs.owner || !approvalInputs.spender || !approvalInputs.value || !approvalOperator|| approvalOperator === "default") {
-          console.error("Approval inputs are incomplete.");
-          toast.error("Please fill out all approval fields.");
-          return;
-        }
-        const approvalRes = await fetch("https://139-59-5-56.nip.io:3443/add_event", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: "Approval",
-            mid: m_id,
-            arguments: JSON.stringify({
-              owner: approvalInputs.owner,
-              spender: approvalInputs.spender,
-              value: approvalOperator + approvalInputs.value
-            }),
-          }),
-        });
-        if (approvalRes.ok) {
-          toast.success("Events added successfully!", {
-            autoClose: 500,
-            onClose: () => {
-              navigate("/alerts", { state: navigationState });
-            },
-          });
-        } else {
-          throw new Error('Error fetching data');
-          toast.error("Failed to add Events. Please try again!");
-        }
-      }
-      
-    }catch (error) {
-      console.error("Error sending event data:", error);
-      toast.error("Failed to update Event. Please try again!");
-    }
-  };
-
-
- 
-
-
+    });
   
+    // Wait for all events to be processed
+    await Promise.all(eventPromises);
+  };
+  
+  const copymessage = () => {
+    navigator.clipboard.writeText(addressState);
+    toast.success("Address Copied successfully!");
+  }
+  
+
   return (
     <div
-      className="font-poppin pt-2 bg-white min-h-full pb-10 lg:pb-0"  >
+      className="font-poppin pt-2 bg-white min-h-full"
+      style={{ backgroundColor: "#FCFFFD" }}
+    >
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -228,9 +365,8 @@ function Events() {
         pauseOnHover
       />
       <Navbar email={email} />
-      <div className="w-full mx-auto mt-10 md:mt-20 flex items-center justify-center flex-col gap-7  flex-wrap md:flex-row md:gap-10 lg:gap-20">
-
-        <div className="">
+      <div className="w-full  flex justify-center items-center flex-wrap mt-10 gap-3">
+        <div className="sm:ml-5 md:ml-10 lg:ml-40 ">
           <div className="flex">
             <div>
               <svg
@@ -518,147 +654,102 @@ function Events() {
             </div>
           </div>
         </div>
-        
-        <div className="">
-          <div className="font-medium text-lg" style={{ color: "black" }}>
-            Choose the Signature Name
-          </div>
-          <div className="my-auto ml-auto">
-            <div className="flex flex-col  gap-4 m-3">
-              <Select 
-                options={options}
-                defaultValue={options.filter((option) => selectedValues.includes(option.value))}
-                isMulti
-                onChange={(selectedOptions) => {
-                  const values = selectedOptions.map((option) => option.value);
-                  setSelectedValues(values);
-                }}
 
+        <div className="w-[90%] sm:w-80 lg:w-[500px] mx-auto mt-5 mb-5 md:mt-0 md:mb-0  h-[500px] flex flex-col justify-start items-center md:overflow-y-auto  lg:pt-10">
+
+        <div className="flex flex-col justify-center items-center gap-6">
+          <div className="font-medium text-lg" style={{ color: "black" }}>
+            Enter the Signature Name
+          </div>
+          <div className="my-auto   min-w-full">
+            {/* w-inherit border-2 border-[#B4B4B4] shadow-md p-3 rounded-lg flex px-3 justify-between py-3 */}
+
+            <div className="w-full">
+              <Select
+                options={options}
+                isMulti
+                closeMenuOnSelect={false}
+                components={{ Option: components.Option }}
+                onChange={handleEventSelection}
+                className="w-full"
+                classNamePrefix="select"
+                placeholder="Search and select events..."
+                noOptionsMessage={() => "No events found"}
+                value={options.filter((option) =>
+                  selectedEventNames.includes(option.label)
+                )} // Filter options based on selectedEventNames
               />
             </div>
+          </div>
+          </div>
 
-            <div className="mt-5">
+          <div className="w-full  max-h-[400px] p-5 overflow-y-auto mb-4 edit-event mt-2">
+            {Object.entries(selectedEvents).map(([eventName, eventData]) => {
+              const args = eventData.argDetails
+                ? eventData.argDetails.split(',').map(arg => arg.trim())
+                : [];
+                console.log("Event Data is:",eventData);
+                console.log("Args:",args);
 
-              {selectedValues.includes('Transfer') && (
-                <>
-                  <div className="mt-3 text-black font-medium mb-3">Transfer :</div>
-                  <div className="flex flex-col gap-3">
-                    <input
-                      className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
-                      style={{ backgroundColor: "white" }}
-                      placeholder="from:address"
-                      value={transferInputs.from || ""}
-                      required
-                      onChange={(e) => {
-                        setTransferInputs({ ...transferInputs, from: e.target.value });
-                      }}
-                    />
-                    <input
-                      className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
-                      style={{ backgroundColor: "white" }}
-                      placeholder="to:address"
-                      value={transferInputs.to || ""}
-                      required
-                      onChange={(e) => {
-                        setTransferInputs({ ...transferInputs, to: e.target.value });
-                      }}
-                    />
-                     <div className="flex gap-3">
-                      <select
-                        className="w-[50%] bg-white border rounded-lg border-black"
-                        onChange={(e) => {
-                          setTransferOperator(e.target.value);
-                        }}
-                        required
-                        value={transferOperator || ""}
-                      >
-                        <option hidden selected={transferOperator=='' || transferOperator==undefined || transferOperator==null}>uint</option>
-                        <option  value="<::" selected={transferOperator=="<::"}>&lt;</option>
-                        <option  value=">::" selected={transferOperator==">::"}>&gt;</option>
-                        <option  value="==::" selected={transferOperator=="==::"}>==</option>
-                      </select>
-                      <input
-                        className="w-[50%] rounded-lg p-2 outline-none border border-[#4C4C4C]"
-                        style={{ backgroundColor: "white" }}
-                        placeholder="uint256"
-                        value={transferInputs.value || ""}
-                        required
-                        onChange={(e) => {
-                          setTransferInputs({ ...transferInputs, value: e.target.value });
-                        }}
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
+              // Ensure eventData.args is an array
+              const eventArgs = Array.isArray(eventData.args) ? eventData.args : [];
+              const eventOperators = Array.isArray(eventData.operators) ? eventData.operators : [];
+                
+              return (
+                <div key={eventName} className=" mb-6">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4">{eventName}</h3>
+                  {args.length > 0 ? (
+                    args.map((arg, index) => (
+                      <div key={index} className="mb-4 flex flex-col space-y-1">
+                        <label className="text-gray-700 text-sm font-medium">
+                          {`${arg} :`}
+                        </label>
+                        <div className="flex flex-col md:flex-row md:items-center md:space-x-3">
+                          <input
+                            className="flex-1 rounded-lg p-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 "
+                            style={{ backgroundColor: "#F9FAFB" }}
+                            type="text"
+                            value={eventArgs[index] || ''}
+                            onChange={(e) => handleArgumentChange(e, eventName, index)}
+                            placeholder={`Enter value for ${arg}`}
+                          />
+                          
+                        </div>
+                        {arg === 'value' && (
+                            <select
+                              className=" rounded-lg border border-gray-300 shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 py-2 w-full"
+                              onChange={(e) => handleArgumentChange(e, eventName, index)}
+                              value={eventOperators[index] || ''}
+                            >
+                              <option value="default" hidden>Select Operator</option>
+                              <option value="<::">{'<'}</option>
+                              <option value=">::">{'>'}</option>
+                              <option value="==::">{"=="}</option>
+                            </select>
+                          )}
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-gray-500 text-sm">No arguments available for this event.</p>
+                  )}
+                </div>
+              );
+            })}
 
-              {selectedValues.includes('Approval') && (
-                <>
-                  <div className="mt-3 text-black font-medium mb-3">Approval :</div>
-                  <div className="flex flex-col gap-3">
-                    <input
-                      className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
-                      style={{ backgroundColor: "white" }}
-                      placeholder="Owner:address"
-                      value={approvalInputs.owner || ""}
-                      required
-                      onChange={(e) => {
-                        setApprovalInputs({ ...approvalInputs, owner: e.target.value });
-                      }}
-                    />
-                    <input
-                      className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
-                      style={{ backgroundColor: "white" }}
-                      placeholder="Spender:address"
-                      value={approvalInputs.spender || ""}
-                      required
-                      onChange={(e) => {
-                        setApprovalInputs({ ...approvalInputs, spender: e.target.value });
-                      }}
-                    />
-                    <div className="flex gap-3">
-                      <select
-                        name=""
-                        id=""
-                        className="w-[50%] bg-white border rounded-lg border-black"
-                        onChange={(e) => {
-                          setApprovalOperator(e.target.value);
-                        }}
-                        required
-                        value={approvalOperator||""}
-                      >
-                        <option hidden selected={approvalOperator=='' || approvalOperator==undefined || approvalOperator==null}>uint</option>
-                        <option  value="<::" selected={approvalOperator=="<::"}>&lt;</option>
-                        <option  value=">::" selected={approvalOperator==">::"}>&gt;</option>
-                        <option  value="==::" selected={approvalOperator== "==::" }>==</option>
-                      </select>
-                      <input
-                        className="w-[50%] rounded-lg p-2 outline-none border border-[#4C4C4C]"
-                        style={{ backgroundColor: "white" }}
-                        placeholder="uint256"
-                        value={approvalInputs.value || ""}
-                        required
-                        onChange={(e) => {
-                          setApprovalInputs({ ...approvalInputs, value: e.target.value });
-                        }}
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
-
-            </div>
 
           </div>
+
+
+          
           <button
-            className="py-3 w-full bg-[#28AA61]  rounded-lg text-white mt-5"
-            onClick={handleSubmit}
+            className="py-3 w-full bg-[#28AA61]  rounded-lg text-white "
+            onClick={handleSaveMonitor}
           >
             Save Monitor
           </button>
         </div>
 
-        <div className="mt-4 md:mt-0 border border-[#0CA851] shadow-md p-5 rounded-xl ">
+        <div className="mt-4 md:mt-0 border border-[#0CA851] mx-auto shadow-md p-4 md:p-10 rounded-xl mb-3 md:mb-0">
           <div className="text-lg font-medium" style={{ color: "black" }}>
             Monitor Summary
           </div>
@@ -692,8 +783,9 @@ function Events() {
             </div>
             <div className="flex gap-1">
               <div className=" bg-[#E9E9E9] rounded-md p-2 text-[13px]">
-                {addressState}
+                {addressState.slice(0, 6)+"..."+ addressState.slice(-4)}
               </div>
+              <button onClick={copymessage}>
               <div className="my-auto">
                 <svg
                   width="19"
@@ -730,6 +822,7 @@ function Events() {
                   </defs>
                 </svg>
               </div>
+              </button>
             </div>
           </div>
           <div className="mt-3">
@@ -792,7 +885,6 @@ function Events() {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );

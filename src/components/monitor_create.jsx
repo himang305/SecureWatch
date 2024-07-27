@@ -25,35 +25,46 @@ function Monitor_create() {
   const [networkName, setNetworkName] = useState("");
   const [abi, setAbi] = useState("");
 
+  console.log("Monitor name:",monitorName);
+  console.log("network:",network);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const data = {
-      name: monitorName,
-      user_id: parseInt(user_Id),
-      network: parseInt(network),
-      address: address,
-      alert_type: 1,
-      alert_data: "",
-      abi: abi,
-      category: riskCategory,
-    };
+    if (monitorName === "" || network === "" || address === "" || abi === "" || monitorName == undefined || network == undefined || address == undefined || abi == undefined) {
+      console.error("Monitor inputs are incomplete.");
+      toast.error("Please fill out all monitor fields.");
+      return;
+    }
 
     try {
+      if (monitorName === "" || network === "" || address === "" || abi === "" || monitorName == undefined || network == undefined || address == undefined || abi == undefined) {
+        console.error("Monitor inputs are incomplete.");
+        toast.error("Please fill out all monitor fields.");
+        return;
+      }
       const response = await axios.post(
         "https://139-59-5-56.nip.io:3443/add_monitor",
-        data
+        {
+          name: monitorName,
+          user_id: parseInt(user_Id),
+          network: parseInt(network),
+          address: address,
+          alert_type: 1,
+          alert_data: "",
+          abi: abi,
+          category: riskCategory,
+        }
       );
-      console.log("API response:", response.data);
-      console.log("monitor name is", monitorName);
-      console.log("Risk category is:", riskCategory);
-      console.log("contract name is", contractName);
-      console.log("netwprk name is", network);
-      console.log(" address is:", address);
-      console.log(" ABI  is:", abi);
-      console.log(" user id is", user_Id);
+      // console.log("API response:", response.data);
+      // console.log("monitor name is", monitorName);
+      // console.log("Risk category is:", riskCategory);
+      // console.log("contract name is", contractName);
+      // console.log("netwprk name is", network);
+      // console.log(" address is:", address);
+      // console.log(" ABI  is:", abi);
+      // console.log(" user id is", user_Id);
 
-      toast.success("Monitor created successfully!", {
+      toast.success("Details updated successfully!", {
         autoClose: 500,
         onClose: () => {
           navigate("/event", {
@@ -73,7 +84,7 @@ function Monitor_create() {
 
       console.log("monnitor id is", response.data.id);
     } catch (error) {
-      console.error("API request failed:", error); // Handle error
+      console.error("API request failed:", error);
       toast.error("Failed to create monitor. Please try again!", {
         autoClose: 500,
       });
@@ -381,6 +392,7 @@ function Monitor_create() {
             </div>
           </div>
         </div>
+        
         <div className="mt-4 lg:mt-0 w-full lg:w-1/2 pb-20">
           <form onSubmit={handleSubmit}>
             <div
@@ -486,6 +498,7 @@ function Monitor_create() {
             </div>
           </form>
         </div>
+        
       </div>
     </div>
   );
