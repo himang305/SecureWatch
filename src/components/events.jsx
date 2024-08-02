@@ -54,24 +54,56 @@ function Events() {
     }));
   };
 
-  const handleArgumentChange = (event, eventName, index) => {
+  const handleArgumentChange = (event, eventName, index, type) => {
     const newValue = event.target.value;
+  
     setSelectedEvents(prevEvents => {
-      // Make sure event.args is an array
+      // Get current event data or default to empty structure
       const eventData = prevEvents[eventName] || { args: [], operators: [] };
-      // console.log("Event Data:", eventData);
-      const updatedArgs = [...eventData.args];
-      updatedArgs[index] = newValue;
-      // console.log("Updated Args:", updatedArgs);
-      return {
-        ...prevEvents,
-        [eventName]: {
-          ...eventData,
-          args: updatedArgs
+  
+      // Ensure args and operators are arrays
+      const updatedArgs = Array.isArray(eventData.args) ? [...eventData.args] : [];
+      const updatedOperators = Array.isArray(eventData.operators) ? [...eventData.operators] : [];
+  
+      // Update based on the type
+      if (type === 'argument') {
+        // Update value at the index or add if index is out of bounds
+        if (index < updatedArgs.length) {
+          updatedArgs[index] = newValue;
+        } else {
+          updatedArgs[index] = newValue; // Update if index is out of bounds
         }
-      };
+  
+        return {
+          ...prevEvents,
+          [eventName]: {
+            ...eventData,
+            args: updatedArgs
+          }
+        };
+      } else if (type === 'operator') {
+        // Update value at the index or add if index is out of bounds
+        if (index < updatedOperators.length) {
+          updatedOperators[index] = newValue;
+        } else {
+          updatedOperators[index] = newValue; // Update if index is out of bounds
+        }
+  
+        return {
+          ...prevEvents,
+          [eventName]: {
+            ...eventData,
+            operators: updatedOperators
+          }
+        };
+      }
+  
+      return prevEvents; // Return previous state if type is invalid
     });
   };
+  
+
+
 
   const handleOperatorChange = (e, eventName, index) => {
     const newOperator = e.target.value;
@@ -123,7 +155,7 @@ function Events() {
   ]);
 
   const options = eventDetails.map((event) => ({
-    label: `${event.name} `,
+    label: `${event.name}`,
     value: event.name,
   }));
   // (${event.inputs})
@@ -132,118 +164,35 @@ function Events() {
     const newSelectedEvents = {};
     selectedOptions.forEach((option) => {
       const eventName = option.value;
+      const eventDetail = eventDetails.find((event) => event.name === eventName);
+
       if (!selectedEvents[eventName]) {
+        // Initialize new selected event with arguments and details
         newSelectedEvents[eventName] = {
-          args: "",
-          argDetails: eventDetails
-            .find((event) => event.name === eventName)
-            .inputs.split(", ")
-            .map((arg) => arg.split(": ")[0])
-            .join(", "),
+          args: Array(eventDetail.inputs.split(", ").length).fill(''),
+          argDetails: eventDetail.inputs.split(", ").map((arg) => {
+            const [name, type] = arg.split(": ");
+            return { name, type }; // Extract name and type
+          }),
         };
       } else {
-        newSelectedEvents[eventName] = selectedEvents[eventName]; // Preserve existing args
+        // Preserve existing arguments if the event is already selected
+        newSelectedEvents[eventName] = selectedEvents[eventName];
       }
     });
+
+    // Update state with new selected events
     setSelectedEvents(newSelectedEvents);
+
+    // Update the list of selected event names for display purposes
     setSelectedEventNames(selectedOptions.map((option) => option.label));
   };
+
 
 
   const web3 = new Web3();
 
   const handleSaveMonitor = async () => {
-    // Validate if eventDetails is an array
-    if (!Array.isArray(eventDetails)) {
-      console.error("eventDetails is not an array:", eventDetails);
-      return; // Exit if eventDetails is not an array
-    }
-  
-    // Validate if all selected events have their arguments filled
-    const allEventsValid = Object.entries(selectedEvents).every(([eventName, eventDataEntry]) => {
-      const event = eventDetails.find((e) => e.name === eventName);
-      if (!event) {
-        console.error("Event not found in eventDetails:", eventName);
-        return false; // Skip if the event is not found
-      }
-      console.log("Event Data Entry is:", eventDataEntry);
-  
-      // Ensure args is an array
-      const argsArray = Array.isArray(eventDataEntry.args)
-        ? eventDataEntry.args
-        : eventDataEntry.args.split(",").map(arg => arg.trim());
-        console.log("Args Array is:", argsArray);
-  
-      // Map argument details from event inputs
-      const argDetails = event.inputs.split(", ").map((arg) => {
-        const [name] = arg.split(": ");
-        return name;
-      });
-      console.log("Arg Details is:", argDetails);
-  
-      // Create an object of arguments
-      const argsObject = argDetails.reduce((acc, argName, index) => {
-        acc[argName] = argsArray[index];
-        return acc;
-      }, {});
-      console.log("Args Object is:", argsObject);
-
-      // Validate the value field in argsObject
-    //   if(argsObject.value){
-    //     const operators = ['<', '>', '=']; // Add more operators if needed
-    //     const operator = argsObject.value.charAt(0);
-    //     if (!operators.includes(operator)) {
-    //       console.warn("Invalid value field in argsObject.");
-    //       toast.error("Please choose a valid operator (<, >, ==) for each value field.");
-    //       return false; // Exit if the value field is invalid
-    //   } 
-    // }
-    if (argsObject.value) {
-      const operators = ['<', '>', '=']; // Define the valid operators
-      const operator = argsObject.value.charAt(0); // Get the first character of the value
-    // <:: >:: ==::
-      if (!operators.includes(operator)) {
-        console.warn("Invalid value field in argsObject.");
-        toast.error("Please choose a valid operator (<, >, =) for each value field.");
-        return false; // Exit if the value field is invalid
-      }
-    
-      // Function to check if a character is a digit
-      const isDigit = (char) => /\d/.test(char);
-    
-      // Check if the value is valid based on the operator
-      if (operator === '<' || operator === '>') {
-        const thirdChar = argsObject.value.charAt(3);
-        if (!isDigit(thirdChar)) {
-          console.warn("Invalid number after operator in argsObject.");
-          toast.error("Please enter a valid number after the operator.");
-          return false; // Exit if the value field is invalid
-        }
-      } else if (operator === '=') {
-        const fourthChar = argsObject.value.charAt(4);
-        if (!isDigit(fourthChar)) {
-          console.warn("Invalid number after operator in argsObject.");
-          toast.error("Please enter a valid number after the operator.");
-          return false; // Exit if the value field is invalid
-        }
-      }
-    }
-    
-      
-
-      
-  
-      // Validate if all required arguments are provided
-      const allArgsFilled = argDetails.every((argName, index) => argsArray[index] && argsArray[index].trim() !== "");
-      return allArgsFilled;
-    });
-  
-    if (!allEventsValid) {
-      console.warn("Not all arguments are filled for every selected event.");
-      toast.error("Please provide values for all required arguments for every selected event.");
-      return; // Exit if any event is missing arguments
-    }
-  
     // Prepare data for valid events
     const validEventEntries = Object.entries(selectedEvents);
   
@@ -271,18 +220,40 @@ function Events() {
       const argsArray = Array.isArray(eventDataEntry.args)
         ? eventDataEntry.args
         : eventDataEntry.args.split(",").map(arg => arg.trim());
-
+  
+      // Ensure operators is an array
+      const operatorsArray = Array.isArray(eventDataEntry.operators)
+        ? eventDataEntry.operators
+        : [];
+  
       // Map argument details from event inputs
       const argDetails = event.inputs.split(", ").map((arg) => {
-        const [name] = arg.split(": ");
-        return name;
+        const [name, type] = arg.split(": ");
+        return { name, type };
       });
   
-      // Create an object of arguments
-      const argsObject = argDetails.reduce((acc, argName, index) => {
-        acc[argName] = argsArray[index];
+      const argsObject = argDetails.reduce((acc, { name, type }, index) => {
+        const value = argsArray[index];
+        const operator = operatorsArray[index] || ''; // Default operator if not provided
+        
+        if (type.startsWith('uint') && !type.startsWith('uint[]')) {
+          // Apply the operator to 'uint' type values (but not for 'uint[]')
+          acc[name] = `${operator}${value}`;
+        } else if (type.startsWith('uint[]')) {
+          // Handle 'uint[]' types by adding values without operator and colon
+          const valuesArray = value.split(',').map(val => val.trim());
+          acc[name] = valuesArray.join(', '); // Just values without operator and colon
+        } else {
+          // Just the value for non-uint types
+          acc[name] = value;
+        }
+      
         return acc;
       }, {});
+      
+      
+      
+      
   
       // Check if 'inputs' is available and correctly formatted
       if (!event.inputs || typeof event.inputs !== "string") {
@@ -319,12 +290,12 @@ function Events() {
         const response = await axios.post("https://139-59-5-56.nip.io:3443/add_event", body);
         console.log("Event added:", response.data);
         console.log("Arguments Object:", argsObject);
-        console.log("signature is:", eventSignature);
-        console.log("network in event is", network);
-        console.log("event is:", selectedEventNames);
-        console.log("monitor id is:", m_id);
-        console.log("event name is:", eventName);
-        
+        console.log("Signature is:", eventSignature);
+        console.log("Network in event is", network);
+        console.log("Event is:", selectedEventNames);
+        console.log("Monitor id is:", m_id);
+        console.log("Event name is:", eventName);
+  
         // Show success message and navigate to alerts
         toast.success("Event Added successfully!", {
           autoClose: 500,
@@ -342,11 +313,25 @@ function Events() {
     await Promise.all(eventPromises);
   };
   
+
   const copymessage = () => {
     navigator.clipboard.writeText(addressState);
     toast.success("Address Copied successfully!");
   }
-  
+
+  // const isBoolean = (arg) => {
+  //   // Ensure argName is a string
+  //   if (typeof arg !== 'string') {
+  //     return false; // or handle the case as needed
+  //   }
+
+  //   console.log(arg);
+
+  //   // Define a list of known boolean argument names
+  //   const booleanKeywords = ['bool', 'flag', 'isActive', 'enabled'];
+  //   return booleanKeywords.includes(arg.toLowerCase());
+  // };
+
 
   return (
     <div
@@ -657,90 +642,102 @@ function Events() {
 
         <div className="w-[90%] sm:w-80 lg:w-[500px] mx-auto mt-5 mb-5 md:mt-0 md:mb-0  h-[500px] flex flex-col justify-start items-center md:overflow-y-auto  lg:pt-10">
 
-        <div className="flex flex-col justify-center items-center gap-6">
-          <div className="font-medium text-lg" style={{ color: "black" }}>
-            Enter the Signature Name
-          </div>
-          <div className="my-auto   min-w-full">
-            {/* w-inherit border-2 border-[#B4B4B4] shadow-md p-3 rounded-lg flex px-3 justify-between py-3 */}
-
-            <div className="w-full">
-              <Select
-                options={options}
-                isMulti
-                closeMenuOnSelect={false}
-                components={{ Option: components.Option }}
-                onChange={handleEventSelection}
-                className="w-full"
-                classNamePrefix="select"
-                placeholder="Search and select events..."
-                noOptionsMessage={() => "No events found"}
-                value={options.filter((option) =>
-                  selectedEventNames.includes(option.label)
-                )} // Filter options based on selectedEventNames
-              />
+          <div className="flex flex-col justify-center items-center gap-6">
+            <div className="font-medium text-lg" style={{ color: "black" }}>
+              Enter the Signature Name
             </div>
-          </div>
+            <div className="my-auto   min-w-full">
+              {/* w-inherit border-2 border-[#B4B4B4] shadow-md p-3 rounded-lg flex px-3 justify-between py-3 */}
+
+              <div className="w-full">
+                <Select
+                  options={options}
+                  isMulti
+                  closeMenuOnSelect={false}
+                  components={{ Option: components.Option }}
+                  onChange={handleEventSelection}
+                  className="w-full"
+                  classNamePrefix="select"
+                  placeholder="Search and select events..."
+                  noOptionsMessage={() => "No events found"}
+                  value={options.filter((option) =>
+                    selectedEventNames.includes(option.label)
+                  )} // Filter options based on selectedEventNames
+                />
+              </div>
+            </div>
           </div>
 
           <div className="w-full  max-h-[400px] p-5 overflow-y-auto mb-4 edit-event mt-2">
-            {Object.entries(selectedEvents).map(([eventName, eventData]) => {
-              const args = eventData.argDetails
-                ? eventData.argDetails.split(',').map(arg => arg.trim())
-                : [];
-                console.log("Event Data is:",eventData);
-                console.log("Args:",args);
+          {Object.entries(selectedEvents).map(([eventName, eventData]) => {
+  // Access the argument details directly as an array of objects
+  const args = eventData.argDetails || [];
 
-              // Ensure eventData.args is an array
-              const eventArgs = Array.isArray(eventData.args) ? eventData.args : [];
-              const eventOperators = Array.isArray(eventData.operators) ? eventData.operators : [];
-                
-              return (
-                <div key={eventName} className=" mb-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">{eventName}</h3>
-                  {args.length > 0 ? (
-                    args.map((arg, index) => (
-                      <div key={index} className="mb-4 flex flex-col space-y-1">
-                        <label className="text-gray-700 text-sm font-medium">
-                          {`${arg} :`}
-                        </label>
-                        <div className="flex flex-col md:flex-row md:items-center md:space-x-3">
-                          <input
-                            className="flex-1 rounded-lg p-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 "
-                            style={{ backgroundColor: "#F9FAFB" }}
-                            type="text"
-                            value={eventArgs[index] || ''}
-                            onChange={(e) => handleArgumentChange(e, eventName, index)}
-                            placeholder={`Enter value for ${arg}`}
-                          />
-                          
-                        </div>
-                        {arg === 'value' && (
-                            <select
-                              className=" rounded-lg border border-gray-300 shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 py-2 w-full"
-                              onChange={(e) => handleArgumentChange(e, eventName, index)}
-                              value={eventOperators[index] || ''}
-                            >
-                              <option value="default" hidden>Select Operator</option>
-                              <option value="<::">{'<'}</option>
-                              <option value=">::">{'>'}</option>
-                              <option value="==::">{"=="}</option>
-                            </select>
-                          )}
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-gray-500 text-sm">No arguments available for this event.</p>
-                  )}
-                </div>
-              );
-            })}
+  // Ensure eventData.args and eventData.operators are arrays
+  const eventArgs = Array.isArray(eventData.args) ? eventData.args : [];
+  const eventOperators = Array.isArray(eventData.operators) ? eventData.operators : [];
+
+  return (
+    <div key={eventName} className="mb-6">
+      <h3 className="text-xl font-semibold text-gray-900 mb-4">{eventName}</h3>
+      {args.length > 0 ? (
+        args.map((arg, index) => (
+          <div key={index} className="mb-4 flex flex-col space-y-1">
+  <label className="text-gray-700 text-sm font-medium">
+    {`${arg.name} :`}
+  </label>
+  <div className="flex flex-col md:flex-row md:items-center md:space-x-3">
+    {/* Input field for argument values */}
+    {arg.type === 'bool' ? (
+      <select
+        className="rounded-lg border border-gray-300 shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 py-2 w-full"
+        name="argument"
+        onChange={(e) => handleArgumentChange(e, eventName, index, 'argument')}
+        value={eventArgs[index] || 'none'}
+      >
+        <option value="none" hidden>None</option>
+        <option value="true">True</option>
+        <option value="false">False</option>
+      </select>
+    ) : (
+      <input
+        className="flex-1 rounded-lg p-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        style={{ backgroundColor: "#F9FAFB" }}
+        type="text"
+        name="argument"
+        value={eventArgs[index] || ''}
+        onChange={(e) => handleArgumentChange(e, eventName, index, 'argument')}
+        placeholder={`Enter value for ${arg.name}`}
+      />
+    )}
+    {/* Operator selection dropdown */}
+    {['uint8', 'uint16', 'uint32', 'uint64', 'uint128', 'uint256', 'int8', 'int16', 'int32', 'int64', 'int128', 'int256'].includes(arg.type) ? (
+      <select
+        className="rounded-lg border border-gray-300 shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 py-2 w-full md:w-auto"
+        name="operator"
+        onChange={(e) => handleArgumentChange(e, eventName, index, 'operator')}
+        value={eventOperators[index] || 'none'} // Ensure 'none' is correctly managed
+      >
+        <option value="none" hidden>Select Operator</option>
+        <option value="<::">&lt;</option>
+        <option value=">::">&gt;</option>
+        <option value="==::">==</option>
+      </select>
+    ) : null}
+  </div>
+</div>
+
+        ))
+      ) : (
+        <p className="text-gray-500 text-sm">No arguments available for this event.</p>
+      )}
+    </div>
+  );
+})}
+
 
 
           </div>
-
-
-          
           <button
             className="py-3 w-full bg-[#28AA61]  rounded-lg text-white "
             onClick={handleSaveMonitor}
@@ -783,45 +780,45 @@ function Events() {
             </div>
             <div className="flex gap-1">
               <div className=" bg-[#E9E9E9] rounded-md p-2 text-[13px]">
-                {addressState.slice(0, 6)+"..."+ addressState.slice(-4)}
+                {addressState.slice(0, 6) + "..." + addressState.slice(-4)}
               </div>
               <button onClick={copymessage}>
-              <div className="my-auto">
-                <svg
-                  width="19"
-                  height="19"
-                  viewBox="0 0 19 19"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <g clip-path="url(#clip0_179_2771)">
-                    <path
-                      d="M15.1074 7.65955H8.35742C7.52899 7.65955 6.85742 8.33112 6.85742 9.15955V15.9095C6.85742 16.738 7.52899 17.4095 8.35742 17.4095H15.1074C15.9358 17.4095 16.6074 16.738 16.6074 15.9095V9.15955C16.6074 8.33112 15.9358 7.65955 15.1074 7.65955Z"
-                      stroke="#434343"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <path
-                      d="M3.85742 12.1595H3.10742C2.7096 12.1595 2.32807 12.0015 2.04676 11.7202C1.76546 11.4389 1.60742 11.0574 1.60742 10.6595V3.90955C1.60742 3.51172 1.76546 3.13019 2.04676 2.84889C2.32807 2.56758 2.7096 2.40955 3.10742 2.40955H9.85742C10.2552 2.40955 10.6368 2.56758 10.9181 2.84889C11.1994 3.13019 11.3574 3.51172 11.3574 3.90955V4.65955"
-                      stroke="#434343"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </g>
-                  <defs>
-                    <clipPath id="clip0_179_2771">
-                      <rect
-                        width="18"
-                        height="18"
-                        fill="white"
-                        transform="translate(0.107422 0.909546)"
+                <div className="my-auto">
+                  <svg
+                    width="19"
+                    height="19"
+                    viewBox="0 0 19 19"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <g clip-path="url(#clip0_179_2771)">
+                      <path
+                        d="M15.1074 7.65955H8.35742C7.52899 7.65955 6.85742 8.33112 6.85742 9.15955V15.9095C6.85742 16.738 7.52899 17.4095 8.35742 17.4095H15.1074C15.9358 17.4095 16.6074 16.738 16.6074 15.9095V9.15955C16.6074 8.33112 15.9358 7.65955 15.1074 7.65955Z"
+                        stroke="#434343"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
                       />
-                    </clipPath>
-                  </defs>
-                </svg>
-              </div>
+                      <path
+                        d="M3.85742 12.1595H3.10742C2.7096 12.1595 2.32807 12.0015 2.04676 11.7202C1.76546 11.4389 1.60742 11.0574 1.60742 10.6595V3.90955C1.60742 3.51172 1.76546 3.13019 2.04676 2.84889C2.32807 2.56758 2.7096 2.40955 3.10742 2.40955H9.85742C10.2552 2.40955 10.6368 2.56758 10.9181 2.84889C11.1994 3.13019 11.3574 3.51172 11.3574 3.90955V4.65955"
+                        stroke="#434343"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </g>
+                    <defs>
+                      <clipPath id="clip0_179_2771">
+                        <rect
+                          width="18"
+                          height="18"
+                          fill="white"
+                          transform="translate(0.107422 0.909546)"
+                        />
+                      </clipPath>
+                    </defs>
+                  </svg>
+                </div>
               </button>
             </div>
           </div>
