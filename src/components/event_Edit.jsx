@@ -11,8 +11,10 @@ function Event_Edit() {
 
   const [options, setOptions] = useState([]);
   const [foundedEvents, setFoundedEvents] = useState([]);
-  const [selectedValues, setSelectedValues] = useState([])
-  const [totalEvents, setTotalEvents] = useState([])
+  const [selectedValues, setSelectedValues] = useState([]);
+  const [totalEvents, setTotalEvents] = useState([]);
+  const [removedEvents, setRemovedEvents] = useState([]);
+
   console.log("Selected values:", selectedValues.length);
 
   const { name, email, m_id, token, network, abi, address, rk, alert_data, alert_type } = location.state || "";
@@ -204,10 +206,24 @@ const handleOperatorChange = (eventName, inputName, operator) => {
 });
 };
 
-  const handleSelectChange = (selectedOptions) => {
-    const values = selectedOptions.map(option => option.value);
-    setSelectedValues(values);
-  };
+const handleSelectChange = (selectedOptions) => {
+  const values = selectedOptions.map(option => option.value);
+  
+  // Identify removed events
+  const newlyRemovedEvents = selectedValues.filter(value => !values.includes(value));
+
+  // Add removed events to the removedEvents state
+  setRemovedEvents(prevRemoved => [
+      ...prevRemoved,
+      ...newlyRemovedEvents.map(eventName => {
+          const eventId = events.find(event => event.name === eventName)?.id;
+          return eventId ? { name: eventName, id: eventId } : null;
+      }).filter(Boolean) // Remove null entries
+  ]);
+
+  setSelectedValues(values);
+};
+
 
   // Ensure ABI data is correctly parsed
   const abiData = JSON.parse(abiState || '[]');
@@ -233,177 +249,190 @@ const handleOperatorChange = (eventName, inputName, operator) => {
 
   const handleSubmit = async () => {
     try {
-      const errors = [];
-      const processingEvents = [];
-      let hasChanges = false;
-  
-      // Helper function to send requests
-      const sendRequest = async (url, method, data) => {
-        const response = await fetch(url, {
-          method,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        });
-        if (!response.ok) {
-          throw new Error(`Error fetching data from ${url}`);
-        }
-        return response.json(); // Return response JSON for further processing
-      };
-  
-      // Helper function to prepare event data
-      const prepareEventData = (eventType, inputs) => {
-        const cleanedValue = (inputs.value || "").trim();
-        return {
-          name: eventType,
-          arguments: {
-            ...inputs,
-            value: cleanedValue,
-          },
+        const errors = [];
+        const processingEvents = [];
+        let hasChanges = false;
+
+        // Helper function to send requests
+        const sendRequest = async (url, method, data) => {
+            const response = await fetch(url, {
+                method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            });
+            if (!response.ok) {
+                throw new Error(`Error fetching data from ${url}`);
+            }
+            return response.json(); // Return response JSON for further processing
         };
-      };
-  
-      // Fetch existing events from the monitor
-      const fetchEventsFromMonitor = async (monitorId) => {
-        const response = await fetch('https://139-59-5-56.nip.io:3443/get_event', {
-          method: 'POST',
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ mid: monitorId }),
-        });
-        if (!response.ok) {
-          throw new Error('Error fetching event data');
-        }
-        return response.json(); // Return response JSON for further processing
-      };
-  
-      // Fetch events from monitor
-      const monitorEventsResponse = await fetchEventsFromMonitor(m_id);
-  
-      // Log the entire response to verify structure
-      console.log("Fetched monitor events response:", monitorEventsResponse);
-  
-      // Extract the monitorEvents array from the response
-      const monitorEvents = monitorEventsResponse.monitors || []; // Default to empty array if missing
-  
-      // Check if monitorEvents is an array
-      if (Array.isArray(monitorEvents)) {
-        // Create a map of existing events by their ID for quick lookup
-        const eventMap = new Map(monitorEvents.map(event => [event.id, event]));
-  
-        // Log the eventMap to verify its content
-        console.log("Event map:", Array.from(eventMap.entries()));
-  
-        // Process each selected event dynamically
-        for (const eventType of selectedValues) {
-          const inputs = eventInputs[eventType] || {};
-  
-          // Log inputs to verify data
-          console.log(`Processing eventType: ${eventType}`);
-          console.log(`Inputs for ${eventType}:`, inputs);
-  
-          // Prepare request data
-          const eventData = prepareEventData(eventType, inputs);
-          console.log(`Prepared event data for ${eventType}:`, eventData);
-  
-          // Get the event ID from inputs and sanitize
-          const eventId = (inputs.id || "").trim();
-  
-          // Debugging logs
-          console.log(`Event ID to check: ${eventId}`);
-  
-          // Find the existing event based on ID or fallback to name
-          let existingEvent = null;
-  
-          // Check if the eventId is a valid number and if it exists in eventMap
-          if (eventId && !isNaN(Number(eventId))) {
-            existingEvent = eventMap.get(Number(eventId));
-          }
-  
-          if (!existingEvent) {
-            // If no event found by ID, try to find by name (fallback method)
-            const normalizedEventType = eventType.trim().toLowerCase();
-            existingEvent = monitorEvents.find(event => event.name.trim().toLowerCase() === normalizedEventType);
-          }
-  
-          // Log the existing event details
-          console.log(`Existing event:`, existingEvent);
-          console.log("Existing event arguments:", existingEvent?.arguments);
-          console.log("Existing event arguments value:", existingEvent?.arguments?.value);
-  
-          // If an existing event is found, update it
-          if (existingEvent) {
-            if (existingEvent.name.trim().toLowerCase() === eventType.trim().toLowerCase()) {
-              console.log(`Updating existing event: ${eventType} with ID: ${existingEvent.id}`);
-  
-              const requestData = { id: existingEvent.id, ...eventData };
-  
-              processingEvents.push(
-                sendRequest("https://139-59-5-56.nip.io:3443/update_event", "POST", requestData)
-                  .then(response => {
-                    console.log(`${eventType} updated successfully!`, response);
-                    hasChanges = true;
-                  })
-                  .catch(error => {
-                    console.error(`Error updating ${eventType}:`, error);
-                    errors.push({
-                      eventType,
-                      message: `Failed to update ${eventType} event. Please try again!`
-                    });
-                  })
-              );
-            } else {
-              console.log(`Event name mismatch: '${eventType}' does not match '${existingEvent.name}'. Skipping.`);
+
+        // Delete removed events
+        for (const removedEvent of removedEvents) {
+            if (removedEvent.id) {
+                processingEvents.push(
+                    sendRequest("https://139-59-5-56.nip.io:3443/delete_event", "POST", { id: removedEvent.id })
+                        .then(response => {
+                            console.log(`Event ${removedEvent.name} deleted successfully!`, response);
+                            hasChanges = true;
+                        })
+                        .catch(error => {
+                            console.error(`Error deleting ${removedEvent.name}:`, error);
+                            errors.push({
+                                eventType: removedEvent.name,
+                                message: `Failed to delete ${removedEvent.name} event. Please try again!`
+                            });
+                        })
+                );
             }
-          } else {
-            // If no existing event is found, add it as a new event
-            console.log(`No matching event found for: ${eventType}. Adding as new.`);
-            const requestData = { mid: m_id, ...eventData };
-            processingEvents.push(
-              sendRequest("https://139-59-5-56.nip.io:3443/add_event", "POST", requestData)
-                .then(response => {
-                  toast.success(`${eventType} event added successfully!`);
-                  console.log(`${eventType} added successfully!`, response);
-                  hasChanges = true;
-                })
-                .catch(error => {
-                  console.error(`Error adding ${eventType}:`, error);
-                  errors.push({
-                    eventType,
-                    message: `Failed to add ${eventType} event. Please try again!`
-                  });
-                })
-            );
-          }
         }
-  
-        // Wait for all event requests to complete
-        await Promise.all(processingEvents);
-  
-        // Display success and error toasts
-        if (hasChanges) {
-          selectedValues.forEach(eventType => {
+
+        // Fetch existing events from the monitor
+        const fetchEventsFromMonitor = async (monitorId) => {
+            const response = await fetch('https://139-59-5-56.nip.io:3443/get_event', {
+                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ mid: monitorId }),
+            });
+            if (!response.ok) {
+                throw new Error('Error fetching event data');
+            }
+            return response.json(); // Return response JSON for further processing
+        };
+
+        // Fetch events from monitor
+        const monitorEventsResponse = await fetchEventsFromMonitor(m_id);
+
+        // Log the entire response to verify structure
+        console.log("Fetched monitor events response:", monitorEventsResponse);
+
+        // Extract the monitorEvents array from the response
+        const monitorEvents = monitorEventsResponse.monitors || []; // Default to empty array if missing
+
+        // Check if monitorEvents is an array
+        if (Array.isArray(monitorEvents)) {
+            // Create a map of existing events by their ID for quick lookup
+            const eventMap = new Map(monitorEvents.map(event => [event.id, event]));
+
+            // Log the eventMap to verify its content
+            console.log("Event map:", Array.from(eventMap.entries()));
+
+            // Process each selected event dynamically
+            for (const eventType of selectedValues) {
+                const inputs = eventInputs[eventType] || {};
+
+                // Log inputs to verify data
+                console.log(`Processing eventType: ${eventType}`);
+                console.log(`Inputs for ${eventType}:`, inputs);
+
+                // Prepare request data
+                const eventData = {
+                    name: eventType,
+                    arguments: {
+                        ...inputs,
+                        value: (inputs.value || "").trim(),
+                    },
+                };
+
+                // Get the event ID from inputs and sanitize
+                const eventId = (inputs.id || "").trim();
+
+                // Debugging logs
+                console.log(`Event ID to check: ${eventId}`);
+
+                // Find the existing event based on ID or fallback to name
+                let existingEvent = null;
+
+                // Check if the eventId is a valid number and if it exists in eventMap
+                if (eventId && !isNaN(Number(eventId))) {
+                    existingEvent = eventMap.get(Number(eventId));
+                }
+
+                if (!existingEvent) {
+                    // If no event found by ID, try to find by name (fallback method)
+                    const normalizedEventType = eventType.trim().toLowerCase();
+                    existingEvent = monitorEvents.find(event => event.name.trim().toLowerCase() === normalizedEventType);
+                }
+
+                // Log the existing event details
+                console.log(`Existing event:`, existingEvent);
+                console.log("Existing event arguments:", existingEvent?.arguments);
+                console.log("Existing event arguments value:", existingEvent?.arguments?.value);
+
+                // If an existing event is found, update it
+                if (existingEvent) {
+                    if (existingEvent.name.trim().toLowerCase() === eventType.trim().toLowerCase()) {
+                        console.log(`Updating existing event: ${eventType} with ID: ${existingEvent.id}`);
+
+                        const requestData = { id: existingEvent.id, ...eventData };
+
+                        processingEvents.push(
+                            sendRequest("https://139-59-5-56.nip.io:3443/update_event", "POST", requestData)
+                                .then(response => {
+                                    console.log(`${eventType} updated successfully!`, response);
+                                    hasChanges = true;
+                                })
+                                .catch(error => {
+                                    console.error(`Error updating ${eventType}:`, error);
+                                    errors.push({
+                                        eventType,
+                                        message: `Failed to update ${eventType} event. Please try again!`
+                                    });
+                                })
+                        );
+                    } else {
+                        console.log(`Event name mismatch: '${eventType}' does not match '${existingEvent.name}'. Skipping.`);
+                    }
+                } else {
+                    // If no existing event is found, add it as a new event
+                    console.log(`No matching event found for: ${eventType}. Adding as new.`);
+                    const requestData = { mid: m_id, ...eventData };
+                    processingEvents.push(
+                        sendRequest("https://139-59-5-56.nip.io:3443/add_event", "POST", requestData)
+                            .then(response => {
+                                toast.success(`${eventType} event added successfully!`);
+                                console.log(`${eventType} added successfully!`, response);
+                                hasChanges = true;
+                            })
+                            .catch(error => {
+                                console.error(`Error adding ${eventType}:`, error);
+                                errors.push({
+                                    eventType,
+                                    message: `Failed to add ${eventType} event. Please try again!`
+                                });
+                            })
+                    );
+                }
+            }
+
+            // Wait for all event requests to complete
+            await Promise.all(processingEvents);
+
+            // Display success and error toasts
             if (hasChanges) {
-              toast.success(`${eventType} event processed successfully!`);
+                selectedValues.forEach(eventType => {
+                    if (hasChanges) {
+                        toast.success(`${eventType} event processed successfully!`);
+                    }
+                });
+                toast.success("Events processed successfully!", {
+                    autoClose: 500,
+                    onClose: () => {
+                        navigate("/alert_edit", { state: navigationState });
+                    },
+                });
+            } else {
+                toast.error("Failed to process events. Please try again!");
+                errors.forEach(({ eventType, message }) => toast.error(message));
             }
-          });
-          toast.success("Events processed successfully!", {
-            autoClose: 500,
-            onClose: () => {
-              navigate("/alert_edit", { state: navigationState });
-            },
-          });
         } else {
-          toast.error("Failed to process events. Please try again!");
-          errors.forEach(({ eventType, message }) => toast.error(message));
+            console.error("monitorEvents is not an array or is missing.");
         }
-      } else {
-        console.error("monitorEvents is not an array or is missing.");
-      }
     } catch (error) {
-      console.error("Unexpected error:", error);
-      toast.error("An unexpected error occurred. Please try again!");
+        console.error("Unexpected error:", error);
+        toast.error("An unexpected error occurred. Please try again!");
     }
-  };
-  
+};
+
   if (
     !events ||
     !Array.isArray(events)
