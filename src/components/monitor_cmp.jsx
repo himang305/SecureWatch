@@ -3,6 +3,9 @@ import React, { useState, useEffect } from "react";
 import { Switch } from "@headlessui/react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Edit from "../images/edit.png";
+import { MdDeleteForever } from "react-icons/md";
+import { ToastContainer, toast } from "react-toastify";
+
 
 const customStyles = {
   content: {
@@ -41,6 +44,7 @@ const Monitor_cmp = (props) => {
     fetchMoniter();
   }, [value]);
 
+
   console.log(moniter);
   // const [enabled, setEnabled] = useState(false);
   // const [disp, setDisp] = useState("block");
@@ -77,6 +81,17 @@ const Monitor_cmp = (props) => {
 
   return (
     <div className="w-full flex justify-center items-center flex-col ">
+      <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
       {moniter.monitors.map((i) => {
         const name = i.name;
         const risk = i.category;
@@ -189,7 +204,36 @@ const Monitor_cmp = (props) => {
                 </button>
 
                 <div className="flex   items-center p-6 w-[30%] sm:w-[20%] md:w-[10%] ">
-                  <div className="flex flex-col justify-end gap-7 items-center">
+                  <div className="flex flex-col justify-end gap-4 items-center">
+                  <button onClick={()=>{
+                    console.log("Monitor id:", mid);
+                    // console.log("Delete monitor");
+                    fetch(
+                      "https://139-59-5-56.nip.io:3443/delete_monitor",
+                      {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          monitor_id: mid,
+                        }),
+                      }
+                    )
+                      .then((response) => response.json())
+                      .then((data) => {
+                        toast.success("Monitor deleted successfully!");
+                        console.log("Success:", data);
+                        setValue(value + 1);
+                      })
+                      .catch((error) => {
+                        toast.error("Error deleting monitor!");
+                        console.error("Error:", error);
+                      });
+                    
+                  }}>
+                    <MdDeleteForever className="text-4xl text-red-600" />
+                  </button>
                     <button onClick={() =>{
                       navigate("/monitor_Edit?id="+mid, { state: { mid,name,network,address,alert_data,alert_type } });
                     }}>
