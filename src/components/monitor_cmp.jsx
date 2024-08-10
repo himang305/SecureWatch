@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Switch } from "@headlessui/react";
 import { useNavigate } from "react-router-dom";
 import Edit from "../images/edit.png";
-import Trash from "../images/icons8-trash-48.png"; // Import your trash icon here
+import Trash from "../images/icons8-trash-48.png"; 
 
 const customStyles = {
   content: {
