@@ -15,7 +15,7 @@ function Event_Edit() {
   const [totalEvents, setTotalEvents] = useState([])
   console.log("Selected values:", selectedValues.length);
 
-  const { name, email, m_id, token, network, abi, address, rk,alert_data,alert_type } = location.state || "";
+  const { name, email, m_id, token, network, abi, address, rk, alert_data, alert_type } = location.state || "";
   const [networkState, setNetworkState] = useState(network || "");
   const [addressState, setAddressState] = useState(address || "");
   const [riskCategoryState, setRiskCategoryState] = useState(rk || "");
@@ -147,8 +147,8 @@ function Event_Edit() {
 
   useEffect(() => {
     console.log("Events are:", events);
-    console.log("Event Inputs are:",eventInputs);
-    console.log("Event Operators are:",eventOperators);
+    console.log("Event Inputs are:", eventInputs);
+    console.log("Event Operators are:", eventOperators);
     console.log("Selected values:", selectedValues);
   }, [events, eventInputs, eventOperators, selectedValues]);
 
@@ -177,15 +177,32 @@ function Event_Edit() {
 
 
 
-  const handleOperatorChange = (eventName,inputName, value) => {
-    setEventInputs(prevInputs => ({
-      ...prevInputs,
-      [eventName]: {
-        ...prevInputs[eventName],
-        [inputName]: value.concat(/^\d/.test(prevInputs[eventName][inputName]) ? prevInputs[eventName][inputName] : prevInputs[eventName][inputName].startsWith('<') || prevInputs[eventName][inputName].startsWith('>') ? prevInputs[eventName][inputName].substring(3) : prevInputs[eventName][inputName].substring(4))        
+const handleOperatorChange = (eventName, inputName, operator) => {
+    setEventInputs(prevInputs => {
+      const currentInput = prevInputs[eventName]?.[inputName] || '';
+  
+      // Regex to check if the currentInput already has an operator
+      const operatorPattern = /^(<|>|==)::/;
+      
+      let newValue;
+  
+      if (operatorPattern.test(currentInput)) {
+        // Replace existing operator with the new one, preserving existing value
+        newValue = currentInput.replace(operatorPattern, `${operator}`);
+      } else {
+        // Add the new operator with :: if no operator exists
+        newValue = `${operator}${currentInput}`;
       }
-    }));
-  };
+  
+      return {
+        ...prevInputs,
+        [eventName]: {
+          ...prevInputs[eventName],
+          [inputName]: newValue,
+        },
+     };
+});
+};
 
   const handleSelectChange = (selectedOptions) => {
     const values = selectedOptions.map(option => option.value);
@@ -218,23 +235,7 @@ function Event_Edit() {
     try {
       const errors = [];
       const processingEvents = [];
-      const successStatus = new Map(); // Track success status for each event
       let hasChanges = false;
-  
-      // Helper function to validate inputs
-      const validateInputs = (eventType, inputs) => {
-        const requiredFields = Object.keys(inputs).filter(field => inputs[field] !== undefined && inputs[field] !== null);
-        const incompleteFields = requiredFields.filter(field => !inputs[field]);
-  
-        if (incompleteFields.length > 0) {
-          errors.push({
-            eventType,
-            message: `${eventType} inputs are incomplete. Please fill in all required fields.`
-          });
-          return false;
-        }
-        return true;
-      };
   
       // Helper function to send requests
       const sendRequest = async (url, method, data) => {
@@ -251,7 +252,7 @@ function Event_Edit() {
   
       // Helper function to prepare event data
       const prepareEventData = (eventType, inputs) => {
-        const cleanedValue = (inputs.value || "")
+        const cleanedValue = (inputs.value || "").trim();
         return {
           name: eventType,
           arguments: {
@@ -299,86 +300,46 @@ function Event_Edit() {
           console.log(`Processing eventType: ${eventType}`);
           console.log(`Inputs for ${eventType}:`, inputs);
   
-          // Validate inputs
-          if (!validateInputs(eventType, inputs)) {
-            continue;
-          }
-  
           // Prepare request data
           const eventData = prepareEventData(eventType, inputs);
           console.log(`Prepared event data for ${eventType}:`, eventData);
-          
-         
   
-          // Check if the event ID exists in the fetched monitor events
-          const eventId = inputs.id;
+          // Get the event ID from inputs and sanitize
+          const eventId = (inputs.id || "").trim();
   
           // Debugging logs
           console.log(`Event ID to check: ${eventId}`);
   
           // Find the existing event based on ID or fallback to name
-          let existingEvent = eventId ? eventMap.get(eventId) : null;
+          let existingEvent = null;
   
-          if (!existingEvent && eventId === undefined) {
-            // If no event found by ID and ID is undefined, try to find by name (fallback method)
+          // Check if the eventId is a valid number and if it exists in eventMap
+          if (eventId && !isNaN(Number(eventId))) {
+            existingEvent = eventMap.get(Number(eventId));
+          }
+  
+          if (!existingEvent) {
+            // If no event found by ID, try to find by name (fallback method)
             const normalizedEventType = eventType.trim().toLowerCase();
             existingEvent = monitorEvents.find(event => event.name.trim().toLowerCase() === normalizedEventType);
           }
   
+          // Log the existing event details
           console.log(`Existing event:`, existingEvent);
-          console.log("Existing event arugments:", existingEvent?.arguments);
-          console.log("xisting event arugments value:", eventData.arguments.value);
-          
-          if(eventData.arguments.value=="" || eventData.arguments.value=== undefined || eventData.arguments.value=== null){
-            console.warn("Invalid value field, please enter the valid value for all fields.");
-              toast.error("Invalid value field, please enter the valid value for all fields.");
-              return false;
-          }
-
-          if (eventData.arguments.value) {
-            const operators = ['<', '>', '=']; // Define the valid operators
-            const operator = eventData.arguments.value.charAt(0); // Get the first character of the value
-          // <:: >:: ==::
-            if (!operators.includes(operator)) {
-              console.warn("Invalid value field in argsObject.");
-              toast.error("Please choose a valid operator (<, >, =) for each value field.");
-              return false; // Exit if the value field is invalid
-            }
-          
-            // Function to check if a character is a digit
-            const isDigit = (char) => /\d/.test(char);
-          
-            // Check if the value is valid based on the operator
-            if (operator === '<' || operator === '>') {
-              const thirdChar = eventData.arguments.value.charAt(3);
-              if (!isDigit(thirdChar)) {
-                console.warn("Invalid number after operator in argsObject.");
-                toast.error("Please enter a valid number after the operator for all value field.");
-                return false; // Exit if the value field is invalid
-              }
-            } else if (operator === '=') {
-              const fourthChar = eventData.arguments.value.charAt(4);
-              if (!isDigit(fourthChar)) {
-                console.warn("Invalid number after operator in argsObject.");
-                toast.error("Please enter a valid number after the operator for all value field.");
-                return false; // Exit if the value field is invalid
-              }
-            }
-          }
+          console.log("Existing event arguments:", existingEvent?.arguments);
+          console.log("Existing event arguments value:", existingEvent?.arguments?.value);
   
-          // Check for valid existing event and process accordingly
+          // If an existing event is found, update it
           if (existingEvent) {
-            // If event is found and the name matches, update it
             if (existingEvent.name.trim().toLowerCase() === eventType.trim().toLowerCase()) {
               console.log(`Updating existing event: ${eventType} with ID: ${existingEvent.id}`);
-              
+  
               const requestData = { id: existingEvent.id, ...eventData };
   
               processingEvents.push(
                 sendRequest("https://139-59-5-56.nip.io:3443/update_event", "POST", requestData)
                   .then(response => {
                     console.log(`${eventType} updated successfully!`, response);
-                    successStatus.set(eventType, true); // Mark as successful
                     hasChanges = true;
                   })
                   .catch(error => {
@@ -387,23 +348,20 @@ function Event_Edit() {
                       eventType,
                       message: `Failed to update ${eventType} event. Please try again!`
                     });
-                    successStatus.set(eventType, false); // Mark as failed
                   })
               );
             } else {
               console.log(`Event name mismatch: '${eventType}' does not match '${existingEvent.name}'. Skipping.`);
-              successStatus.set(eventType, false); // Mark as failed
             }
           } else {
-            // If event is not found, add it
-            console.log(`Adding new event: ${eventType}`);
+            // If no existing event is found, add it as a new event
+            console.log(`No matching event found for: ${eventType}. Adding as new.`);
             const requestData = { mid: m_id, ...eventData };
-  
             processingEvents.push(
               sendRequest("https://139-59-5-56.nip.io:3443/add_event", "POST", requestData)
                 .then(response => {
+                  toast.success(`${eventType} event added successfully!`);
                   console.log(`${eventType} added successfully!`, response);
-                  successStatus.set(eventType, true); // Mark as successful
                   hasChanges = true;
                 })
                 .catch(error => {
@@ -412,7 +370,6 @@ function Event_Edit() {
                     eventType,
                     message: `Failed to add ${eventType} event. Please try again!`
                   });
-                  successStatus.set(eventType, false); // Mark as failed
                 })
             );
           }
@@ -422,26 +379,20 @@ function Event_Edit() {
         await Promise.all(processingEvents);
   
         // Display success and error toasts
-        const allSuccessful = Array.from(successStatus.values()).every(status => status);
-  
-        if (allSuccessful) {
-          // Display success toasts
+        if (hasChanges) {
           selectedValues.forEach(eventType => {
-            if (successStatus.get(eventType)) {
+            if (hasChanges) {
               toast.success(`${eventType} event processed successfully!`);
             }
           });
-          toast.success("Event updated successfully!", {
+          toast.success("Events processed successfully!", {
             autoClose: 500,
             onClose: () => {
               navigate("/alert_edit", { state: navigationState });
             },
           });
-          // Redirect after success toasts are shown
-          
         } else {
-          // Display validation errors for incomplete inputs
-          toast.error("Faild to update event. Please try again!");
+          toast.error("Failed to process events. Please try again!");
           errors.forEach(({ eventType, message }) => toast.error(message));
         }
       } else {
@@ -453,8 +404,6 @@ function Event_Edit() {
     }
   };
   
-  
-
   if (
     !events ||
     !Array.isArray(events)
@@ -1253,71 +1202,85 @@ function Event_Edit() {
           </div>
 
 
-          <div className="w-full  max-h-[400px] p-5 overflow-y-auto mb-2 edit-event mt-2">
-                {selectedValues.length === 0 ? (
-                  <p>No events selected.</p>
-                ) : (
-                  selectedValues.map(eventName => {
-                    const abiEvent = abiEventsMap[eventName];
-                    if (!abiEvent) {
-                      console.warn(`ABI Event not found for: ${eventName}`);
-                      return null;
-                    }
-                    console.log("abiEvent", abiEvent);
+          <div className="w-full max-h-[400px] p-5 overflow-y-auto mb-2 edit-event mt-2">
+            {selectedValues.length === 0 ? (
+              <p>No events selected.</p>
+            ) : (
+              selectedValues.map(eventName => {
+                const abiEvent = abiEventsMap[eventName];
+                if (!abiEvent) {
+                  console.warn(`ABI Event not found for: ${eventName}`);
+                  return null;
+                }
+                console.log("abiEvent", abiEvent);
 
-                    return (
-                      <div key={eventName}>
-                        <div className="mt-3 text-black font-medium mb-3">{eventName} :</div>
-                        <div className="flex flex-col gap-3">
-                          {abiEvent.inputs.map(input => (
-                            <div>
-                            <input
-                              key={input.name}
-                              className="w-full rounded-lg p-2 outline-none border border-[#4C4C4C]"
-                              style={{ backgroundColor: "white" }}
-                              placeholder={`${input.name}: ${input.type}`}
-                              value={eventInputs[eventName]?.[input.name] || ""}
+                return (
+                  <div key={eventName} className="mb-4">
+                  <div className="mt-3 text-black font-medium mb-3">{eventName} :</div>
+                  <div className="flex flex-col gap-3">
+                    {abiEvent.inputs.map(input => (
+                      <div key={input.name} className="flex flex-col gap-2">
+                        <label className="text-gray-700 text-sm font-medium">
+                          {`${input.name} :`}
+                        </label>
+                        {input.type === 'bool' ? (
+                          <select
+                            className="w-full rounded-lg p-2 border border-[#4C4C4C] bg-white outline-none"
+                            onChange={(e) => handleInputChange(eventName, input.name, e.target.value)}
+                            value={eventInputs[eventName]?.[input.name] || 'none'}
+                            required
+                          >
+                            <option value="none" hidden>None</option>
+                            <option value="true">True</option>
+                            <option value="false">False</option>
+                          </select>
+                        ) : (
+                          <input
+                            className="w-full rounded-lg p-2 border border-[#4C4C4C] bg-white outline-none"
+                            placeholder={`${input.name}: ${input.type}`}
+                            value={
+                              eventInputs[eventName]?.[input.name]
+                                ? eventInputs[eventName][input.name].startsWith('<') ? eventInputs[eventName][input.name].substring(3)
+                                : eventInputs[eventName][input.name].startsWith('>') ? eventInputs[eventName][input.name].substring(3)
+                                : eventInputs[eventName][input.name].startsWith('=') ? eventInputs[eventName][input.name].substring(4)
+                                : eventInputs[eventName][input.name]
+                                : ""
+                            }
+                            required
+                            onChange={(e) => handleInputChange(eventName, input.name, e.target.value)}
+                          />
+                        )}
+                        {['uint8', 'uint16', 'uint32', 'uint64', 'uint128', 'uint256', 'int8', 'int16', 'int32', 'int64', 'int128', 'int256'].includes(input.type) && (
+                          <div className="flex gap-3 mt-2">
+                            <select
+                              className="w-full py-2 bg-white border rounded-lg border-black"
+                              onChange={(e) => handleOperatorChange(eventName, input.name, e.target.value)}
+                              value={
+                                eventInputs[eventName]?.[input.name]
+                                  ? eventInputs[eventName][input.name].startsWith('<') ? "<::"
+                                  : eventInputs[eventName][input.name].startsWith('>') ? ">::"
+                                  : eventInputs[eventName][input.name].startsWith('=') ? "==::"
+                                  : "None"
+                                  : "None"
+                              }
                               required
-                              onChange={(e) => handleInputChange(eventName, input.name, e.target.value)}
-                            />
-                            {input.name === 'value' && ( <div className="flex gap-3">
-                              <select
-                                className="w-full py-2 bg-white border rounded-lg border-black mt-5"
-                                onChange={(e) => handleOperatorChange(eventName, input.name ,e.target.value)}
-                                required
-                                // value={eventInputs[eventName]?.[input.name].slice(0,1) || ""}
-                              >
-                                <option hidden value="default">Select operator</option>
-                                <option value="<::">&lt;</option>
-                                <option value=">::">&gt;</option>
-                                <option value="==::">==</option>
-                              </select>
-                            </div>)}
-                          
+                            >
+                              <option value="None" hidden>None</option>
+                              <option value="<::" selected={eventInputs[eventName]?.[input.name]?.startsWith('<')}> &lt; </option>
+                              <option value=">::" selected={eventInputs[eventName]?.[input.name]?.startsWith('>')}> &gt; </option>
+                              <option value="==::" selected={eventInputs[eventName]?.[input.name]?.startsWith('=')}> == </option>
+                            </select>
                           </div>
-                          )
-                          )}
-                          {/* {abiEvent.inputs.some(input => input.name === 'value') && (
-                            <div className="flex gap-3">
-                              <select
-                                className="w-full py-2 bg-white border rounded-lg border-black"
-                                onChange={(e) => handleOperatorChange(eventName, e.target.value)}
-                                required
-                                value={eventOperators[eventName] || ""}
-                              >
-                                <option hidden value="default">uint</option>
-                                <option value="<::">&lt;</option>
-                                <option value=">::">&gt;</option>
-                                <option value="==::">==</option>
-                              </select>
-                            </div>
-                          )} */}
-                        </div>
+                        )}
                       </div>
-                    );
-                  })
-                )}
-              </div>
+                    ))}
+                  </div>
+                </div>
+                
+                );
+              })
+            )}
+          </div>
 
           <button
             className="py-3 w-full bg-[#28AA61]  rounded-lg text-white mt-5"
@@ -1373,42 +1336,42 @@ function Event_Edit() {
                 {addressState.slice(0, 6) + "..." + addressState.slice(-4)}
               </div>
               <button onClick={copyMessage}>
-              <div className="my-auto">
-                <svg
-                  width="19"
-                  height="19"
-                  viewBox="0 0 19 19"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <g clip-path="url(#clip0_179_2771)">
-                    <path
-                      d="M15.1074 7.65955H8.35742C7.52899 7.65955 6.85742 8.33112 6.85742 9.15955V15.9095C6.85742 16.738 7.52899 17.4095 8.35742 17.4095H15.1074C15.9358 17.4095 16.6074 16.738 16.6074 15.9095V9.15955C16.6074 8.33112 15.9358 7.65955 15.1074 7.65955Z"
-                      stroke="#434343"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <path
-                      d="M3.85742 12.1595H3.10742C2.7096 12.1595 2.32807 12.0015 2.04676 11.7202C1.76546 11.4389 1.60742 11.0574 1.60742 10.6595V3.90955C1.60742 3.51172 1.76546 3.13019 2.04676 2.84889C2.32807 2.56758 2.7096 2.40955 3.10742 2.40955H9.85742C10.2552 2.40955 10.6368 2.56758 10.9181 2.84889C11.1994 3.13019 11.3574 3.51172 11.3574 3.90955V4.65955"
-                      stroke="#434343"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </g>
-                  <defs>
-                    <clipPath id="clip0_179_2771">
-                      <rect
-                        width="18"
-                        height="18"
-                        fill="white"
-                        transform="translate(0.107422 0.909546)"
+                <div className="my-auto">
+                  <svg
+                    width="19"
+                    height="19"
+                    viewBox="0 0 19 19"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <g clip-path="url(#clip0_179_2771)">
+                      <path
+                        d="M15.1074 7.65955H8.35742C7.52899 7.65955 6.85742 8.33112 6.85742 9.15955V15.9095C6.85742 16.738 7.52899 17.4095 8.35742 17.4095H15.1074C15.9358 17.4095 16.6074 16.738 16.6074 15.9095V9.15955C16.6074 8.33112 15.9358 7.65955 15.1074 7.65955Z"
+                        stroke="#434343"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
                       />
-                    </clipPath>
-                  </defs>
-                </svg>
-              </div>
+                      <path
+                        d="M3.85742 12.1595H3.10742C2.7096 12.1595 2.32807 12.0015 2.04676 11.7202C1.76546 11.4389 1.60742 11.0574 1.60742 10.6595V3.90955C1.60742 3.51172 1.76546 3.13019 2.04676 2.84889C2.32807 2.56758 2.7096 2.40955 3.10742 2.40955H9.85742C10.2552 2.40955 10.6368 2.56758 10.9181 2.84889C11.1994 3.13019 11.3574 3.51172 11.3574 3.90955V4.65955"
+                        stroke="#434343"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </g>
+                    <defs>
+                      <clipPath id="clip0_179_2771">
+                        <rect
+                          width="18"
+                          height="18"
+                          fill="white"
+                          transform="translate(0.107422 0.909546)"
+                        />
+                      </clipPath>
+                    </defs>
+                  </svg>
+                </div>
               </button>
             </div>
           </div>
