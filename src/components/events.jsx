@@ -335,7 +335,7 @@ function Events() {
 
   return (
     <div
-      className="font-poppin pt-2 bg-white min-h-full"
+      className="font-poppin pt-10 bg-white min-h-full"
       style={{ backgroundColor: "#FCFFFD" }}
     >
       <ToastContainer
@@ -349,9 +349,10 @@ function Events() {
         draggable
         pauseOnHover
       />
-      <Navbar email={email} />
-      <div className="w-full  flex justify-center items-center flex-wrap mt-10 gap-3">
-        <div className="sm:ml-5 md:ml-10 lg:ml-40 ">
+      <Navbar email={email}  />
+      <div className="mt-16 w-full flex justify-center items-center gap-10 flex-wrap ">
+
+        <div className="  w-80 ">
           <div className="flex">
             <div>
               <svg
@@ -640,7 +641,7 @@ function Events() {
           </div>
         </div>
 
-        <div className="w-[90%] sm:w-80 lg:w-[500px] mx-auto mt-5 mb-5 md:mt-0 md:mb-0  h-[500px] flex flex-col justify-start items-center md:overflow-y-auto  lg:pt-10">
+        <div className=" w-[98%] md:w-[600px]  lg:min-h-96 overflow-auto mb-10">
 
           <div className="flex flex-col justify-center items-center gap-6">
             <div className="font-medium text-lg" style={{ color: "black" }}>
@@ -746,7 +747,7 @@ function Events() {
           </button>
         </div>
 
-        <div className="mt-4 md:mt-0 border border-[#0CA851] mx-auto shadow-md p-4 md:p-10 rounded-xl mb-3 md:mb-0">
+        <div className="border border-[#0CA851]  shadow-md p-4 md:p-10 rounded-xl w-80   mb-10 xl:mb-0">
           <div className="text-lg font-medium" style={{ color: "black" }}>
             Monitor Summary
           </div>
