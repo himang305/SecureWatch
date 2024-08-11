@@ -26,9 +26,13 @@ function Monitor_Edit() {
   const { name } = location.state;
   const {alert_data}= location.state;
   const {alert_type}= location.state;
+  console.log("alert data is", alert_data);
+  console.log("alert type is", alert_type);
+  
   // const { address }= location.state;
   // const {network} = location.state;
 
+  
   const [monitorName, setMonitorName] = useState(name || "");
   const [riskCategory, setRiskCategory] = useState("");
   const [address, setAddress] = useState("");

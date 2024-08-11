@@ -24,8 +24,8 @@ function Events() {
   const [addressState, setAddressState] = useState(address || "");
   const [riskCategoryState, setRiskCategoryState] = useState(rk || "");
   const [abiState, setAbiState] = useState(abi || "");
-  // console.log(token);
-  // console.log(m_id);
+  console.log("name:",name);
+  console.log("MID:",m_id);
   const mid = m_id;
 
   const [disp1, setDisp1] = useState("none");
@@ -198,7 +198,7 @@ function Events() {
   
     // Prepare navigation state
     const navigationState = {
-      monitorName: name,
+      name: name,
       network: network,
       address: address,
       rk: rk,

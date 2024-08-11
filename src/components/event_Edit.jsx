@@ -18,6 +18,10 @@ function Event_Edit() {
   console.log("Selected values:", selectedValues.length);
 
   const { name, email, m_id, token, network, abi, address, rk, alert_data, alert_type } = location.state || "";
+
+  console.log("alert_data",alert_data);
+  console.log("alert_type",alert_type);
+  
   const [networkState, setNetworkState] = useState(network || "");
   const [addressState, setAddressState] = useState(address || "");
   const [riskCategoryState, setRiskCategoryState] = useState(rk || "");

@@ -3,6 +3,7 @@ import { Switch } from "@headlessui/react";
 import { useNavigate } from "react-router-dom";
 import Edit from "../images/edit.png";
 import Trash from "../images/icons8-trash-48.png"; 
+import { ToastContainer, toast } from "react-toastify";
 
 const customStyles = {
   content: {
@@ -52,13 +53,16 @@ const Monitor_cmp = () => {
 
         if (response.ok) {
           setValue(value + 1); // Trigger re-fetch after deletion
-          alert("Monitor deleted successfully.");
+          toast.success("Monitor deleted successfully.");
+          // alert("Monitor deleted successfully.");
         } else {
-          alert("Failed to delete monitor. Please try again.");
+          toast.error("Failed to delete monitor. Please try again.")
+          // alert("Failed to delete monitor. Please try again.");
         }
       } catch (error) {
+        toast.error("An error occurred. Please try again.")
         console.error("Error deleting monitor:", error);
-        alert("An error occurred. Please try again.");
+        // alert("An error occurred. Please try again.");
       }
     }
   };
@@ -77,6 +81,7 @@ const Monitor_cmp = () => {
 
   return (
     <div className="w-full flex justify-center items-center flex-col ">
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
       {moniter.monitors.map((i) => {
         const name = i.name;
         const risk = i.category;
@@ -90,6 +95,7 @@ const Monitor_cmp = () => {
 
         return (
           <div key={mid} className="w-full mx-auto flex justify-center items-center flex-col ">
+             
             <div className="w-full mx-auto flex justify-center items-center flex-col ">
               <div
                 className="mt-10 w-[95%] lg:w-4/5  flex flex-wrap   rounded-2xl "

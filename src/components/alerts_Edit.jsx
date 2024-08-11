@@ -21,41 +21,49 @@ const customStyles = {
 };
 
 function Alerts_Edit() {
-  const [riskCategory, setRiskCategory] = useState("");
-  const [emailInput, setEmailInput] = useState("");
-  const [actionType, setActionType] = useState("default");
-  const [isSaved, setIsSaved] = useState(false);
-  const [open, setOpen] = useState(false);
-  
   const location = useLocation();
   const navigate = useNavigate();
-
   const { name, email, m_id, token, network, address, rk, selectedEventNames, alert_data, alert_type } = location.state || {};
+  console.log("Alert Data",alert_data);
+  console.log("Alert Type",alert_type);
 
+  const [riskCategory, setRiskCategory] = useState("");
+  const [emailInput, setEmailInput] = useState(alert_data || "");
+  const [actionType, setActionType] = useState(alert_type=== 1 ?"email":"other" || "default");
+  const [isSaved, setIsSaved] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [previousData, setPreviousData] = useState({});
+  
+
+  
+ 
   // Fetch monitor data on component mount
-  useEffect(() => {
-    const fetchMonitorData = async () => {
-      try {
-        const response = await axios.post(
-          "https://139-59-5-56.nip.io:3443/get_monitor",
-          { monitor_id: m_id }
-        );
-        const monitorData = response.data;
-        console.log(monitorData);
+  // useEffect(() => {
+  //   const fetchMonitorData = async () => {
+  //     try {
+  //       const response = await axios.post(
+  //         "https://139-59-5-56.nip.io:3443/get_monitor",
+  //         { monitor_id: m_id }
+  //       );
+  //       const monitorData = response.data;
+  //       setPreviousData(monitorData);
+  //       console.log(monitorData);
         
 
-        // Prefill the form with the retrieved data
-        setRiskCategory(monitorData.risk_category || "");
-        setEmailInput(monitorData.alert_data || "");
-        setActionType(monitorData.alert_type === 1 ? "email" : "other");
-      } catch (error) {
-        console.error("Error fetching monitor data:", error);
-        toast.error("Failed to fetch monitor data. Please try again!");
-      }
-    };
+  //       // Prefill the form with the retrieved data
+  //       setRiskCategory(monitorData.risk_category || "");
+  //       setEmailInput(monitorData.alert_data || "");
+  //       setActionType(monitorData.alerts[0].alerts ? "email" : "other");
+  //     } catch (error) {
+  //       console.error("Error fetching monitor data:", error);
+  //       toast.error("Failed to fetch monitor data. Please try again!");
+  //     }
+  //   };
 
-    fetchMonitorData();
-  }, [m_id]);
+  //   fetchMonitorData();
+  // }, [m_id]);
+
+
 
   function openModal() {
     setOpen(true);
@@ -71,7 +79,7 @@ function Alerts_Edit() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (riskCategory === "" || actionType === "default") {
+    if (riskCategory === "default" || actionType === "default") {
       console.error("No actions selected.");
       setOpen(false);
       toast.error("Please select all required fields!");
@@ -90,10 +98,8 @@ function Alerts_Edit() {
     const postData = {
       monitor_id: m_id,
       name: name,
-      alert_data: emailString,
       alert_type: actionType === "email" ? 1 : 0,
-      risk_category: riskCategory,
-      status: 2,
+      alert_data: actionType === "email" ?emailString:"",
     };
 
     try {

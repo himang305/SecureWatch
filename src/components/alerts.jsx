@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "./navbar2";
 import Modal from "react-modal";
@@ -21,14 +21,25 @@ const customStyles = {
 };
 
 function Alerts() {
-  const [emailInput, setEmailInput] = useState(""); // State to handle email inputs
-  const [isSaved, setIsSaved] = useState(false);
-  const [riskCategory, setRiskCategory] = useState("");
-  const [actionType, setActionType] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   const { name, email, m_id, token, network, address, rk, selectedEventNames } = location.state || {};
+  console.log("name:",name);
+  console.log("MID:",m_id);
+
+
+  const [emailInput, setEmailInput] = useState("");
+  const [isSaved, setIsSaved] = useState(false);
+  const [riskCategory, setRiskCategory] = useState("default");
+  const [actionType, setActionType] = useState("default");
+  
+  console.log("riskCategory",riskCategory);
+  console.log("actionType",actionType);
+  
+
+
+
 
   const [open, setOpen] = useState(false);
 
@@ -42,6 +53,10 @@ function Alerts() {
   function closeModal() {
     setOpen(false);
   }
+  useEffect(()=>{
+    console.log("emailInput",emailInput);
+    
+  },[emailInput])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -60,26 +75,33 @@ function Alerts() {
       return;
     }
 
-    const emails = emailInput.split(",").map((email) => email.trim());
-    const emailString = emails.join(",");
+    // const emails = emailInput.split(",").map((email) => email.trim());
+    // const emailString = emails.join(",");
 
-    const postData = {
-      monitor_id: m_id,
-      name: name,
-      alert_data: actionType === "email" ? emailString : null, // Store email if email action is selected
-      alert_type: actionType === "email" ? "1" : "0", // Example: "1" for email, "0" for other actions
-      risk_category: riskCategory,
-      status: 2,
-      other_data: actionType !== "email" ? "other action data" : null, // Placeholder for other action data
-    };
+    // const postData = {
+    //   name: name,
+    //   monitor_id: m_id,
+    //   alert_type: actionType === "email" ? 1: 0, // Example: "1" for email, "0" for other actions
+    //   alert_data: actionType === "email" ? JSON.stringify(emailInput) : null, // Store email if email action is selected
+    //   risk_category: riskCategory,
+    //   // other_data: actionType !== "email" ? "other action data" : null, // Placeholder for other action data
+    // };
 
-    console.log("Storing the following data:", postData); // Log the stored details
+    // console.log("Storing the following data:", postData); // Log the stored details
 
     try {
-      const response = await axios.post(
-        "https://139-59-5-56.nip.io:3443/update_monitor",
-        postData
-      );
+      const response = await fetch("https://139-59-5-56.nip.io:3443/update_monitor", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: name,
+          monitor_id: m_id,
+          alert_type: actionType === "email" ? 1: 0, 
+          alert_data: actionType === "email" ? emailInput : "", 
+        }),
+      });
       console.log("Response from server:", response.data);
 
       toast.success("Monitor Updated successfully!", {
@@ -231,10 +253,11 @@ function Alerts() {
               id="category"
               required
               onChange={(e) => setRiskCategory(e.target.value)}
-              defaultValue="none"
+              value={riskCategory}
               className="outline-none border-2 border-[#4C4C4C] py-3 rounded-xl  w-full px-3"
             >
-              <option value="none" selected disabled hidden className="text-xl font-medium">
+              
+              <option value="default" className="text-[13px] text-[#959595] ">
                 None
               </option>
               <option value="Low Severity" className="text-[13px] text-[#959595] ">
