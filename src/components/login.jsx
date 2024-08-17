@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import google from "../images/google.png";
 import { useNavigate } from "react-router-dom";
 import { showErrorAlert, showSuccessAlert } from "./toastifyalert";
+import { baseUrl } from "../Constants/data";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -24,7 +25,7 @@ function Login() {
         showErrorAlert("Invalid email or password.");
       } else {
         const response = await axios.post(
-          "https://139-59-5-56.nip.io:3443/login_securewatch",
+          `${baseUrl}/login_securewatch`,
           {
             email,
             password,

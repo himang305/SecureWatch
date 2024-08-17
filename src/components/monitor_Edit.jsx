@@ -5,6 +5,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { useLocation, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import { baseUrl } from "../Constants/data";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -57,7 +58,7 @@ function Monitor_Edit() {
     console.log("Data is:", data);
     try {
       const response = await axios.post(
-        "https://139-59-5-56.nip.io:3443/update_monitor",
+        `${baseUrl}/update_monitor`,
         data
       );
       // console.log("API response:", response.data);
@@ -128,7 +129,7 @@ function Monitor_Edit() {
       try {
         console.log("called fetchMoniter ");
 
-        const res = await fetch("https://139-59-5-56.nip.io:3443/get_monitor", {
+        const res = await fetch(`${baseUrl}/get_monitor`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

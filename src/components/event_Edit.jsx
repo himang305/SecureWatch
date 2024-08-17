@@ -4,6 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Navbar from "./navbar2";
 import Select from 'react-select'
+import { baseUrl } from "../Constants/data";
 
 function Event_Edit() {
   const navigate = useNavigate();
@@ -97,7 +98,7 @@ function Event_Edit() {
           console.warn('m_id is not set');
           return;
         }
-        const res = await fetch("https://139-59-5-56.nip.io:3443/get_event", {
+        const res = await fetch(`${baseUrl}/get_event`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -274,7 +275,7 @@ const handleSelectChange = (selectedOptions) => {
         for (const removedEvent of removedEvents) {
             if (removedEvent.id) {
                 processingEvents.push(
-                    sendRequest("https://139-59-5-56.nip.io:3443/delete_event", "POST", { id: removedEvent.id })
+                    sendRequest(`${baseUrl}/delete_event`, "POST", { id: removedEvent.id })
                         .then(response => {
                             console.log(`Event ${removedEvent.name} deleted successfully!`, response);
                             hasChanges = true;
@@ -292,7 +293,7 @@ const handleSelectChange = (selectedOptions) => {
 
         // Fetch existing events from the monitor
         const fetchEventsFromMonitor = async (monitorId) => {
-            const response = await fetch('https://139-59-5-56.nip.io:3443/get_event', {
+            const response = await fetch(`${baseUrl}/get_event`, {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ mid: monitorId }),
@@ -370,7 +371,7 @@ const handleSelectChange = (selectedOptions) => {
                         const requestData = { id: existingEvent.id, ...eventData };
 
                         processingEvents.push(
-                            sendRequest("https://139-59-5-56.nip.io:3443/update_event", "POST", requestData)
+                            sendRequest(`${baseUrl}/update_event`, "POST", requestData)
                                 .then(response => {
                                     console.log(`${eventType} updated successfully!`, response);
                                     hasChanges = true;
@@ -391,7 +392,7 @@ const handleSelectChange = (selectedOptions) => {
                     console.log(`No matching event found for: ${eventType}. Adding as new.`);
                     const requestData = { mid: m_id, ...eventData };
                     processingEvents.push(
-                        sendRequest("https://139-59-5-56.nip.io:3443/add_event", "POST", requestData)
+                        sendRequest(`${baseUrl}/add_event`, "POST", requestData)
                             .then(response => {
                                 toast.success(`${eventType} event added successfully!`);
                                 console.log(`${eventType} added successfully!`, response);

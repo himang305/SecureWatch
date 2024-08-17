@@ -9,6 +9,7 @@ import Grid from '../images/grid.png'
 import Actions from '../images/Actions.png';
 import Code from '../images/code.png';
 import { useState } from "react";
+import { baseUrl } from "../Constants/data";
 
 
 function Dashboard() {
@@ -38,7 +39,7 @@ console.log(userEmail);
   //   console.log(s);
   React.useEffect(() => {
     const fetchMoniter = async () => {
-      const res=await fetch('https://139-59-5-56.nip.io:3443/get_monitor',{
+      const res=await fetch( `${baseUrl}/get_monitor`,{
         method:'POST',
         headers:{
           'Content-Type':'application/json'

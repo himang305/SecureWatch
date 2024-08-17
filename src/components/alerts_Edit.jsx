@@ -6,6 +6,7 @@ import Load from "../images/loading.png";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import {baseUrl} from '../Constants/data.js';
 
 Modal.setAppElement("#root");
 
@@ -42,7 +43,7 @@ function Alerts_Edit() {
   //   const fetchMonitorData = async () => {
   //     try {
   //       const response = await axios.post(
-  //         "https://139-59-5-56.nip.io:3443/get_monitor",
+  //         `${baseUrl}/get_monitor`,
   //         { monitor_id: m_id }
   //       );
   //       const monitorData = response.data;
@@ -104,7 +105,7 @@ function Alerts_Edit() {
 
     try {
       const response = await axios.post(
-        "https://139-59-5-56.nip.io:3443/update_monitor",
+        `${baseUrl}/update_monitor`,
         postData
       );
       console.log(response.data);

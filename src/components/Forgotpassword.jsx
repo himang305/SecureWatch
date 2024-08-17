@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { showErrorAlert, showSuccessAlert } from "./toastifyalert";
+import { baseUrl } from "../Constants/data";
 
 function Forgotpassword() {
   const [loading, setLoading] = useState(false);
@@ -31,7 +32,7 @@ function Forgotpassword() {
       }
        else {
         const response = await axios.post(
-          "https://139-59-5-56.nip.io:3443/forgot_password_securewatch",
+          `${baseUrl}/forgot_password_securewatch`,
           {
             "email":email
           }

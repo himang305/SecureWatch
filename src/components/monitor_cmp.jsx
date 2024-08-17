@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Edit from "../images/edit.png";
 import Trash from "../images/icons8-trash-48.png"; 
 import { ToastContainer, toast } from "react-toastify";
+import { baseUrl } from "../Constants/data";
 
 const customStyles = {
   content: {
@@ -23,7 +24,7 @@ const Monitor_cmp = () => {
 
   useEffect(() => {
     const fetchMoniter = async () => {
-      const res = await fetch("https://139-59-5-56.nip.io:3443/get_monitor", {
+      const res = await fetch(`${baseUrl}/get_monitor`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,7 +42,7 @@ const Monitor_cmp = () => {
   const handleDeleteMonitor = async (monitor_id) => {
     if (window.confirm("Are you sure you want to delete this monitor?")) {
       try {
-        const response = await fetch("https://139-59-5-56.nip.io:3443/delete_monitor", {
+        const response = await fetch(`${baseUrl}/delete_monitor`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -189,7 +190,7 @@ const Monitor_cmp = () => {
                         const newStatus = status === 0 ? 1 : 0;
 
                         fetch(
-                          "https://139-59-5-56.nip.io:3443/update_monitor",
+                          `${baseUrl}/update_monitor`,
                           {
                             method: "POST",
                             headers: {

@@ -5,6 +5,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { useLocation, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import { baseUrl } from "../Constants/data";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -43,7 +44,7 @@ function Monitor_create() {
         return;
       }
       const response = await axios.post(
-        "https://139-59-5-56.nip.io:3443/add_monitor",
+        `${baseUrl}/add_monitor`,
         {
           name: monitorName,
           user_id: parseInt(user_Id),

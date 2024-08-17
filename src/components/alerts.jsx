@@ -6,6 +6,7 @@ import Load from "../images/loading.png";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { baseUrl } from "../Constants/data.js";
 
 Modal.setAppElement("#root");
 
@@ -90,7 +91,7 @@ function Alerts() {
     // console.log("Storing the following data:", postData); // Log the stored details
 
     try {
-      const response = await fetch("https://139-59-5-56.nip.io:3443/update_monitor", {
+      const response = await fetch(`${baseUrl}/update_monitor`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

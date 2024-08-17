@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import Navbar from "./navbar2";
 import { FaCaretDown,FaCopy } from 'react-icons/fa';
 import { showErrorAlert, showSuccessAlert } from "./toastifyalert";
+import { baseUrl } from "../Constants/data";
 
 function Monitor_alerts() {
   const location = useLocation();
@@ -17,7 +18,7 @@ function Monitor_alerts() {
 
   useEffect(() => {
     const fetchAlert = async () => {
-      const res=await fetch('https://139-59-5-56.nip.io:3443/get_alerts',{
+      const res=await fetch(`${baseUrl}/get_alerts`,{
         method:'POST',
         headers:{
           'Content-Type':'application/json'

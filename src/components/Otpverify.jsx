@@ -6,6 +6,7 @@ import axios from "axios";
 import { useNavigate,useLocation } from "react-router-dom";
 import OtpInput from 'react-otp-input';
 import { showErrorAlert, showSuccessAlert } from "./toastifyalert";
+import { baseUrl } from "../Constants/data";
 
 function Otpverify() {
   const navigate = useNavigate();
@@ -50,7 +51,7 @@ function Otpverify() {
        else {
         const validOtp= parseInt(otp);
         const response = await axios.post(
-          "https://139-59-5-56.nip.io:3443/verify_forgot_password_securewatch",
+          `${baseUrl}/verify_forgot_password_securewatch`,
           {
             "email":email,
             "otp":validOtp,

@@ -1,12 +1,13 @@
 import React,{useEffect,useState} from 'react'
 import Navbar from "./navbar2";
+import { baseUrl } from '../Constants/data';
 
 function Monitor_activity() {
     const [moniter, setMoniter] = useState([]);
     const [value, setValue] = useState(0);
     useEffect(() => {
         const fetchMoniter = async () => {
-          const res = await fetch("https://139-59-5-56.nip.io:3443/get_monitor", {
+          const res = await fetch(`${baseUrl}/get_monitor`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

@@ -4,6 +4,7 @@ import c1 from "../images/backg.png";
 import c2 from "../images/ellipse.png";
 import { useNavigate, useLocation } from "react-router-dom";
 import { showErrorAlert,showSuccessAlert } from "./toastifyalert";
+import { baseUrl } from "../Constants/data";
 
 function Login1() {
   const [loading, setLoading] = useState(false);
@@ -33,7 +34,7 @@ function Login1() {
         showErrorAlert("Enter the Email, userame and password");
       } else {
         const response = await axios.post(
-          "https://139-59-5-56.nip.io:3443/signup_securewatch",
+          `${baseUrl}/signup_securewatch`,
           {
             name: u_name,
             email,

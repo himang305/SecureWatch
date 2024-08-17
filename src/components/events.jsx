@@ -11,7 +11,7 @@ import Web3 from "web3";
 import Select, { components } from "react-select";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-//
+import { baseUrl } from "../Constants/data";
 
 function Events() {
   const navigate = useNavigate();
@@ -287,7 +287,7 @@ function Events() {
   
       // Send data to the server
       try {
-        const response = await axios.post("https://139-59-5-56.nip.io:3443/add_event", body);
+        const response = await axios.post(`${baseUrl}/add_event`, body);
         console.log("Event added:", response.data);
         console.log("Arguments Object:", argsObject);
         console.log("Signature is:", eventSignature);
