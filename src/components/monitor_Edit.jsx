@@ -5,6 +5,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { useLocation, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import { baseUrl } from "../Constants/data";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -22,13 +23,24 @@ function Monitor_Edit() {
   const targetMids = query.get("id");
   console.log("MID = ", targetMids);
 
-  const [monitorName, setMonitorName] = React.useState("");
-  const [riskCategory, setRiskCategory] = React.useState("");
-  const [address, setAddress] = React.useState("");
-  const [contractName, setContractName] = React.useState("");
-  const [network, setNetwork] = React.useState("");
+  const { mid } = location.state;
+  const { name } = location.state;
+  const {alert_data}= location.state;
+  const {alert_type}= location.state;
+  console.log("alert data is", alert_data);
+  console.log("alert type is", alert_type);
+  
+  // const { address }= location.state;
+  // const {network} = location.state;
+
+  
+  const [monitorName, setMonitorName] = useState(name || "");
+  const [riskCategory, setRiskCategory] = useState("");
+  const [address, setAddress] = useState("");
+  const [contractName, setContractName] = useState("");
+  const [network, setNetwork] = useState("");
   const [networkName, setNetworkName] = useState("");
-  const [abi, setAbi] = React.useState("");
+  const [abi, setAbi] = useState("");
   const [selectedMonitor, setSelectedMonitor] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -36,9 +48,9 @@ function Monitor_Edit() {
     e.preventDefault();
 
     const data = {
-      monitor_id: selectedMonitor.mid,
       name: monitorName || selectedMonitor.name,
-      network: network || selectedMonitor.network,
+      monitor_id: selectedMonitor.mid,
+      // network: network || selectedMonitor.network,
       address: address || selectedMonitor.address,
       alert_type: 1,
       abi: abi || selectedMonitor.abi,
@@ -46,7 +58,7 @@ function Monitor_Edit() {
     console.log("Data is:", data);
     try {
       const response = await axios.post(
-        "https://139-59-5-56.nip.io:3443/update_monitor",
+        `${baseUrl}/update_monitor`,
         data
       );
       // console.log("API response:", response.data);
@@ -58,7 +70,7 @@ function Monitor_Edit() {
       // console.log(" ABI  is:", abi);
       // console.log(" user id is", user_Id);
 
-      toast.success("Monitor created successfully!", {
+      toast.success("Details updated successfully!", {
         autoClose: 500,
         onClose: () => {
           navigate("/event_Edit", {
@@ -71,6 +83,8 @@ function Monitor_Edit() {
               m_id: selectedMonitor.mid,
               email: email,
               token: token,
+              alert_data: alert_data || "",
+              alert_type: alert_type || "",
             },
           });
         },
@@ -110,15 +124,12 @@ function Monitor_Edit() {
 
 
   useEffect(() => {
-
-  
-
     const fetchMoniter = async () => {
       let data;
       try {
         console.log("called fetchMoniter ");
 
-        const res = await fetch("https://139-59-5-56.nip.io:3443/get_monitor", {
+        const res = await fetch(`${baseUrl}/get_monitor`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -472,86 +483,19 @@ function Monitor_Edit() {
         </div>
         <div className="mt-4 md:mt-0 w-full md:w-1/2 pb-20">
           <form onSubmit={handleSubmit}>
-            <div className="font-medium text-xl" style={{ color: "black" }}>
-              Name
-            </div>
-            <div
-              className="text-lg text-[#989898] mt-1"
-              style={{ color: "black" }}
-            >
-              Give your monitor a name to make it easier to identify it. Only
-              for display purposes.
-            </div>
-            <input
-              style={{ backgroundColor: "white" }}
-              type="text"
-              name="name"
-              placeholder={selectedMonitor.name}
-              onChange={(e) => setMonitorName(e.target.value)}
-              className="outline-none border-2 border-[#4C4C4C] w-full rounded-xl p-2 py-3 mt-1 "
-            />
-            <div
-              className="font-medium mt-5 text-lg"
-              style={{ color: "black" }}
-            >
-              Risk Category
-            </div>
-            <select
-              style={{ backgroundColor: "white" }}
-              name="category"
-              id="category"
-              placeholder={selectedMonitor.c}
-              // value={formData.category}
-
-              onChange={(e) => setRiskCategory(e.target.value)}
-              className="outline-none border-2 border-[] py-3 rounded-xl  w-full px-3"
-            >
-              <option
-                value="none"
-                selected
-                disabled
-                hidden
-                className="text-xl font-medium"
-              >
-                None
-              </option>
-              <option
-                value="governance"
-                className="text-[13px] text-[#959595] "
-              >
-                Governance
-              </option>
-              <option
-                value="access control"
-                className="text-[13px] text-[#959595]"
-              >
-                Access Control
-              </option>
-              <option
-                value="suspicious activity"
-                className="text-[13px] text-[#959595]"
-              >
-                Suspicious Activity
-              </option>
-              <option value="financial" className="text-[13px] text-[#959595]">
-                Financial
-              </option>
-              <option value="technical" className="text-[13px] text-[#959595]">
-                Technical
-              </option>
-            </select>
-
+        
             <div
               className="text-lg font-medium mt-5"
               style={{ color: "black" }}
             >
-              Contract Name
+              Monitor Name
             </div>
             <input
               style={{ backgroundColor: "white" }}
               type="text"
               placeholder="Enter text"
               onChange={(e) => setContractName(e.target.value)}
+              value={monitorName}
               className="outline-none border-2 border-[] py-3 rounded-xl  w-full px-"
             />
             {/* #4C4C4C */}

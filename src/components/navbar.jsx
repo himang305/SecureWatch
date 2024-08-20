@@ -98,12 +98,12 @@ function Navbar() {
         </div>   
         
         <div className="flex gap-1 sm:gap-3">
-        <Link to="/login">
+        <Link to="/login" className="hidden sm:block">
           <div className="bg-white rounded-full px-3 py-2 font-medium font-inter">
           Login
           </div>
         </Link>
-        <button  onClick={toggleMenu} className="md:hidden inline-flex items-center justify-center p-2 rounded-md  hover:text-white  focus:outline-none  focus:text-white">
+        <button  onClick={toggleMenu} className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-white  hover:text-white  focus:outline-none  focus:text-white">
               <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
               </svg>
@@ -179,6 +179,11 @@ function Navbar() {
 </div>
 </div>
 
+<Link to="/login" className="sm:hidden">
+          <div className="text-white font-medium font-inter">
+          Login
+          </div>
+        </Link>
         </div>
       )}
 

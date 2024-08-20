@@ -78,7 +78,7 @@ const Api_builder = () => {
   return (
     <div className="App bg-white pb-64 pt-5">
        <Navbar email={userEmail} />
-      <h1 className='  text-center my-10 text-4xl font-medium'>Get Web3 API List</h1>
+      <h1 className='  text-center my-10 text-4xl font-medium text-black'>Get Web3 API List</h1>
       <div className="flex justify-center gap-6 flex-wrap my-7">
         <button className="connect_wallet" onClick={handleConnectWallet}>Connect Wallet!</button>
         <div id="wallet-info " className="wallet-info py-3 px-4 border-2">
@@ -88,14 +88,14 @@ const Api_builder = () => {
       </div>
 <div className='w-full flex flex-col justify-center items-center'>
       <form className="form-container w-full sm:w-[80%] md:w-[70%] lg:w-[50%] bg-slate-600 flex flex-col" onSubmit={handleSubmit}>
-        <label>Paste Contract ABI:</label>
+        <label className='text-black'>Paste Contract ABI:</label>
         <input
           className="form-input"
           type="text"
           value={abi}
           onChange={(e) => setAbi(e.target.value)}
         />
-        <label>Paste Contract Address:</label>
+        <label className='text-black'>Paste Contract Address:</label>
         <input
           className="form-input"
           type="text"

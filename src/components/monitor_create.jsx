@@ -5,6 +5,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { useLocation, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import { baseUrl } from "../Constants/data";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -17,43 +18,54 @@ function Monitor_create() {
   const user_Id = decoded.userId;
 
   const navigate = useNavigate();
-  const [monitorName, setMonitorName] = React.useState("");
-  const [riskCategory, setRiskCategory] = React.useState("");
-  const [address, setAddress] = React.useState("");
-  const [contractName, setContractName] = React.useState("");
-  const [network, setNetwork] = React.useState("");
+  const [monitorName, setMonitorName] = useState("");
+  const [riskCategory, setRiskCategory] = useState("");
+  const [address, setAddress] = useState("");
+  const [contractName, setContractName] = useState("");
+  const [network, setNetwork] = useState("");
   const [networkName, setNetworkName] = useState("");
-  const [abi, setAbi] = React.useState("");
+  const [abi, setAbi] = useState("");
+
+  console.log("Monitor name:",monitorName);
+  console.log("network:",network);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const data = {
-      name: monitorName,
-      user_id: parseInt(user_Id),
-      network: parseInt(network),
-      address: address,
-      alert_type: 1,
-      alert_data: "",
-      abi: abi,
-      category: riskCategory,
-    };
+    if (monitorName === "" || network === "" || address === "" || abi === "" || monitorName == undefined || network == undefined || address == undefined || abi == undefined) {
+      console.error("Monitor inputs are incomplete.");
+      toast.error("Please fill out all monitor fields.");
+      return;
+    }
 
     try {
+      if (monitorName === "" || network === "" || address === "" || abi === "" || monitorName == undefined || network == undefined || address == undefined || abi == undefined) {
+        console.error("Monitor inputs are incomplete.");
+        toast.error("Please fill out all monitor fields.");
+        return;
+      }
       const response = await axios.post(
-        "https://139-59-5-56.nip.io:3443/add_monitor",
-        data
+        `${baseUrl}/add_monitor`,
+        {
+          name: monitorName,
+          user_id: parseInt(user_Id),
+          network: parseInt(network),
+          address: address,
+          alert_type: 1,
+          alert_data: "",
+          abi: abi,
+          category: riskCategory,
+        }
       );
-      console.log("API response:", response.data);
-      console.log("monitor name is", monitorName);
-      console.log("Risk category is:", riskCategory);
-      console.log("contract name is", contractName);
-      console.log("netwprk name is", network);
-      console.log(" address is:", address);
-      console.log(" ABI  is:", abi);
-      console.log(" user id is", user_Id);
+      // console.log("API response:", response.data);
+      // console.log("monitor name is", monitorName);
+      // console.log("Risk category is:", riskCategory);
+      // console.log("contract name is", contractName);
+      // console.log("netwprk name is", network);
+      // console.log(" address is:", address);
+      // console.log(" ABI  is:", abi);
+      // console.log(" user id is", user_Id);
 
-      toast.success("Monitor created successfully!", {
+      toast.success("Details updated successfully!", {
         autoClose: 500,
         onClose: () => {
           navigate("/event", {
@@ -73,7 +85,7 @@ function Monitor_create() {
 
       console.log("monnitor id is", response.data.id);
     } catch (error) {
-      console.error("API request failed:", error); // Handle error
+      console.error("API request failed:", error);
       toast.error("Failed to create monitor. Please try again!", {
         autoClose: 500,
       });
@@ -98,7 +110,7 @@ function Monitor_create() {
       />
       <Navbar email={email} />
       <div className="w-5/6  lg:w-5/6 mx-auto mt-20 flex justify-center flex-col md:flex-row md:gap-10 lg:gap-20 ">
-        <div className="w-full md:w-1/4 ">
+        <div className="w-full lg:w-1/4 ">
           <div className="flex">
             <div>
               <svg
@@ -381,86 +393,20 @@ function Monitor_create() {
             </div>
           </div>
         </div>
-        <div className="mt-4 md:mt-0 w-full md:w-1/2 pb-20">
+        
+        <div className="mt-4 lg:mt-0 w-full lg:w-1/2 pb-20">
           <form onSubmit={handleSubmit}>
-            <div className="font-medium text-xl" style={{ color: "black" }}>
-              Name
-            </div>
-            <div
-              className="text-lg text-[#989898] mt-1"
-              style={{ color: "black" }}
-            >
-              Give your monitor a name to make it easier to identify it. Only
-              for display purposes.
-            </div>
-            <input
-              style={{ backgroundColor: "white" }}
-              type="text"
-              name="name"
-              onChange={(e) => setMonitorName(e.target.value)}
-              className="outline-none border-2 border-[#4C4C4C] w-full rounded-xl p-2 py-3 mt-1 "
-            />
-            <div
-              className="font-medium mt-5 text-lg"
-              style={{ color: "black" }}
-            >
-              Risk Category
-            </div>
-            <select
-              style={{ backgroundColor: "white" }}
-              name="category"
-              id="category"
-              // value={formData.category}
-
-              onChange={(e) => setRiskCategory(e.target.value)}
-              className="outline-none border-2 border-[] py-3 rounded-xl  w-full px-3"
-            >
-              <option
-                value="none"
-                selected
-                disabled
-                hidden
-                className="text-xl font-medium"
-              >
-                None
-              </option>
-              <option
-                value="governance"
-                className="text-[13px] text-[#959595] "
-              >
-                Governance
-              </option>
-              <option
-                value="access control"
-                className="text-[13px] text-[#959595]"
-              >
-                Access Control
-              </option>
-              <option
-                value="suspicious activity"
-                className="text-[13px] text-[#959595]"
-              >
-                Suspicious Activity
-              </option>
-              <option value="financial" className="text-[13px] text-[#959595]">
-                Financial
-              </option>
-              <option value="technical" className="text-[13px] text-[#959595]">
-                Technical
-              </option>
-            </select>
-
             <div
               className="text-lg font-medium mt-5"
               style={{ color: "black" }}
             >
-              Contract Name
+              Monitor Name
             </div>
             <input
               style={{ backgroundColor: "white" }}
               type="text"
               placeholder="Enter text"
-              onChange={(e) => setContractName(e.target.value)}
+              onChange={(e) => setMonitorName(e.target.value)}
               className="outline-none border-2 border-[] py-3 rounded-xl  w-full px-"
             />
             {/* #4C4C4C */}
@@ -553,6 +499,7 @@ function Monitor_create() {
             </div>
           </form>
         </div>
+        
       </div>
     </div>
   );

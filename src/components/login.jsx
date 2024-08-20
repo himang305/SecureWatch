@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import google from "../images/google.png";
 import { useNavigate } from "react-router-dom";
 import { showErrorAlert, showSuccessAlert } from "./toastifyalert";
+import { baseUrl } from "../Constants/data";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -24,7 +25,7 @@ function Login() {
         showErrorAlert("Invalid email or password.");
       } else {
         const response = await axios.post(
-          "https://139-59-5-56.nip.io:3443/login_securewatch",
+          `${baseUrl}/login_securewatch`,
           {
             email,
             password,
@@ -68,11 +69,11 @@ function Login() {
   };
   const [enabled, setEnabled] = useState(false);
   return (
-    <div className="font-poppin bg-white  flex flex-col h-full justify-center mx-5 md:mx-0 items-center md:gap-[50px] md:flex-row lg:gap-[150px]">
-      <div className="w-[90vw] md:w-[50vw] lg:w-[30vw] my-auto mb-10 md:mb-0 mt-0">
-        <img src={c1} alt="not found" className="my-auto" />
+    <div className="font-poppin bg-white flex justify-center items-center flex-wrap min-h-full gap-6 md:gap-20  p-3">
+      <div className=" ">
+        <img src={c1} alt="not found" className=" w-96" />
       </div>
-      <div className="my-auto w-full md:w-1/3 lg:w-1/4">
+      <div className=" w-[97%] md:w-96">
         <div className="flex w-[160px] justify-between rounded-full border border-1 border-[#59E296] py-2 px-3">
           <div>
             <img src={c2} alt="not found" />
@@ -149,10 +150,10 @@ function Login() {
                   } inline-block h-4 w-4 transform rounded-full bg-white transition`}
                 />
               </Switch>
-              <div className="text-black">Remember me</div>
+              <div className="text-black text-nowrap">Remember me</div>
             </div>
             <Link to="/forgotpassword" className="text-[#007AFF]">
-            <div className="text-[#007AFF]">Forgot Password?</div>
+            <div className="text-[#007AFF] text-nowrap">Forgot Password?</div>
             </Link>
           </div>
           <button type="submit" className="mx-auto bg-[#28AA61] px-4 py-2 text-white my-9 w-full rounded-md">

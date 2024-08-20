@@ -9,6 +9,7 @@ import Grid from '../images/grid.png'
 import Actions from '../images/Actions.png';
 import Code from '../images/code.png';
 import { useState } from "react";
+import { baseUrl } from "../Constants/data";
 
 
 function Dashboard() {
@@ -38,7 +39,7 @@ console.log(userEmail);
   //   console.log(s);
   React.useEffect(() => {
     const fetchMoniter = async () => {
-      const res=await fetch('https://139-59-5-56.nip.io:3443/get_monitor',{
+      const res=await fetch( `${baseUrl}/get_monitor`,{
         method:'POST',
         headers:{
           'Content-Type':'application/json'
@@ -63,9 +64,9 @@ console.log(userEmail);
 
 
   return (
-      <div className="bg-white pt-12">
+      <div className="bg-white pt-12 pb-10">
         <Navbar email={userEmail} />
-        <div className="w-4/6 mx-auto">
+        <div className="w-4/6 mx-auto ">
           <div className="mt-10 flex justify-center items-center gap-6 flex-wrap ">
             <div className="flex gap-2">
               {/* <div className="font-poppin font-medium text-lg sm:text-ml md:text-2xl lg:text-3xl text-[#0CA851]  bg-[#A7FFCE] p-2 rounded-2xl text-center">

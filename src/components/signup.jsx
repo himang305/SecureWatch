@@ -44,11 +44,11 @@ function Signup() {
   };
   const [enabled, setEnabled] = useState(false);
   return (
-    <div className="font-poppin bg-white flex flex-col h-full justify-center mx-5 md:mx-0 items-center md:gap-[50px] md:flex-row lg:gap-[150px]">
-      <div className="w-[90vw] md:w-[50vw] lg:w-[30vw] my-auto mb-10 md:mb-0 mt-0">
-        <img src={c1} alt="not found" className="my-auto" />
+    <div className="font-poppin bg-white flex justify-center items-center flex-wrap min-h-full gap-6 md:gap-20  p-3">
+      <div className="">
+        <img src={c1} alt="not found" className=" w-96" />
       </div>
-      <div className="my-auto w-full md:w-1/3 lg:w-1/4">
+      <div className=" w-[97%] md:w-96">
         <div className="flex w-[160px] justify-between rounded-full border border-1 border-[#59E296] py-2 px-3">
           <div>
             <img src={c2} alt="not found" />

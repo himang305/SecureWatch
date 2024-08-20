@@ -22,6 +22,8 @@ import ApiBuilder from "./components/api_builder.jsx";
 import MonitorAlerts from "./components/monitor_alerts.jsx";
 import Forgotpassword from "./components/Forgotpassword.jsx";
 import Otpverify from "./components/Otpverify.jsx";
+import 'react-toastify/dist/ReactToastify.css';
+import { toast } from "react-toastify";
 
 function App() {
   return (
@@ -29,27 +31,13 @@ function App() {
       <Routes>
         <Route path="/log" element={<Logs />} />
         <Route path="/alerts" element={<Protected cmp={<Alerts />} />} />
-
         <Route path="/function" element={<Protected cmp={<Functions />} />} />
         <Route path="/event" element={<Protected cmp={<Events />} />} />
-        <Route
-          path="/alert_edit"
-          element={<Protected cmp={<AlertsEdit />} />}
-        />
-        <Route
-          path="/event_edit"
-          element={<Protected cmp={<EventsEdit />} />}
-        />
-        <Route
-          path="/monitor_create"
-          element={<Protected cmp={<MonitorCreate />} />}
-        />
+        <Route path="/alert_edit" element={<Protected cmp={<AlertsEdit />} />}/>
+        <Route path="/event_edit" element={<Protected cmp={<EventsEdit />} />}/>
+        <Route path="/monitor_create" element={<Protected cmp={<MonitorCreate />} />}/>
         <Route path="/monitor_Edit" element={<MonitorEdit />}></Route>
-
-        <Route
-          path="/monitor_activity"
-          element={<Protected cmp={<MonitorActivity />} />}
-        />
+        <Route path="/monitor_activity" element={<Protected cmp={<MonitorActivity />} />}/>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgotpassword" element={<Forgotpassword />} />
@@ -60,10 +48,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/dashboard" element={<Protected cmp={<Dashboard />} />} />
         <Route path="/monitor" element={<Protected cmp={<Monitor />} />} />
-        <Route
-          path="/api_builder"
-          element={<Protected cmp={<ApiBuilder />} />}
-        />
+        <Route path="/api_builder" element={<Protected cmp={<ApiBuilder />} />}/>
         <Route path="/monitor_alerts" element={<MonitorAlerts />} />
       </Routes>
     </BrowserRouter>
