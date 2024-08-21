@@ -42,6 +42,7 @@ function Monitor_Edit() {
       address: address || selectedMonitor.address,
       alert_type: 1,
       abi: abi || selectedMonitor.abi,
+    
     };
     console.log("Data is:", data);
     try {
@@ -49,15 +50,7 @@ function Monitor_Edit() {
         "https://139-59-5-56.nip.io:3443/update_monitor",
         data
       );
-      // console.log("API response:", response.data);
-      // console.log("monitor name is", monitorName);
-      // console.log("Risk category is:", riskCategory);
-      // console.log("contract name is", contractName);
-      // console.log("netwprk name is", network);
-      // console.log(" address is:", address);
-      // console.log(" ABI  is:", abi);
-      // console.log(" user id is", user_Id);
-
+    
       toast.success("Monitor created successfully!", {
         autoClose: 500,
         onClose: () => {
@@ -140,25 +133,7 @@ function Monitor_Edit() {
     fetchMoniter();
   }, [user_Id, value]);
 
-  // console.log("monitor isa:", moniter);
-
-
  
-  // console.log("Selected Monitor:", selectedMonitor);
-  // console.log("name is:", selectedMonitor.name);
-
-  // {
-  //   selectedMonitor.network === 80002
-  //     ? "Amoy"
-  //     : selectedMonitor.network === 1
-  //     ? "Ethereum Mainnet"
-  //     : selectedMonitor.network === 11155111
-  //     ? "Sepolia Testnet"
-  //     : selectedMonitor.network === 137
-  //     ? "Polygon Mainnet"
-  //     : "Unknown";
-  // }
-
   if (loading) {
     return (
       <div className="text-center mt-20 text-4xl font-medium text-black">
@@ -602,6 +577,9 @@ function Monitor_Edit() {
               </option>
               <option value="80002" className="text-[13px] text-[#959595]">
                 Amoy
+              </option>
+              <option value="80002" className="text-[13px] text-[#959595]">
+                Algorand Mainnet
               </option>
             </select>
             <div
